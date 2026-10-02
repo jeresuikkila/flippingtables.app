@@ -69,6 +69,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .up.ok{background:var(--accent);color:#fff;box-shadow:0 6px 0 #9c2c14;cursor:pointer}
 .up.ok .cost{color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
 .up.no{cursor:default}
+#shop.many .up{flex-direction:column;gap:3px;padding:9px 6px 8px;width:84px;text-align:center}
+#shop.many .up .nm{display:none}
+#shop.many .up .sn{display:block}
+#shop.many .up .cost{font-size:16px;margin-top:0}
 .up.no:not(.max) .em{filter:grayscale(1);opacity:.55}
 .up.max{background:#1e3a2a;color:var(--good);box-shadow:0 6px 0 #0b0c0f}
 #elevBtn{position:absolute;left:50%;bottom:120px;transform:translateX(-50%) scale(.9);padding:16px 26px;border-radius:14px;font-family:var(--display);font-size:18px;letter-spacing:.04em;color:#1a1208;background:linear-gradient(180deg,#ffd166,#ff9f1c);box-shadow:0 8px 0 #a35a00,0 18px 40px rgba(255,159,28,.35);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap}
@@ -88,9 +92,46 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .num.intern{font-size:12px;color:#b9c2d0}
 .num.relic{font-size:24px;color:#ffd166;letter-spacing:.04em;animation-duration:1.8s}
 .num.loaded{font-size:12px;color:#ffd9a0;letter-spacing:.08em;animation-duration:1.1s}
+.num.yelp{font-family:var(--body);font-weight:800;font-size:13px;color:#fff;background:#000;padding:2px 7px;border-radius:8px;animation-duration:1.4s}
+.num.chair{font-size:20px;color:#9fd3ff}
 .num.reward{font-size:22px;color:var(--accent);animation-duration:1.2s}
 @keyframes rise{0%{opacity:0;transform:translateY(6px) scale(.6)}15%{opacity:1;transform:translateY(-6px) scale(1.15)}100%{opacity:0;transform:translateY(-60px) scale(1)}}
 body.bossfloor #toasts{margin-top:44px}
+#bragBtn{position:absolute;left:50%;bottom:196px;transform:translateX(-50%) scale(.9);padding:12px 20px;border-radius:14px;font-family:var(--display);font-size:15px;color:#111;background:#fff;box-shadow:0 6px 0 #8f949c;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;white-space:nowrap}
+#bragBtn.show{opacity:1;pointer-events:auto;transform:translateX(-50%) scale(1);animation:bob 1.2s ease-in-out infinite}
+#bragBtn:active{box-shadow:0 2px 0 #8f949c;translate:0 4px}
+.cta2{margin-top:16px;font-family:var(--display);font-size:15px;padding:12px 22px;border-radius:12px;background:#2a2d35;color:#ffd166;box-shadow:0 5px 0 #0b0c0f}
+.cta2:active{transform:translateY(4px);box-shadow:0 1px 0 #0b0c0f}
+.world{margin-top:18px;font-family:var(--display);font-size:13px;letter-spacing:.04em;color:var(--accent2);min-height:16px}
+#modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(10,11,14,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+#modal[hidden]{display:none}
+#modal .card{width:min(480px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#1d2027;border-radius:20px;padding:22px;box-shadow:0 10px 0 #0b0c0f;user-select:text;-webkit-user-select:text}
+#modal h2{font-family:var(--display);font-size:26px;line-height:1;margin-bottom:4px}
+#modal h3{font-family:var(--display);font-size:13px;letter-spacing:.08em;color:var(--accent2);margin:20px 0 10px}
+#modal p{font-size:14px;line-height:1.5;color:#c9cbd2}
+#modal .x{float:right;width:34px;height:34px;border-radius:10px;background:#2a2d35;font-weight:800;box-shadow:0 3px 0 #0b0c0f}
+.relics{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.relic{background:#262a32;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.35;color:#9a9ca6}
+.relic b{display:block;font-family:var(--display);font-size:12px;color:#fff;margin-bottom:3px}
+.relic.found{background:#2f2a1c}
+.relic.found b{color:#ffd166}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:#262a32;border-radius:12px;padding:10px 12px}
+.stat b{display:block;font-family:var(--display);font-size:20px}
+.stat span{font-size:11px;color:#9a9ca6;font-weight:600}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.btn{flex:1 1 auto;padding:12px 14px;border-radius:12px;font-family:var(--display);font-size:13px;background:var(--accent);color:#fff;box-shadow:0 5px 0 #9c2c14;text-align:center;text-decoration:none}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #9c2c14}
+.btn.dark{background:#2a2d35;color:#fff;box-shadow:0 5px 0 #0b0c0f}
+.btn.dark:active{box-shadow:0 1px 0 #0b0c0f}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;font-size:14px;font-weight:600}
+.row + .row{border-top:1px solid rgba(255,255,255,.06)}
+.pill{padding:8px 12px;border-radius:10px;background:#2a2d35;font-family:var(--display);font-size:12px;box-shadow:0 3px 0 #0b0c0f;min-width:74px}
+.danger{margin-top:18px;font-size:12px;color:#7d808a;text-decoration:underline}
+.shareimg{width:100%;border-radius:12px;display:block;margin:12px 0 4px;background:#000;aspect-ratio:1200/630}
+.big-time{font-family:var(--display);font-size:64px;line-height:1;color:var(--accent2);margin:10px 0 4px}
+body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{animation:none}
 #banner{position:fixed;left:0;right:0;top:34%;text-align:center;pointer-events:none;opacity:0}
 #banner.show{animation:banner 2.6s ease forwards}
 #banner .f{font-family:var(--display);font-size:clamp(44px,9vw,92px);line-height:.95;text-shadow:0 4px 0 #000,0 0 40px rgba(0,0,0,.5)}
@@ -138,7 +179,13 @@ body.bossfloor #toasts{margin-top:44px}
   .up .nm{display:none}
   .up .sn{display:block}
   .up .cost{margin-top:0}
+  #shop.many{gap:4px}
+  #shop.many .up{width:auto;flex:1 1 0;padding:8px 1px 7px}
+  #shop.many .up .ic{font-size:20px;width:26px;height:26px}
+  #shop.many .up .cost{font-size:13px}
+  #shop.many .up .sn{font-size:9px}
   #tip{bottom:calc(130px + env(safe-area-inset-bottom))}
+  #bragBtn{bottom:calc(204px + env(safe-area-inset-bottom))}
   #elevBtn{bottom:calc(136px + env(safe-area-inset-bottom));font-size:16px;padding:14px 20px}
   #hint{font-size:13px;top:auto;bottom:calc(142px + env(safe-area-inset-bottom));transform:translateX(-50%)}
   #toasts{left:50%;right:auto;transform:translateX(-50%);top:calc(140px + env(safe-area-inset-top));bottom:auto;width:calc(100vw - 28px)}
@@ -180,15 +227,16 @@ body.bossfloor #toasts{margin-top:44px}
 
 <div id="hud">
   <div class="tl">
-    <div class="lbl">FLOOR</div>
+    <div class="lbl" id="flLbl">FLOOR</div>
     <div class="big" id="floorNum">1</div>
     <div id="dept">Customer Support</div>
     <div class="prog"><div id="progBar"></div></div>
   </div>
   <div class="tr">
-    <div class="lbl">RAGE</div>
+    <div class="lbl" id="rgLbl">RAGE</div>
     <div class="big rage" id="rage">0</div>
     <div id="tools">
+      <button id="menuBtn" aria-label="Menu, relics and settings" title="Menu"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
       <button id="muteBtn" aria-label="Toggle sound"></button>
       <button id="shareBtn" aria-label="Share" title="Brag"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M5 13v6h14v-6"/></svg></button>
     </div>
@@ -196,12 +244,14 @@ body.bossfloor #toasts{margin-top:44px}
   <div id="combo"></div>
   <div id="boss"><div class="bname">⚠ THE BOARDROOM TABLE ⚠</div><div class="bbar"><div id="bossBar"></div></div></div>
   <div id="hint"></div>
+  <button id="bragBtn">📸 SHOW OFF</button>
   <button id="elevBtn">▲ TAKE THE ELEVATOR<small>OR CLICK THE ELEVATOR</small></button>
   <div id="toasts"></div>
   <div id="tip"></div>
   <div id="shop"></div>
 </div>
 <div id="fx"></div>
+<div id="modal" role="dialog" aria-modal="true" hidden><div class="card" id="modalCard"></div></div>
 <div id="banner"><div class="f" id="bannerF"></div><div class="d" id="bannerD"></div></div>
 <div id="elev"><div class="door l"></div><div class="door r"></div><div class="elevInd"><span>▲</span><b id="elevFloor">1</b></div></div>
 
@@ -212,12 +262,29 @@ body.bossfloor #toasts{margin-top:44px}
     <div class="face">(╯°□°)╯︵ <span class="t">┻━┻</span></div>
     <p class="tag">There are infinite floors. Every floor has tables. Every table is a problem.<br>Solve them all.</p>
     <button class="cta" id="startBtn">CLOCK IN</button>
+    <div><button class="cta2" id="dailyBtn">☀ FLOOR OF THE DAY</button></div>
+    <div class="world" id="worldCount"></div>
     <div class="fine" id="fine">No tables were harmed. Several were flipped.</div>
-    <button class="quit" id="resetBtn" hidden>Quit job (erase progress)</button>
   </div>
 </div>
 
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three-r170.min.js"}}</script>
+<script>
+  // Vercel Web Analytics (pageviews + custom events) and a tiny client error reporter.
+  window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+  (function () {
+    var sent = 0;
+    function report(msg, stack) {
+      if (sent++ >= 5) return;
+      var body = JSON.stringify({ msg: String(msg).slice(0, 400), stack: String(stack || '').slice(0, 1200), url: location.href, ua: navigator.userAgent, t: Date.now() });
+      try { navigator.sendBeacon ? navigator.sendBeacon('/api/log', new Blob([body], { type: 'application/json' })) : fetch('/api/log', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } }); } catch (e) {}
+    }
+    window.reportError = report;
+    addEventListener('error', function (e) { report(e.message, e.error && e.error.stack); });
+    addEventListener('unhandledrejection', function (e) { report('unhandledrejection: ' + (e.reason && e.reason.message || e.reason), e.reason && e.reason.stack); });
+  })();
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
 <script type="module">
 import * as THREE from 'three';
 
@@ -229,7 +296,7 @@ function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = 
 
 // ---------------------------------------------------------------- state
 const SAVE_KEY = 'flippingtables-v1';
-const DEF = { rage: 0, lifetime: 0, flipped: 0, floor: 1, best: 1, found: {}, up: { arms: 0, interns: 0, spite: 0, shock: 0, email: 0 }, muted: false, t: 0 };
+const DEF = { rage: 0, lifetime: 0, flipped: 0, floor: 1, best: 1, bestEver: 1, sev: 0, hires: 0, found: {}, daily: {}, up: { arms: 0, interns: 0, spite: 0, shock: 0, email: 0, chair: 0, retreat: 0 }, muted: false, motion: null, t: 0 };
 const S = load();
 function load() {
   try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s) return { ...structuredClone(DEF), ...s, up: { ...DEF.up, ...s.up } }; } catch (e) {}
@@ -243,20 +310,28 @@ const isBoss = f => f % 10 === 0;
 const tableHP = f => Math.ceil(3 * Math.pow(1.16, f - 1) * Math.min(1, 0.3 + 0.07 * (f - 1)));
 const tableReward = f => Math.ceil(2 * Math.pow(1.17, f - 1));
 const tableCount = f => isBoss(f) ? 1 : Math.min(2 + f, 30);
+let mode = 'career'; // 'career' | 'daily'
+// Severance: permanent multiplier earned by quitting and getting rehired (prestige).
+const sevMult = () => 1 + 0.1 * S.sev;
+const sevGain = () => S.floor >= 25 ? Math.floor(Math.pow(S.floor / 10, 2)) : 0;
 const dmgAt = n => (1 + n) * Math.pow(1.12, n);
-const dmg = () => dmgAt(S.up.arms);
-const internDps = () => S.up.interns * 0.8 * dmg();
-const critChance = () => Math.min(0.6, S.up.spite * 0.04);
-const splashR = () => S.up.shock ? 1.6 + 0.7 * S.up.shock : 0;
-const emailRate = () => S.up.email * tableReward(S.floor) * 0.15;
+const dmg = () => mode === 'daily' ? 1 : dmgAt(S.up.arms) * sevMult();
+const internDps = () => mode === 'daily' ? 0 : S.up.interns * 0.8 * dmg() * (1 + 0.5 * S.up.retreat);
+const chairDmg = () => dmg() * 1.5 * S.up.chair;
+const critChance = () => mode === 'daily' ? 0 : Math.min(0.6, S.up.spite * 0.04);
+const splashR = () => mode === 'daily' || !S.up.shock ? 0 : 1.6 + 0.7 * S.up.shock;
+const emailRate = () => mode === 'daily' ? 0 : S.up.email * tableReward(S.floor) * 0.15 * sevMult();
 
 const UPG = [
-  { id: 'arms', short: 'Arms', blurb: 'More damage per click', ic: '💪', name: 'Forearm Day', base: 10, k: 1.5, fx: () => `${fmt(dmg())} dmg per click` },
-  { id: 'interns', short: 'Intern', blurb: 'Flips tables while you idle', ic: '🧑‍💼', name: 'Unpaid Intern', base: 250, k: 1.7, fx: () => S.up.interns ? `${fmt(internDps())} dmg/s for "exposure"` : 'Flips tables for "exposure"' },
-  { id: 'spite', short: 'Spite', blurb: 'Chance of 5× critical hits', ic: '😤', name: 'Pure Spite', base: 60, k: 1.7, max: 15, fx: () => `${Math.round(critChance() * 100)}% chance of 5× crit` },
-  { id: 'shock', short: 'Shock', blurb: 'Hits splash onto nearby desks', ic: '💥', name: 'Shockwave', base: 120, k: 1.75, max: 10, fx: () => S.up.shock ? `${splashR().toFixed(1)}m splash radius` : 'Rage gets area of effect' },
-  { id: 'email', short: 'Emails', blurb: 'Passive rage per second', ic: '📧', name: 'Reply-All Storm', base: 45, k: 1.5, fx: () => S.up.email ? `+${fmt(emailRate())} rage/s passively` : 'Generates rage while idle' },
+  { id: 'arms', unlock: 1, short: 'Arms', blurb: 'More damage per click', ic: '💪', name: 'Forearm Day', base: 10, k: 1.5, fx: () => `${fmt(dmg())} dmg per click` },
+  { id: 'interns', unlock: 4, short: 'Intern', blurb: 'Flips tables while you idle', ic: '🧑‍💼', name: 'Unpaid Intern', base: 250, k: 1.7, fx: () => S.up.interns ? `${fmt(internDps())} dmg/s for "exposure"` : 'Flips tables for "exposure"' },
+  { id: 'spite', unlock: 3, short: 'Spite', blurb: 'Chance of 5× critical hits', ic: '😤', name: 'Pure Spite', base: 60, k: 1.7, max: 15, fx: () => `${Math.round(critChance() * 100)}% chance of 5× crit` },
+  { id: 'shock', unlock: 5, short: 'Shock', blurb: 'Hits splash onto nearby desks', ic: '💥', name: 'Shockwave', base: 120, k: 1.75, max: 10, fx: () => S.up.shock ? `${splashR().toFixed(1)}m splash radius` : 'Rage gets area of effect' },
+  { id: 'email', unlock: 2, short: 'Emails', blurb: 'Passive rage per second', ic: '📧', name: 'Reply-All Storm', base: 45, k: 1.5, fx: () => S.up.email ? `+${fmt(emailRate())} rage/s passively` : 'Generates rage while idle' },
+  { id: 'chair', unlock: 7, short: 'Chairs', blurb: 'Flipped desks fling their chairs at other desks', ic: '🪑', name: 'Ergonomic Chair Throw', base: 400, k: 1.8, max: 10, fx: () => S.up.chair ? `Thrown chairs hit for ${fmt(chairDmg())}` : 'Chairs become projectiles' },
+  { id: 'retreat', unlock: 9, req: () => S.up.interns > 0, short: 'Retreat', blurb: 'Interns hit harder after the trust falls', ic: '🏕️', name: 'Team Building Retreat', base: 3000, k: 2.1, max: 10, fx: () => `Interns deal ×${(1 + 0.5 * S.up.retreat).toFixed(1)} damage` },
 ];
+const unlocked = u => S.best >= u.unlock && (!u.req || u.req() || S.up[u.id] > 0);
 const cost = u => Math.ceil(u.base * Math.pow(u.k, S.up[u.id]));
 
 function fmt(n) {
@@ -273,6 +348,7 @@ function deptName(f) {
   const special = { 1: 'Customer Support', 2: 'Accounting', 3: 'IT (Have You Tried Restarting?)', 5: 'Initech Software Division', 11: 'Elbonia Outsourcing Liaison', 13: '[REDACTED]', 23: 'Macrodata Refinement', 42: 'Meaning of Work', 99: 'Middle Management', 100: 'The C-Suite', 404: 'Department Not Found', 1000: 'The Shareholders' };
   if (special[f]) return special[f];
   if (isBoss(f)) return 'Executive Boardroom';
+  if (THEME_NAMES[floorTheme(f)]) return THEME_NAMES[floorTheme(f)];
   const r = mulberry32(f * 7919 + 3);
   return `${PRE[r() * PRE.length | 0]} ${SUF[r() * SUF.length | 0]}`;
 }
@@ -319,14 +395,22 @@ const sfx = {
   flip() { noise(0.25, 0.2, 'bandpass', 900); tone('sine', 300, 600, 0.2, 0.08); },
   thump(big) { tone('sine', big ? 90 : 130, 35, big ? 0.6 : 0.3, 0.9); noise(big ? 0.5 : 0.2, 0.6, 'lowpass', big ? 500 : 900); },
   clatter() { for (let i = 0; i < 4; i++) noise(0.04, 0.18, 'highpass', 3000 + Math.random() * 3000, i * 0.04 + Math.random() * 0.03); },
-  ding() { tone('sine', 1318, 1310, 1.4, 0.3); tone('sine', 2637, 2630, 0.8, 0.08); tone('sine', 1046, 1040, 1.6, 0.25, 0.35); },
+  ding() { // two-note elevator bell (ding-dong) built from bell-like partials
+    [[1318.5, 0], [1046.5, 0.42]].forEach(([f, at]) => [[1, 0.26, 1.7], [2.0, 0.08, 1.1], [2.76, 0.05, 0.6], [5.4, 0.02, 0.25]].forEach(([m, v, d]) => tone('sine', f * m, f * m * 0.998, d, v, at)));
+  },
   buy() { tone('square', 660, 660, 0.06, 0.08); tone('square', 990, 990, 0.09, 0.08, 0.06); },
   doors() { noise(0.6, 0.15, 'lowpass', 400); },
 };
 
 // ---------------------------------------------------------------- three setup
 const canvas = $('#c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+let renderer;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' }); }
+catch (err) { // no WebGL: say so instead of failing silently
+  window.reportError && window.reportError('WebGL unavailable: ' + err.message, err.stack);
+  $('#title').innerHTML = '<div><h1 class="logo">FLIPPING<br><em>TABLES</em></h1><p class="tag">Your browser refused to render 3D tables. Try a recent Chrome, Safari or Firefox, or turn on hardware acceleration. The tables will wait.</p></div>';
+  throw err;
+}
 const coarse = matchMedia('(pointer: coarse)').matches;
 renderer.setPixelRatio(Math.min(devicePixelRatio, coarse ? 1.75 : 2));
 renderer.shadowMap.enabled = true;
@@ -368,7 +452,11 @@ const M = {
   mugs: [std(0xffffff, { roughness: 0.3 }), std(0x2bb3a3, { roughness: 0.3 }), std(0x2f6fed, { roughness: 0.3 }), std(0xffd166, { roughness: 0.3 })],
   leaf: std(0x3f9b52, { roughness: 0.8, flatShading: true }), pot: std(0xc96b45), chair: std(0x30343c, { roughness: 0.85 }),
   wall: std(0xe9e4da, { roughness: 0.95 }), trim: std(0x9b8e7e), gold: std(0xffc94d, { roughness: 0.25, metalness: 0.9 }),
-  binder: std(0x2a3f7a), elevLight: new THREE.MeshBasicMaterial({ color: 0xfff1c9, toneMapped: false }), cabinet: std(0x8d939b, { roughness: 0.5, metalness: 0.3 }), pillar: std(0xd9d3c7, { roughness: 0.9 }),
+  binder: std(0x2a3f7a), serverWall: std(0x3c414b, { roughness: 0.8 }), breakWall: std(0xf1e6c8, { roughness: 0.9 }),
+  counter: std(0x8a6d52, { roughness: 0.7 }), counterTop: std(0xe9e6df, { roughness: 0.3 }), felt: std(0x5b6f8a, { roughness: 1 }),
+  donutBox: std(0xf4a6c0, { roughness: 0.8 }), pizzaBox: std(0xc9a274, { roughness: 0.9 }), rack: std(0x23262d, { roughness: 0.4, metalness: 0.5 }),
+  spark: new THREE.MeshBasicMaterial({ color: 0xffe08a, toneMapped: false }),
+  printer: std(0xd9dbde, { roughness: 0.5 }), whiteTop: std(0xf2f0ea, { roughness: 0.4 }), elevLight: new THREE.MeshBasicMaterial({ color: 0xfff1c9, toneMapped: false }), cabinet: std(0x8d939b, { roughness: 0.5, metalness: 0.3 }), pillar: std(0xd9d3c7, { roughness: 0.9 }),
   baseboard: std(0x5b5146), mat: std(0x2b2e36, { roughness: 1 }), walnut: std(0x6b4a33, { roughness: 0.45 }), cooler: std(0xf0f2f5, { roughness: 0.4 }), water: std(0x7cc4ff, { roughness: 0.1, transparent: true, opacity: 0.75 }),
 };
 const GEO = {};
@@ -446,21 +534,26 @@ const IM = {
   hair: [std(0x2b1d14), std(0x6b4423), std(0xd9b36c), std(0x111111)],
   shirt: [std(0xcfe3f7), std(0xf4f4f0), std(0xf7d9e3), std(0xd8f0d2)],
   pants: std(0x2f3542, { roughness: 0.9 }), shoe: std(0x15161a), tie: std(0xd4141c), badge: std(0xffffff), lanyard: std(0x2f6fed),
+  polo: [std(0x2d4a7a), std(0x7a2d3a), std(0x3d6b4a), std(0xb8902f), std(0x5b4a7a), std(0x6b6f76)],
+  suit: std(0x2b2e36, { roughness: 0.6 }), hrTie: std(0x55606e), clip: std(0x8a6a44),
 };
 let interns = [], elevPos = new THREE.Vector3();
-function makeIntern(i) {
+function makeIntern(i, role = 'intern') {
   const g = new THREE.Group(), pk = a => a[i % a.length];
+  const shirt = role === 'hr' ? IM.suit : role === 'coworker' ? pk(IM.polo) : pk(IM.shirt);
   const limb = (w, h, d, mat, y) => { const pivot = new THREE.Group(); const m = box(w, h, d, mat); m.position.y = -h / 2; pivot.add(m); pivot.position.y = y; return pivot; };
   const legL = limb(0.15, 0.72, 0.17, IM.pants, 0.74), legR = limb(0.15, 0.72, 0.17, IM.pants, 0.74);
   legL.position.x = -0.1; legR.position.x = 0.1;
   for (const leg of [legL, legR]) { const shoe = box(0.16, 0.07, 0.24, IM.shoe); shoe.position.set(0, -0.7, 0.04); leg.add(shoe); }
-  const torso = box(0.44, 0.58, 0.25, pk(IM.shirt)); torso.position.y = 1.04;
-  const tie = box(0.06, 0.34, 0.02, IM.tie); tie.position.set(0, 1.12, 0.135);
+  const torso = box(0.44, 0.58, 0.25, shirt); torso.position.y = 1.04;
+  const tie = box(0.06, 0.34, 0.02, role === 'hr' ? IM.hrTie : IM.tie); tie.position.set(0, 1.12, 0.135);
   const strap = box(0.2, 0.02, 0.02, IM.lanyard); strap.position.set(0, 1.27, 0.13); strap.rotation.z = 0.5;
   const badge = box(0.09, 0.12, 0.015, IM.badge); badge.position.set(0.1, 1.0, 0.135);
-  const armL = limb(0.12, 0.56, 0.13, pk(IM.shirt), 1.3), armR = limb(0.12, 0.56, 0.13, pk(IM.shirt), 1.3);
+  if (role !== 'intern') { strap.visible = badge.visible = false; tie.visible = role === 'hr' || i % 3 === 0; }
+  const armL = limb(0.12, 0.56, 0.13, shirt, 1.3), armR = limb(0.12, 0.56, 0.13, shirt, 1.3);
   armL.position.x = -0.29; armR.position.x = 0.29;
   for (const arm of [armL, armR]) { const hand = box(0.11, 0.11, 0.11, pk(IM.skin)); hand.position.y = -0.6; arm.add(hand); }
+  if (role === 'hr') { const clip = box(0.24, 0.32, 0.02, IM.clip); clip.position.set(0, -0.62, 0.12); const sheet = box(0.2, 0.26, 0.022, IM.badge); sheet.position.set(0, -0.62, 0.122); armR.add(clip, sheet); }
   const head = new THREE.Mesh(geo('head', () => new THREE.SphereGeometry(0.17, 16, 12)), pk(IM.skin)); head.position.y = 1.53; head.castShadow = true;
   const hair = new THREE.Mesh(geo('hair', () => new THREE.SphereGeometry(0.18, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2)), IM.hair[(i * 3 + 1) % IM.hair.length]);
   hair.position.set(0, 1.55, -0.015); hair.rotation.x = -0.25; hair.castShadow = true;
@@ -479,6 +572,7 @@ function spawnIntern(i, delay) {
   floorGroup.add(it.g); interns.push(it);
 }
 function syncInterns() {
+  if (mode === 'daily') return;
   const want = Math.min(S.up.interns, MAX_VISIBLE_INTERNS);
   for (let i = interns.length; i < want; i++) spawnIntern(i, (i - interns.length) * 0.5);
 }
@@ -507,7 +601,8 @@ function updateIntern(it, dt) {
     if (it.target) { // stand just off the desk on the side we approach from, fanned out per intern
       const t = it.target, sp = it.spot.copy(g.position).sub(t.base).setY(0);
       if (sp.lengthSq() < 0.01) sp.set(0, 0, 1);
-      sp.normalize().applyAxisAngle(UP, it.ang).multiplyScalar(t.boss ? 1.7 : t.heavy ? 1.25 : 1.05).add(t.base).setY(0);
+      sp.normalize().applyAxisAngle(UP, it.ang);
+      sp.multiplyScalar(Math.abs(sp.x) * t.half[0] + Math.abs(sp.z) * t.half[1] + 0.45).add(t.base).setY(0);
       sp.x = clamp(sp.x, -W / 2 + 0.4, W / 2 - 0.4); sp.z = clamp(sp.z, -D / 2 + 0.4, D / 2 - 0.4);
     }
   }
@@ -518,6 +613,7 @@ function updateIntern(it, dt) {
     if (dist > 0.08) {
       const step = Math.min(dist, 2.6 * dt);
       g.position.addScaledVector(to.normalize(), step);
+      avoid(g.position, it, t);
       g.rotation.y = Math.atan2(to.x, to.z);
       it.phase += dt * 12;
       const sw = Math.sin(it.phase);
@@ -542,6 +638,95 @@ function updateIntern(it, dt) {
     const share = internDps() * 0.55 / Math.max(1, interns.length);
     hit(t, share, 'intern', t.base.clone().sub(g.position));
   }
+}
+// keep walkers from ghosting through each other and through desks they're not heading for
+function avoid(pos, self, target) {
+  const push = (x, z, r) => { const dx = pos.x - x, dz = pos.z - z, d = Math.hypot(dx, dz); if (d < r && d > 1e-4) { pos.x += dx / d * (r - d) * 0.5; pos.z += dz / d * (r - d) * 0.5; } };
+  for (const o of interns) if (o !== self && o.g.visible) push(o.g.position.x, o.g.position.z, 0.6);
+  for (const o of tables) if (!o.dead && o !== target) push(o.base.x, o.base.z, o.radius * 0.85);
+}
+// ---------------------------------------------------------------- coworkers, HR, printer
+// Coworkers sit at some desks, cower when their desk gets hit and flee to the elevator when it flips.
+const YELPS = ['AAAH!', 'My stapler!', 'Not again!', 'I was on a call!', "I'm telling HR!", 'My spreadsheet!', 'Why?!', 'I just got here!'];
+let coworkers = [], hr = null, printer = null;
+function seatCoworker(t, ch, i) {
+  const cw = makeIntern(i + 2, 'coworker');
+  cw.table = t; cw.state = 'sit'; cw.t = 0;
+  cw.g.position.set(ch.position.x, -0.2, ch.position.z);
+  cw.g.rotation.y = Math.atan2(t.base.x - ch.position.x, t.base.z - ch.position.z);
+  cw.legL.rotation.x = cw.legR.rotation.x = -1.45;
+  floorGroup.add(cw.g); coworkers.push(cw);
+}
+function startle(t, flipped) {
+  for (const cw of coworkers) {
+    if (cw.state === 'flee' || cw.state === 'gone') continue;
+    const near = Math.hypot(cw.g.position.x - t.base.x, cw.g.position.z - t.base.z) < 3;
+    if (cw.table === t && flipped) {
+      cw.state = 'flee'; cw.t = 0; cw.g.position.y = 0; cw.legL.rotation.x = cw.legR.rotation.x = 0;
+      const p = cw.g.position.clone(); p.y = 2; spawnText(p, pick(YELPS), 'yelp');
+    } else if (cw.table === t || (flipped && near)) { cw.state = 'cower'; cw.t = 0; }
+  }
+}
+function updateCoworker(cw, dt) {
+  const g = cw.g; cw.t += dt; cw.phase += dt * 14;
+  if (cw.state === 'sit') { // typing
+    cw.armL.rotation.x = -1.15 + Math.sin(cw.phase * 1.3) * 0.08; cw.armR.rotation.x = -1.15 + Math.cos(cw.phase * 1.1) * 0.08;
+    cw.body.rotation.x = 0.1;
+  } else if (cw.state === 'cower') { // hands over head, trembling
+    cw.armL.rotation.x = cw.armR.rotation.x = -2.7 + Math.sin(cw.phase * 3) * 0.1;
+    cw.body.rotation.x = 0.45 + Math.sin(cw.phase * 4) * 0.03;
+    if (cw.t > 1.6) { cw.state = 'sit'; cw.t = 0; }
+  } else if (cw.state === 'flee') { // run for the elevator, arms flailing
+    const to = tmpV.copy(elevPos).sub(g.position).setY(0), d = to.length();
+    if (d < 0.5) { cw.state = 'gone'; g.visible = false; return; }
+    g.position.addScaledVector(to.normalize(), Math.min(d, 4.2 * dt));
+    avoid(g.position, cw, null);
+    g.rotation.y = Math.atan2(to.x, to.z);
+    const sw = Math.sin(cw.phase);
+    cw.legL.rotation.x = sw * 0.9; cw.legR.rotation.x = -sw * 0.9;
+    cw.armL.rotation.x = -2.4 + sw * 0.6; cw.armR.rotation.x = -2.4 - sw * 0.6;
+    cw.body.position.y = Math.abs(Math.cos(cw.phase)) * 0.06; cw.body.rotation.x = 0.15;
+  }
+}
+function spawnHR() {
+  hr = makeIntern(1, 'hr');
+  hr.g.position.set(elevPos.x + 1.2, 0, elevPos.z + 1.4);
+  floorGroup.add(hr.g);
+}
+function updateHR(dt) {
+  const t = tables[0]; if (!hr || !t) return;
+  hr.phase += dt;
+  hr.g.rotation.y = Math.atan2(t.base.x - hr.g.position.x, t.base.z - hr.g.position.z) + Math.sin(hr.phase * (t.dead ? 9 : 2)) * (t.dead ? 0.35 : 0.12); // disapproving head shake
+  hr.armR.rotation.x = -1.3 + Math.sin(hr.phase * 7) * 0.05; // clipboard up, taking notes
+  hr.armL.rotation.x = -0.9 + Math.sin(hr.phase * 11) * 0.15; // scribbling
+}
+function makePrinter(x, z) {
+  const g = new THREE.Group();
+  const stand = box(0.62, 0.62, 0.5, M.cabinet); stand.position.y = 0.31;
+  const body = box(0.58, 0.32, 0.46, M.printer); body.position.y = 0.78;
+  const tray = box(0.4, 0.03, 0.2, M.plastic); tray.position.set(0, 0.86, 0.3);
+  const lcd = new THREE.Mesh(geo('lcd', () => new THREE.PlaneGeometry(0.2, 0.05)), RM.lcd); lcd.position.set(0.12, 0.88, 0.231);
+  g.add(stand, body, tray, lcd); g.position.set(x, 0, z); g.rotation.y = -0.5;
+  floorGroup.add(g);
+  printer = { g, body, jam: 0 };
+}
+function printerProtest() {
+  if (!printer) return;
+  printer.jam = 0.45;
+  noise(0.35, 0.12, 'bandpass', 500); tone('square', 90, 70, 0.3, 0.04);
+  const out = new THREE.Vector3(0, 0, 1).applyAxisAngle(UP, printer.g.rotation.y);
+  for (let i = 0; i < 2; i++) {
+    const m = new THREE.Mesh(geo('paper', () => new THREE.PlaneGeometry(0.21, 0.29)), M.paper);
+    m.position.copy(printer.g.position).add(new THREE.Vector3(0, 0.95, 0)).addScaledVector(out, 0.3);
+    m.rotation.set(rand(0, 6), rand(0, 6), rand(0, 6)); floorGroup.add(m);
+    addDebris(m, out.clone().multiplyScalar(rand(1.5, 3)).add(new THREE.Vector3(rand(-0.6, 0.6), rand(2, 3.5), 0)), new THREE.Vector3(rand(-4, 4), rand(-4, 4), rand(-4, 4)), { g: 4, drag: 1.4, rest: 0.005, flat: true });
+  }
+  if (Math.random() < 0.3) spawnText(printer.g.position.clone().setY(1.5), 'PC LOAD LETTER', 'loaded');
+}
+function updatePrinter(dt) {
+  if (!printer || printer.jam <= 0) return;
+  printer.jam -= dt;
+  printer.body.position.x = Math.sin(printer.jam * 90) * 0.02 * (printer.jam > 0 ? 1 : 0);
 }
 function makeChair() {
   const g = new THREE.Group(), o = -0.45;
@@ -623,23 +808,49 @@ function poster(i, x, y, z, facing, frameMat) {
   floorGroup.add(g);
 }
 
-function buildFloor(f) {
+// Floor themes keep the infinite office from getting samey. Deterministic per floor.
+function floorTheme(f) {
+  if (f < 6 || isBoss(f)) return 'office';
+  const r = mulberry32(f * 977 + 5)();
+  return r < 0.55 ? 'office' : r < 0.7 ? 'openplan' : r < 0.85 ? 'breakroom' : 'server';
+}
+const THEME_NAMES = { openplan: 'Open-Plan Collaboration Zone', breakroom: 'The Break Room', server: 'Server Room (Do Not Touch)' };
+const THEME_MEMOS = {
+  openplan: ['Open-plan seating improves collaboration by 0%. The benches are long, heavy and loaded with monitors.', 'FACILITIES'],
+  breakroom: ['Someone microwaved fish again. The break room tables must answer for this.', 'INTERNAL MEMO'],
+  server: ['IT asks that you please do not flip the servers. IT is not your manager.', 'IT DEPARTMENT'],
+};
+const tileTex = canvasTex(128, 128, (g, w, h) => { for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { g.fillStyle = (x + y) % 2 ? '#d9d4c9' : '#f4f1ea'; g.fillRect(x * 64, y * 64, 64, 64); } });
+tileTex.wrapS = tileTex.wrapT = THREE.RepeatWrapping;
+const raisedTex = canvasTex(128, 128, (g, w, h) => { g.fillStyle = '#9aa0a8'; g.fillRect(0, 0, w, h); g.strokeStyle = '#6c727b'; g.lineWidth = 4; g.strokeRect(2, 2, w - 4, h - 4); g.fillStyle = '#7d838c'; for (const [x, y] of [[16, 16], [112, 16], [16, 112], [112, 112]]) { g.beginPath(); g.arc(x, y, 4, 0, 7); g.fill(); } });
+raisedTex.wrapS = raisedTex.wrapT = THREE.RepeatWrapping;
+const rackFaces = [0, 1].map(k => canvasTex(64, 128, (g, w, h) => {
+  g.fillStyle = '#16181d'; g.fillRect(0, 0, w, h);
+  for (let y = 4; y < h - 4; y += 10) { g.fillStyle = '#23262d'; g.fillRect(4, y, w - 8, 8); for (let i = 0; i < 3; i++) { const on = ((y * 7 + i * 13 + k * 5) % 11) < 6; g.fillStyle = on ? (i === 2 ? '#4cc3ff' : '#4cff7a') : '#1d3a26'; g.fillRect(w - 18 + i * 5, y + 3, 3, 2); } }
+}));
+const rackFaceMat = new THREE.MeshBasicMaterial({ map: rackFaces[0], toneMapped: false });
+M.serverSign = new THREE.MeshBasicMaterial({ map: labelTex(360, 120, '#c8241c', '#fff', ['SERVER ROOM', 'AUTHORIZED PERSONNEL ONLY'], 'bold 22px Inter, sans-serif') });
+
+function buildFloor(f, daily = 0) {
   if (floorGroup) scene.remove(floorGroup);
   perFloor.forEach(x => x.dispose()); perFloor.length = 0; interns = [];
   debris.length = 0; puffs.length = 0; tables = [];
   floorGroup = new THREE.Group(); scene.add(floorGroup);
-  const rng = mulberry32(f * 131 + 7), boss = isBoss(f), n = tableCount(f);
-  const sx = 3.4, sz = 3.1;
-  const cols = boss ? 1 : Math.ceil(Math.sqrt(n * 1.6)), rows = boss ? 1 : Math.ceil(n / cols);
+  coworkers = []; hr = null; printer = null;
+  const rng = mulberry32(daily ? daily * 7919 + 1 : f * 131 + 7), boss = !daily && isBoss(f), theme = daily ? DAILY_THEMES[daily % 4] : floorTheme(f);
+  const n = daily ? { office: 12, openplan: 6, breakroom: 9, server: 12 }[theme] : theme === 'openplan' ? Math.ceil(tableCount(f) / 2) : theme === 'breakroom' ? Math.ceil(tableCount(f) * 0.7) : tableCount(f);
+  const [sx, sz, aspect] = theme === 'openplan' ? [5.4, 3.7, 1.0] : theme === 'breakroom' ? [2.9, 2.9, 1.6] : theme === 'server' ? [1.5, 3.2, 3.5] : [3.4, 3.1, 1.6];
+  const cols = boss ? 1 : Math.ceil(Math.sqrt(n * aspect)), rows = boss ? 1 : Math.ceil(n / cols);
   W = boss ? 13 : Math.max(7, cols * sx + 3.4); D = boss ? 10 : Math.max(6, rows * sz + 3.2);
 
   // floor + walls
   const hue = (f * 0.137) % 1;
-  const carpet = std(new THREE.Color().setHSL(hue, boss ? 0.45 : 0.22, boss ? 0.22 : 0.42), { map: carpetTex.clone(), roughness: 1 });
-  carpet.map.repeat.set(W / 3, D / 3); carpet.map.needsUpdate = true; perFloor.push(carpet, carpet.map);
+  const floorColor = theme === 'breakroom' ? new THREE.Color(0xffffff) : theme === 'server' ? new THREE.Color(0xc4c9d0) : new THREE.Color().setHSL(hue, boss ? 0.45 : 0.22, boss ? 0.22 : 0.42);
+  const carpet = std(floorColor, { map: (theme === 'breakroom' ? tileTex : theme === 'server' ? raisedTex : carpetTex).clone(), roughness: theme === 'office' || theme === 'openplan' ? 1 : 0.6 });
+  carpet.map.repeat.set(W / (theme === 'office' || theme === 'openplan' ? 3 : 1.2), D / (theme === 'office' || theme === 'openplan' ? 3 : 1.2)); carpet.map.needsUpdate = true; perFloor.push(carpet, carpet.map);
   const fl = new THREE.Mesh(new THREE.BoxGeometry(W, 0.4, D), [M.trim, M.trim, carpet, M.trim, M.trim, M.trim]);
   fl.position.y = -0.2; fl.receiveShadow = true; floorGroup.add(fl); perFloor.push(fl.geometry);
-  const wallMat = boss ? std(0x3a2a22, { roughness: 0.6 }) : M.wall;
+  const wallMat = boss ? std(0x3a2a22, { roughness: 0.6 }) : theme === 'server' ? M.serverWall : theme === 'breakroom' ? M.breakWall : M.wall;
   const bw = new THREE.Mesh(new THREE.BoxGeometry(W + 0.3, 3.2, 0.3), wallMat); bw.position.set(0, 1.6, -D / 2 - 0.15);
   const lw = new THREE.Mesh(new THREE.BoxGeometry(0.3, 3.2, D), wallMat); lw.position.set(-W / 2 - 0.15, 1.6, 0);
   [bw, lw].forEach(m => { m.receiveShadow = m.castShadow = true; floorGroup.add(m); perFloor.push(m.geometry); });
@@ -650,11 +861,22 @@ function buildFloor(f) {
   const deck = [...POSTERS.keys()].sort(() => rng() - 0.5);
   const posterSlot = slots.length >= 4 ? 1 + (rng() * (slots.length - 2) | 0) : -1;
   slots.forEach((x, i) => {
+    if (theme === 'server') { // no windows in a server room; just a stern sign
+      if (i === 1 || slots.length === 1) { const sign = new THREE.Mesh(geo('ssign', () => new THREE.PlaneGeometry(1.8, 0.6)), M.serverSign); sign.position.set(x, 1.9, -D / 2 + 0.03); floorGroup.add(sign); }
+      return;
+    }
     if (i === posterSlot) { poster(deck.pop(), x, 1.75, -D / 2 + 0.03, 'z', frameMat); return; }
     const frame = box(1.9, 1.75, 0.06, frameMat); frame.position.set(x, 1.75, -D / 2 + 0.02); floorGroup.add(frame);
     const pane = new THREE.Mesh(geo('pane', () => new THREE.PlaneGeometry(1.78, 1.63)), winMat); pane.position.set(x, 1.75, -D / 2 + 0.06); floorGroup.add(pane);
     const sill = box(2.0, 0.05, 0.16, M.trim); sill.position.set(x, 0.86, -D / 2 + 0.08); floorGroup.add(sill);
-    if (rng() < 0.45) { // low filing cabinet under the window
+    if (theme === 'breakroom') { // kitchenette counter run under the windows
+      const counter = box(2.3, 0.88, 0.6, M.counter); counter.position.set(x, 0.44, -D / 2 + 0.3); floorGroup.add(counter);
+      const top = box(2.3, 0.04, 0.62, M.counterTop); top.position.set(x, 0.9, -D / 2 + 0.31); floorGroup.add(top);
+      if (i === 0) { const mw = box(0.5, 0.3, 0.38, M.cooler); mw.position.set(x - 0.4, 1.07, -D / 2 + 0.3); const door = box(0.32, 0.22, 0.01, M.plastic); door.position.set(-0.06, 0, 0.195); mw.add(door); floorGroup.add(mw); }
+      if (i === 1) { const cm = box(0.3, 0.42, 0.3, M.plastic); cm.position.set(x + 0.5, 1.13, -D / 2 + 0.3); const pot = cyl(0.08, 0.08, 0.16, M.water); pot.position.set(0, -0.1, 0.12); cm.add(pot); floorGroup.add(cm); }
+      return;
+    }
+    if (x < W / 2 - 2.2 && rng() < 0.45) { // low filing cabinet under the window
       const cab = box(0.9, 0.7, 0.44, M.cabinet); cab.position.set(x + (rng() - 0.5) * 0.6, 0.35, -D / 2 + 0.24);
       const gap = box(0.86, 0.015, 0.01, M.leg); gap.position.set(0, 0, 0.222); cab.add(gap);
       floorGroup.add(cab);
@@ -688,19 +910,25 @@ function buildFloor(f) {
   for (let pz = ez + 2.5; pz < D / 2 - 1.1 && deck.length; pz += 1.7) poster(deck.pop(), -W / 2 + 0.03, 1.65, pz, 'x', frameMat);
   // decor
   const plant = (x, z) => { const p = cyl(0.28, 0.22, 0.6, M.pot); p.position.set(x, 0.3, z); const l = new THREE.Mesh(geo('bigleaf', () => new THREE.IcosahedronGeometry(0.55, 0)), M.leaf); l.position.set(x, 1.05, z); l.castShadow = true; floorGroup.add(p, l); };
-  plant(W / 2 - 0.6, -D / 2 + 0.6); plant(-W / 2 + 0.6, D / 2 - 0.6);
+  makePrinter(W / 2 - 0.7, -D / 2 + 0.65);
+  if (theme !== 'breakroom') plant(-W / 2 + 0.6, D / 2 - 0.6);
+  else { const fridge = box(0.8, 1.9, 0.7, M.cooler); fridge.position.set(-W / 2 + 0.5, 0.95, D / 2 - 0.6); fridge.rotation.y = Math.PI / 2; const h = box(0.04, 0.5, 0.05, M.metal); h.position.set(-0.3, 0.2, 0.37); fridge.add(h); floorGroup.add(fridge); }
   const cooler = box(0.4, 1.0, 0.4, M.cooler); cooler.position.set(-W / 2 + 0.45, 0.5, ez + 1.6);
   const jug = cyl(0.16, 0.16, 0.45, M.water); jug.position.set(-W / 2 + 0.45, 1.25, ez + 1.6); floorGroup.add(cooler, jug);
 
   // tables
-  const cornerOdds = f < 4 ? 0 : Math.min(0.4, 0.08 + (f - 4) * 0.025);
-  let corners = 0;
+  const cornerOdds = daily ? 0.2 : f < 4 ? 0 : Math.min(0.4, 0.08 + (f - 4) * 0.025);
+  const hpBase = daily ? 4 : tableHP(f);
+  let corners = 0, standings = 0;
   for (let i = 0; i < n; i++) {
-    const kind = boss ? 'boss' : rng() < cornerOdds ? 'corner' : 'desk';
-    const mult = kind === 'boss' ? [14, 8] : kind === 'corner' ? [3, 2.5] : [1, 1];
+    const roll = rng();
+    const kind = boss ? 'boss' : theme === 'openplan' ? 'bench' : theme === 'breakroom' ? 'round' : theme === 'server' ? 'rack'
+      : roll < cornerOdds ? 'corner' : (daily || f >= 6) && roll < cornerOdds + 0.15 ? 'standing' : 'desk';
+    const mult = { boss: [14, 8], corner: [3, 2.5], standing: [1.5, 2], bench: [2.2, 1.6], round: [0.8, 1], rack: [1.6, 1.8] }[kind] || [1, 1];
     // relics: the first red stapler is guaranteed on floor 2 to teach the mechanic, then ~1 per 2 floors
     let relic = null;
-    if (kind === 'desk') {
+    if (kind === 'standing') standings++;
+    if (kind === 'desk' && !daily) {
       if (f === 2 && i === n - 1 && !S.found.stapler) relic = 'stapler';
       else if (f >= 3 && rng() < 0.5 / n) relic = RELIC_KEYS.filter(k => k !== 'bossmug')[rng() * 4 | 0];
     }
@@ -708,9 +936,15 @@ function buildFloor(f) {
     const c = i % cols, r = i / cols | 0;
     const x = boss ? 0 : (c - (cols - 1) / 2) * sx + (rng() - 0.5) * 0.4;
     const z = boss ? 0.3 : (r - (rows - 1) / 2) * sz + (rng() - 0.5) * 0.3 + 0.3;
-    tables.push(makeTable(x, z, kind, tableHP(f) * mult[0], tableReward(f) * mult[1], (rng() - 0.5) * 0.14, relic));
+    tables.push(makeTable(x, z, kind, hpBase * mult[0], tableReward(f) * mult[1], (rng() - 0.5) * 0.14, relic));
   }
-  if (corners && !S.seenCorner) { S.seenCorner = true; setTimeout(() => memo('Facilities has installed corner desks. They are heavier, load-bearing (probably) and covered in expensive equipment.', 'FACILITIES'), 2600); }
+  if (THEME_MEMOS[theme] && !daily && !S['seen_' + theme]) { S['seen_' + theme] = true; setTimeout(() => memo(...THEME_MEMOS[theme]), 2600); }
+  // seat some coworkers (never more than 7, none in the server room)
+  let seated = 0;
+  for (const t of tables) for (const ch of t.chairs) if (!t.boss && seated < 7 && rng() < 0.3) seatCoworker(t, ch, seated++);
+  if (boss) spawnHR();
+  if (standings && !daily && !S.seenStanding) { S.seenStanding = true; setTimeout(() => memo('Facilities has installed standing desks. They are taller, pay double, and nobody has ever stood at one.', 'FACILITIES'), 3200); }
+  if (corners && !daily && !S.seenCorner) { S.seenCorner = true; setTimeout(() => memo('Facilities has installed corner desks. They are heavier, load-bearing (probably) and covered in expensive equipment.', 'FACILITIES'), 2600); }
   alive = n; floorFlipped = 0; cleared = false;
 
   // light + camera fit
@@ -757,13 +991,36 @@ function fitCamera() {
   camera.setViewOffset(innerWidth, innerHeight, cx * innerWidth / 2, -(cy - wantY) * innerHeight / 2, innerWidth, innerHeight);
 }
 
+// Bench: open-plan long table, monitors and chairs on both sides.
+function makeBench(t, g, x, z) {
+  const add = (o, ix, iz, ry = 0) => { o.position.set(ix, TOP_H / 2 + o.userData.h, iz); o.rotation.y = ry; g.add(o); t.items.push(o); };
+  for (const s of [-1, 1]) for (const j of [-1, 1]) {
+    add(itMonitor(), j * 1.0 + rand(-0.1, 0.1), s * 0.06, s > 0 ? 0 : Math.PI);
+    add(itKeyboard(), j * 1.0, s * 0.42, s > 0 ? 0 : Math.PI);
+    if (Math.random() < 0.5) add(itMug(), j * 1.0 + 0.45, s * 0.35, rand(0, 6));
+    const ch = makeChair(); ch.position.set(x + j * 1.0, 0.45, z + s * 1.05); ch.rotation.y = s > 0 ? rand(-0.3, 0.3) : Math.PI + rand(-0.3, 0.3); floorGroup.add(ch); t.chairs.push(ch);
+  }
+}
+// Break room: round table with snacks and three chairs.
+function itDonuts() { const b = box(0.36, 0.08, 0.36, M.donutBox); const lid = box(0.36, 0.01, 0.18, M.donutBox); lid.position.set(0, 0.12, -0.2); lid.rotation.x = -1.2; return item(0.04, 0.04, b, lid); }
+function itPizza() { return item(0.025, 0.025, box(0.42, 0.05, 0.42, M.pizzaBox)); }
+function makeRound(t, g, x, z) {
+  const add = (o, ix, iz, ry = 0) => { o.position.set(ix, TOP_H / 2 + o.userData.h, iz); o.rotation.y = ry; g.add(o); t.items.push(o); };
+  add(Math.random() < 0.5 ? itDonuts() : itPizza(), rand(-0.1, 0.1), rand(-0.1, 0.1), rand(0, 6));
+  for (let i = 0; i < 2 + (Math.random() * 3 | 0); i++) { const a = rand(0, 6.28); add(itMug(), Math.cos(a) * 0.45, Math.sin(a) * 0.45, rand(0, 6)); }
+  const a0 = rand(0, 6.28);
+  for (let i = 0; i < 3; i++) { const a = a0 + i * 2.09; const ch = makeChair(); ch.position.set(x + Math.sin(a) * 1.0, 0.45, z + Math.cos(a) * 1.0); ch.rotation.y = a; floorGroup.add(ch); t.chairs.push(ch); }
+}
+
 // Corner desks: an L-shaped walnut slab that takes 3× the hits. Same group origin, so flipping just works.
 const CORNER = { slabs: [[1.9, 0.8, 0, -0.3], [0.8, 0.7, 0.55, 0.45]], legs: [[-0.85, -0.6], [-0.85, 0], [0.85, -0.6], [0.85, 0.72], [0.22, 0.72]] };
 function makeTable(x, z, kind, hp, reward, yaw, relic) {
-  const boss = kind === 'boss', heavy = kind === 'corner';
-  const w = boss ? 5.6 : 2.0, d = boss ? 2.2 : 1.05;
+  if (kind === 'rack') return makeRack(x, z, hp, reward, yaw);
+  if (kind === 'bench' || kind === 'round') return makeSpecial(x, z, kind, hp, reward, yaw);
+  const boss = kind === 'boss', heavy = kind === 'corner', standing = kind === 'standing';
+  const w = boss ? 5.6 : 2.0, d = boss ? 2.2 : 1.05, legH = standing ? 1.08 : LEG_H;
   const g = new THREE.Group();
-  const topMat = (boss ? M.darkwood : heavy ? M.walnut : M.wood).clone(); perFloor.push(topMat);
+  const topMat = (boss ? M.darkwood : heavy ? M.walnut : standing ? M.whiteTop : M.wood).clone(); perFloor.push(topMat);
   const slabs = heavy ? CORNER.slabs : [[w, d, 0, 0]];
   for (const [sw, sd, ox, oz] of slabs) {
     const top = new THREE.Mesh(geo(`top${sw},${sd}`, () => new THREE.BoxGeometry(sw, TOP_H, sd)), topMat);
@@ -771,10 +1028,11 @@ function makeTable(x, z, kind, hp, reward, yaw, relic) {
   }
   const legT = boss ? 0.12 : heavy ? 0.09 : 0.07;
   const legs = heavy ? CORNER.legs : [-1, 1].flatMap(a => [-1, 1].map(b => [a * (w / 2 - 0.12), b * (d / 2 - 0.12)]));
-  for (const [lx, lz] of legs) { const l = box(legT, LEG_H, legT, boss ? M.gold : heavy ? M.metal : M.leg); l.position.set(lx, -LEG_H / 2 - TOP_H / 2, lz); g.add(l); }
-  g.position.set(x, TOP_Y, z); g.rotation.y = yaw;
+  for (const [lx, lz] of legs) { const l = box(legT, legH, legT, boss ? M.gold : heavy || standing ? M.metal : M.leg); l.position.set(lx, -legH / 2 - TOP_H / 2, lz); g.add(l); }
+  if (standing) { const bar = box(w - 0.3, 0.05, 0.05, M.metal); bar.position.set(0, -legH * 0.75, 0); g.add(bar); }
+  g.position.set(x, legH + TOP_H / 2, z); g.rotation.y = yaw;
   floorGroup.add(g);
-  const t = { g, topMat, hp, max: hp, reward, boss, heavy, relic: heavy ? null : relic, items: [], chairs: [], dead: false, shake: 0, hover: false, flip: null, base: g.position.clone(), q0: g.quaternion.clone() };
+  const t = { g, topMat, hp, max: hp, reward, boss, heavy, kind, heat: 0, radius: boss ? 1.7 : heavy ? 1.25 : 1.05, half: boss ? [2.8, 1.1] : heavy ? [0.95, 0.75] : [1, 0.53], relic: heavy ? null : relic, items: [], chairs: [], dead: false, shake: 0, hover: false, flip: null, base: g.position.clone(), q0: g.quaternion.clone() };
   g.userData.table = t;
   const add = (o, ix, iz, ry = 0) => { o.position.set(ix, TOP_H / 2 + o.userData.h, iz); o.rotation.y = ry; g.add(o); t.items.push(o); };
   if (boss) {
@@ -801,9 +1059,48 @@ function makeTable(x, z, kind, hp, reward, yaw, relic) {
     if (Math.random() < extra) add(itPapers(), -side * rand(0.55, 0.75), rand(0, 0.3), rand(-0.4, 0.4));
     if (Math.random() < extra * 0.5) add(Math.random() < 0.5 ? itPlant() : itBinder(), side * 0.8, -0.3, rand(-0.3, 0.3));
     if (relic) add(RELICS[relic].make(), -side * rand(0.45, 0.7), -0.3, rand(-0.5, 0.5));
+    if (standing) return t; // nobody sits at a standing desk (nobody stands at one either)
     const ch = makeChair(); ch.position.set(x + rand(-0.2, 0.2), 0.45, z + d / 2 + 0.4); ch.rotation.y = rand(-0.4, 0.4); floorGroup.add(ch); t.chairs.push(ch);
   }
   return t;
+}
+
+function newTable(g, kind, topMat, hp, reward, radius, half, extra = {}) {
+  const t = { g, topMat, hp, max: hp, reward, boss: false, heavy: false, kind, heat: 0, radius, half, relic: null, items: [], chairs: [], dead: false, shake: 0, hover: false, flip: null, base: g.position.clone(), q0: g.quaternion.clone(), ...extra };
+  g.userData.table = t; floorGroup.add(g); return t;
+}
+function makeSpecial(x, z, kind, hp, reward, yaw) {
+  const g = new THREE.Group(), bench = kind === 'bench';
+  const topMat = (bench ? M.whiteTop : M.wood).clone(); perFloor.push(topMat);
+  if (bench) {
+    const top = new THREE.Mesh(geo('benchTop', () => new THREE.BoxGeometry(4.2, TOP_H, 1.3)), topMat); top.castShadow = top.receiveShadow = true; g.add(top);
+    for (const lx of [-1.95, 0, 1.95]) for (const lz of [-0.5, 0.5]) { const l = box(0.07, LEG_H, 0.07, M.metal); l.position.set(lx, -LEG_H / 2 - TOP_H / 2, lz); g.add(l); }
+    const screen = box(4.0, 0.3, 0.03, M.felt); screen.position.y = 0.18; g.add(screen);
+  } else {
+    const top = new THREE.Mesh(geo('roundTop', () => new THREE.CylinderGeometry(0.72, 0.72, TOP_H, 28)), topMat); top.castShadow = top.receiveShadow = true; g.add(top);
+    const post = cyl(0.06, 0.06, LEG_H, M.leg, 10); post.position.y = -LEG_H / 2; g.add(post);
+    const foot = cyl(0.36, 0.4, 0.04, M.leg, 20); foot.position.y = -LEG_H - TOP_H / 2 + 0.02; g.add(foot);
+  }
+  g.position.set(x, TOP_Y, z); g.rotation.y = yaw;
+  const t = newTable(g, kind, topMat, hp, reward, bench ? 1.9 : 0.95, bench ? [2.1, 0.65] : [0.72, 0.72]);
+  (bench ? makeBench : makeRound)(t, g, x, z);
+  return t;
+}
+// Server rack: tall, blinking, sparks when hit, topples over instead of flipping.
+function makeRack(x, z, hp, reward, yaw) {
+  const g = new THREE.Group();
+  const topMat = M.rack.clone(); perFloor.push(topMat);
+  const body = new THREE.Mesh(geo('rack', () => new THREE.BoxGeometry(0.7, 2.0, 1.0)), topMat); body.castShadow = body.receiveShadow = true; g.add(body);
+  const face = new THREE.Mesh(geo('rackFace', () => new THREE.PlaneGeometry(0.62, 1.9)), rackFaceMat); face.position.z = 0.505; g.add(face);
+  g.position.set(x, 1.0, z); g.rotation.y = yaw;
+  return newTable(g, 'rack', topMat, hp, reward, 0.85, [0.35, 0.5], { loadMult: 1.6, flipAngle: Math.PI / 2, flipH: 0.35 });
+}
+function sparks(pos, n) {
+  for (let i = 0; i < n; i++) {
+    const m = new THREE.Mesh(geo('spark', () => new THREE.BoxGeometry(0.04, 0.04, 0.04)), M.spark);
+    m.position.copy(pos).add(new THREE.Vector3(rand(-0.3, 0.3), rand(-0.4, 0.6), rand(-0.3, 0.3))); floorGroup.add(m);
+    addDebris(m, new THREE.Vector3(rand(-3, 3), rand(1, 5), rand(-3, 3)), new THREE.Vector3(), { g: 12, rest: 0.02, life: rand(0.3, 0.7) });
+  }
 }
 
 // ---------------------------------------------------------------- effects
@@ -819,7 +1116,7 @@ function puff(pos, n, size) {
   }
 }
 function addDebris(o, v, w, opt = {}) {
-  debris.push({ o, v, w, g: opt.g ?? 22, drag: opt.drag ?? 0, rest: opt.rest ?? 0.05, flat: !!opt.flat, ph: Math.random() * 9, done: false, b: 0 });
+  debris.push({ o, v, w, g: opt.g ?? 22, drag: opt.drag ?? 0, rest: opt.rest ?? 0.05, flat: !!opt.flat, ph: Math.random() * 9, done: false, b: 0, target: opt.target, tdmg: opt.tdmg, life: opt.life });
 }
 function spawnText(pos, text, cls) {
   const v = pos.clone().project(camera);
@@ -838,6 +1135,10 @@ function memo(text, head = 'INTERNAL MEMO') {
   el.addEventListener('animationend', () => el.remove());
   const box = $('#toasts'); box.appendChild(el); while (box.children.length > 3) box.firstChild.remove();
 }
+function bannerText(big, small) {
+  $('#bannerF').textContent = big; $('#bannerD').textContent = small;
+  const b = $('#banner'); b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+}
 function banner(f) {
   $('#bannerF').textContent = `FLOOR ${f}`;
   $('#bannerD').textContent = deptName(f).toUpperCase();
@@ -845,19 +1146,23 @@ function banner(f) {
 }
 
 // ---------------------------------------------------------------- gameplay
-let combo = 0, lastHit = 0;
+let combo = 0, lastHit = 0, pendingFlips = 0;
 const comboMult = () => 1 + Math.min(combo, 40) * 0.05;
 
 function tint(t) {
-  const dmgFrac = 1 - Math.max(0, t.hp) / t.max;
-  t.topMat.emissive.setRGB(0.55 * dmgFrac + (t.hover ? 0.12 : 0), 0.05 * dmgFrac + (t.hover ? 0.08 : 0), t.hover ? 0.03 : 0);
+  if (t.dead) return t.topMat.emissive.setRGB(0, 0, 0);
+  const dmgFrac = 1 - Math.max(0, t.hp) / t.max, h = t.heat; // heat: desks glow hotter the longer your combo runs
+  t.topMat.emissive.setRGB(0.55 * dmgFrac + (t.hover ? 0.12 : 0) + 0.9 * h, 0.05 * dmgFrac + (t.hover ? 0.08 : 0) + 0.32 * h, t.hover ? 0.03 : 0);
 }
 
 function hit(t, amount, src, dir) {
   if (t.dead) return;
   let cls = src === 'click' ? '' : src;
-  if (src === 'click' && Math.random() < critChance()) { amount *= 5; cls = 'crit'; sfx.crit(); camShake = Math.max(camShake, 0.25); }
-  t.hp -= amount;
+  const crit = src === 'click' && Math.random() < critChance();
+  if (crit) { amount *= 5; cls = 'crit'; sfx.crit(); shake(0.25); }
+  t.hp -= amount; t.lastCrit = crit;
+  if (t.kind === 'rack') sparks(t.g.position.clone().setY(1.2), 3);
+  if (src !== 'intern' || Math.random() < 0.3) startle(t, false);
   t.shake = Math.min(0.35, t.shake + (src === 'intern' ? 0.06 : 0.14) * (t.heavy || t.boss ? 0.5 : 1));
   const p = t.g.position.clone(); p.y += 0.6;
   spawnText(p, fmt(amount), cls);
@@ -868,30 +1173,51 @@ function hit(t, amount, src, dir) {
 function kill(t, src, dir) {
   t.dead = true; t.hover = false; alive--; floorFlipped++; S.flipped++;
   const load = 0.6 + 0.2 * t.items.length, relic = t.relic && RELICS[t.relic];
-  const gain = t.reward * load * (relic ? relic.mult : 1) * (src === 'click' ? comboMult() : 1);
-  S.rage += gain; S.lifetime += gain;
+  const gain = mode === 'daily' ? 0 : t.reward * (t.loadMult ?? load) * (relic ? relic.mult : 1) * (src === 'click' ? comboMult() : 1) * sevMult();
+  S.rage += gain; S.lifetime += gain; pendingFlips++;
   const p = t.g.position.clone(); p.y += 1.2;
-  spawnText(p, `+${fmt(gain)} RAGE`, 'reward');
-  if (relic) {
+  if (gain) spawnText(p, `+${fmt(gain)} RAGE`, 'reward');
+  if (relic && mode === 'daily') { /* relics only count in your career */ }
+  else if (relic) {
     spawnText(p.clone().setY(2.2), `${relic.name} ×${relic.mult}`, 'relic');
     sfx.relic(); buzz([30, 30, 60]);
     const first = !S.found[t.relic]; S.found[t.relic] = (S.found[t.relic] || 0) + 1;
     const n = Object.keys(S.found).length;
     memo(relic.memo, first ? `RELIC FOUND · ${n} / ${RELIC_KEYS.length}` : 'RELIC FLIPPED AGAIN');
+    if (first) { track('relic', { key: t.relic, n }); bragMoment({ headline: relic.name, sub: `Office relic ${n} / ${RELIC_KEYS.length}`, lines: [`Found on floor ${S.floor}`, `${S.flipped.toLocaleString()} tables flipped`] }, `I found the ${relic.name} (${n}/${RELIC_KEYS.length} office relics) on floor ${S.floor}. (╯°□°)╯︵ ┻━┻`, 'relic'); }
   } else if (load >= 1.4) spawnText(p.clone().setY(0.6), `LOADED ×${load.toFixed(1)}`, 'loaded');
   t.topMat.emissive.setRGB(0, 0, 0);
   if (!dir) dir = new THREE.Vector3(-camDir.x, 0, -camDir.z);
-  dir = dir.clone().setY(0).normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), rand(-0.5, 0.5));
-  const axis = new THREE.Vector3(0, 1, 0).cross(dir).normalize();
-  t.flip = { t: 0, dur: t.boss ? 1.1 : t.heavy ? 0.9 : 0.72, dir, axis, p0: t.g.position.clone(), q0: t.g.quaternion.clone(), dist: t.boss ? 1.2 : rand(1.0, 1.7), h: t.boss ? 2.6 : rand(1.4, 2.2), landed: false };
+  dir = dir.clone().setY(0).normalize().applyAxisAngle(UP, rand(-0.5, 0.5));
+  const axis = UP.clone().cross(dir).normalize();
+  // land somewhere clear: shorten the throw until it doesn't pile onto another desk or leave the room
+  let dist = t.boss ? 1.2 : rand(1.0, 1.7);
+  const clear = q => Math.abs(q.x) < W / 2 - 0.9 && Math.abs(q.z) < D / 2 - 0.7 &&
+    tables.every(o => o === t || Math.hypot((o.land || o.base).x - q.x, (o.land || o.base).z - q.z) > (o.radius + t.radius) * 0.75);
+  for (const k of [1, 0.7, 0.45, 0.2, 0]) { const q = t.base.clone().addScaledVector(dir, dist * k); if (k === 0 || clear(q)) { dist *= k; break; } }
+  t.land = t.base.clone().addScaledVector(dir, dist);
+  const landY = t.kind === 'rack' ? (Math.abs(dir.x) > Math.abs(dir.z) ? 0.35 : 0.5) : TOP_H / 2;
+  t.flip = { t: 0, dur: t.boss ? 1.1 : t.heavy ? 0.9 : 0.72, dir, axis, p0: t.g.position.clone(), q0: t.g.quaternion.clone(), dist, h: t.boss ? 2.6 : t.flipH ?? rand(1.4, 2.2), angle: t.flipAngle || Math.PI, landY, landed: false };
+  if (t.kind === 'rack') { sparks(t.g.position, 18); tone('sawtooth', 1800, 200, 0.4, 0.06); }
+  startle(t, true); printerProtest();
+  t.heat = 0;
+  if (src === 'click' && (alive === 1 || t.boss || t.lastCrit)) slowmo(alive === 1 || t.boss ? 0.9 : 0.45);
   for (const o of t.items) {
     floorGroup.attach(o);
     const v = dir.clone().multiplyScalar(rand(1.5, 4.5)).add(new THREE.Vector3(rand(-1.5, 1.5), rand(4, 7.5), rand(-1.5, 1.5)));
     addDebris(o, v, new THREE.Vector3(rand(-12, 12), rand(-8, 8), rand(-12, 12)), { rest: o.userData.rest });
   }
   for (const ch of t.chairs) {
-    const away = ch.position.clone().sub(t.g.position).setY(0).normalize();
-    addDebris(ch, away.multiplyScalar(rand(2.5, 4.5)).add(new THREE.Vector3(0, rand(2.5, 4), 0)), new THREE.Vector3(rand(-6, 6), rand(-4, 4), rand(-6, 6)), { rest: 0.25 });
+    const spin = new THREE.Vector3(rand(-6, 6), rand(-4, 4), rand(-6, 6));
+    const target = S.up.chair && mode !== 'daily' ? nearestLive(ch.position, 8, t) : null;
+    if (target) { // Ergonomic Chair Throw: lob the chair onto the nearest desk
+      const T = 0.75, v = target.base.clone().sub(ch.position).setY(0).divideScalar(T);
+      v.y = 0.5 * 22 * T + (target.base.y + 0.3 - ch.position.y) / T;
+      addDebris(ch, v, spin, { rest: 0.25, target, tdmg: chairDmg() });
+    } else {
+      const away = ch.position.clone().sub(t.g.position).setY(0).normalize();
+      addDebris(ch, away.multiplyScalar(rand(2.5, 4.5)).add(new THREE.Vector3(0, rand(2.5, 4), 0)), spin, { rest: 0.25 });
+    }
   }
   for (let i = 0; i < (t.boss ? 30 : 6); i++) {
     const m = new THREE.Mesh(geo('paper', () => new THREE.PlaneGeometry(0.21, 0.29)), M.paper);
@@ -904,10 +1230,25 @@ function kill(t, src, dir) {
   if (alive === 0) floorCleared();
 }
 
+function nearestLive(pos, maxD, except) {
+  let best = null, bd = maxD;
+  for (const o of tables) if (!o.dead && o !== except) { const d = Math.hypot(o.base.x - pos.x, o.base.z - pos.z); if (d < bd) { bd = d; best = o; } }
+  return best;
+}
+let slowT = 0;
+function slowmo(dur) { if (!reducedMotion()) slowT = Math.max(slowT, dur); }
+function shake(v) { if (!reducedMotion()) camShake = Math.max(camShake, v); }
+const reducedMotion = () => S.motion === 'reduce' || (S.motion == null && matchMedia('(prefers-reduced-motion: reduce)').matches);
+
 function floorCleared() {
   cleared = true;
-  S.best = Math.max(S.best, S.floor + 1);
-  save();
+  if (mode === 'daily') { dailyTime = dailyStart ? (performance.now() - dailyStart) / 1000 : 0; return dailyDone(); }
+  S.best = Math.max(S.best, S.floor + 1); S.bestEver = Math.max(S.bestEver, S.best);
+  save(); flushFlips();
+  if (S.floor % 5 === 0) track('floor', { floor: S.floor, sev: S.sev });
+  if (isBoss(S.floor)) bragMoment({ headline: 'BOARDROOM FLIPPED', sub: `Floor ${S.floor} · ${deptName(S.floor + 1)} is next`, lines: [`${S.flipped.toLocaleString()} tables flipped`, `${hrCount().toLocaleString()} open HR complaints`] }, `I flipped the boardroom table on floor ${S.floor}. (╯°□°)╯︵ ┻━┻`, 'boss');
+  else if (S.floor % 25 === 0) bragMoment(careerCard(), careerText(), 'milestone');
+  if (S.floor === 25 && !S.hires) setTimeout(() => memo('HR has prepared a severance package. Open the menu (☰) to Quit & Rehire and come back permanently stronger.', 'HUMAN RESOURCES'), 2500);
   setTimeout(() => {
     if (!cleared) return;
     lamp.material.color.set(0x34ff7a);
@@ -920,8 +1261,8 @@ function floorCleared() {
 
 let riding = false;
 function rideElevator() {
-  if (!cleared || riding) return;
-  riding = true;
+  if (!cleared || riding || mode !== 'career') return;
+  riding = true; $('#bragBtn').classList.remove('show');
   $('#elevBtn').classList.remove('show');
   const el = $('#elev');
   $('#elevFloor').textContent = S.floor;
@@ -943,22 +1284,23 @@ function updateTable(t, dt) {
       f.t += dt;
       const p = Math.min(1, f.t / f.dur);
       g.position.copy(f.p0).addScaledVector(f.dir, f.dist * p);
-      g.position.y = THREE.MathUtils.lerp(f.p0.y, TOP_H / 2, p) + Math.sin(Math.PI * p) * f.h;
-      const ang = Math.PI * (1 - Math.pow(1 - p, 1.6));
+      g.position.y = THREE.MathUtils.lerp(f.p0.y, f.landY, p) + Math.sin(Math.PI * p) * f.h;
+      const ang = f.angle * (1 - Math.pow(1 - p, 1.6));
       g.quaternion.setFromAxisAngle(f.axis, ang).multiply(f.q0);
     } else if (!f.landed) {
       f.landed = true; f.wob = 0;
-      camShake = Math.max(camShake, t.boss ? 0.9 : t.heavy ? 0.5 : 0.28);
+      shake(t.boss ? 0.9 : t.heavy ? 0.5 : 0.28);
       sfx.thump(t.boss || t.heavy); sfx.clatter();
       puff(g.position, t.boss ? 26 : t.heavy ? 16 : 10, t.boss ? 2.4 : t.heavy ? 1.5 : 1);
       buzz(t.boss ? [60, 40, 90] : t.heavy ? 40 : 18);
     } else if (f.wob < 0.5) {
       f.wob += dt;
-      const a = Math.PI + Math.sin(f.wob * 30) * 0.06 * (1 - f.wob / 0.5);
+      const a = f.angle + Math.sin(f.wob * 30) * 0.06 * (1 - f.wob / 0.5);
       g.quaternion.setFromAxisAngle(f.axis, a).multiply(f.q0);
     }
     return;
   }
+  if (t.heat > 0) { t.heat = Math.max(0, t.heat - dt * 0.7); tint(t); }
   if (t.shake > 0) {
     t.shake = Math.max(0, t.shake - dt * 1.6);
     const s = t.shake * 0.35;
@@ -978,6 +1320,12 @@ function updateDebris(dt) {
     if (d.drag) { d.v.x *= 1 - d.drag * dt; d.v.z *= 1 - d.drag * dt; if (d.v.y < -2) d.v.y = -2; o.position.x += Math.sin(time * 5 + d.ph) * dt * 0.7; }
     o.position.addScaledVector(d.v, dt);
     o.rotation.x += d.w.x * dt; o.rotation.y += d.w.y * dt; o.rotation.z += d.w.z * dt;
+    if (d.target && !d.target.dead && o.position.distanceTo(d.target.g.position) < 0.9) { // thrown chair connects
+      const tg = d.target; d.target = null;
+      hit(tg, d.tdmg, 'chair', d.v.clone()); sfx.crit();
+      d.v.multiplyScalar(-0.25); d.v.y = 2;
+    }
+    if (d.life != null && (d.life -= dt) <= 0) { d.done = true; o.visible = false; continue; }
     if (Math.abs(o.position.x) > hx) { o.position.x = Math.sign(o.position.x) * hx; d.v.x *= -0.4; }
     if (Math.abs(o.position.z) > hz) { o.position.z = Math.sign(o.position.z) * hz; d.v.z *= -0.4; }
     if (o.position.y <= d.rest) {
@@ -1025,7 +1373,7 @@ const buzz = p => { if (!S.muted && navigator.vibrate) try { navigator.vibrate(p
 canvas.addEventListener('pointermove', e => {
   if (!started || e.pointerType !== 'mouse') return;
   const t = pickTable(e);
-  const overElev = !t && cleared && ray.intersectObjects(elev.meshes).length > 0;
+  const overElev = !t && cleared && mode === 'career' && ray.intersectObjects(elev.meshes).length > 0;
   if (t !== hovered) { if (hovered) { hovered.hover = false; tint(hovered); } hovered = t; if (t) { t.hover = true; tint(t); } }
   canvas.style.cursor = t || overElev ? 'pointer' : 'default';
   mouse.set(e.clientX / innerWidth - 0.5, e.clientY / innerHeight - 0.5);
@@ -1036,30 +1384,41 @@ canvas.addEventListener('pointerdown', e => {
   audio();
   const t = pickTable(e);
   if (!t) {
-    if (ray.intersectObjects(elev.meshes).length) {
+    if (ray.intersectObjects(elev.meshes).length && mode === 'career') {
       if (cleared) rideElevator();
       else tip('The elevator is reserved for people who have flipped <b>every</b> desk on this floor.');
     }
     return;
   }
   e.preventDefault();
+  playerHit(t);
+});
+function playerHit(t) {
+  audio();
   const now = performance.now();
+  if (mode === 'daily' && !dailyStart) dailyStart = now;
   combo = now - lastHit < 650 ? combo + 1 : 1; lastHit = now;
   const dir = t.g.position.clone().sub(camera.position).setY(0);
+  t.heat = Math.min(1, combo / 18);
   hit(t, dmg(), 'click', dir);
   sfx.hit(combo);
-  camShake = Math.max(camShake, 0.06);
+  shake(0.06);
   const r = splashR();
   if (r) for (const o of tables) if (o !== t && !o.dead && o.g.position.distanceTo(t.g.position) < r) hit(o, dmg() * 0.4, 'splash', o.g.position.clone().sub(t.g.position));
   $('#hint').style.opacity = 0;
-});
+}
 $('#elevBtn').addEventListener('click', () => { audio(); rideElevator(); });
 
 // ---------------------------------------------------------------- UI
 const shop = $('#shop');
+let shownUpgrades = null;
 function renderShop() {
   shop.innerHTML = '';
-  for (const u of UPG) {
+  const list = UPG.filter(unlocked);
+  if (shownUpgrades && started) for (const u of list) if (!shownUpgrades.includes(u.id)) setTimeout(() => { tip(`New upgrade unlocked: <b>${u.name}</b> · ${u.blurb}`); sfx.buy(); }, 1800);
+  shownUpgrades = list.map(u => u.id);
+  shop.classList.toggle('many', list.length > 5);
+  for (const u of list) {
     const b = document.createElement('button'); b.className = 'up'; b.dataset.id = u.id;
     b.innerHTML = `<div class="ic"><span class="em">${u.ic}</span><span class="lv"></span></div><div><div class="nm">${u.name}</div><div class="sn">${u.short}</div><div class="cost"></div></div>`;
     b.addEventListener('click', () => buy(u));
@@ -1084,7 +1443,7 @@ function buy(u) {
   S.rage -= c; S.up[u.id]++; sfx.buy(); buzz(10); save(); refreshShop();
   tip(`<b>${u.name} ${S.up[u.id]}</b> · ${u.fx()}`);
   if (u.id === 'interns') {
-    syncInterns();
+    renderShop(); syncInterns();
     if (S.up.interns <= MAX_VISIBLE_INTERNS) memo(`Your new intern ${INTERN_NAMES[S.up.interns - 1]} has started. They do not know where the bathroom is. They know where the tables are.`, 'ONBOARDING');
   }
 }
@@ -1095,36 +1454,244 @@ function tip(html) {
 }
 function setMute(m) { S.muted = m; if (master) master.gain.value = m ? 0 : 0.55; $('#muteBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/>${m ? '<path d="M17 9l5 6M22 9l-5 6"/>' : '<path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'}</svg>`; save(); }
 $('#muteBtn').addEventListener('click', () => { audio(); setMute(!S.muted); });
-$('#shareBtn').addEventListener('click', async () => {
-  const text = `I've flipped ${S.flipped.toLocaleString()} tables and rage-climbed to floor ${S.floor} of an infinite office. ${Object.keys(S.found).length ? `Found ${Object.keys(S.found).length}/${RELIC_KEYS.length} office relics. ` : ''}HR has ${hrCount().toLocaleString()} open complaints. (╯°□°)╯︵ ┻━┻`;
-  const url = 'https://flippingtables.app';
-  try {
-    if (navigator.share) await navigator.share({ title: 'Flipping Tables', text, url });
-    else { await navigator.clipboard.writeText(`${text}\n${url}`); memo('Copied to clipboard. Go cause a scene in the group chat.', 'BRAG READY'); }
-  } catch (e) {}
-});
-$('#resetBtn').addEventListener('click', () => {
-  if (!confirm('Quit your job? All rage, upgrades and floors will be lost. The tables will be put back. This is the real tragedy.')) return;
-  try { localStorage.removeItem(SAVE_KEY); } catch (e) {}
-  location.reload();
-});
+$('#shareBtn').addEventListener('click', () => { audio(); shareFlow(mode === 'daily' ? { headline: 'FLOOR OF THE DAY', sub: `#${dailyDay}`, lines: ['Same floor for everyone.', 'Beat my time.'] } : careerCard(), mode === 'daily' ? `Flipping Tables · Floor of the Day #${dailyDay} (╯°□°)╯︵ ┻━┻` : careerText(), 'button'); });
 const hrCount = () => Math.floor(S.flipped * 1.5 + S.floor * 3);
 
 const ui = { floor: $('#floorNum'), dept: $('#dept'), bar: $('#progBar'), rage: $('#rage'), combo: $('#combo'), boss: $('#bossBar') };
 function updateHud() {
-  ui.floor.textContent = S.floor;
-  ui.dept.textContent = deptName(S.floor);
   const n = tables.length;
   ui.bar.style.width = (n ? floorFlipped / n * 100 : 0) + '%';
-  ui.rage.textContent = fmt(S.rage);
+  if (mode === 'daily') {
+    const tm = cleared ? dailyTime : dailyStart ? (performance.now() - dailyStart) / 1000 : 0;
+    ui.floor.textContent = tm.toFixed(1); ui.dept.textContent = `Floor of the Day #${dailyDay}`;
+    ui.rage.textContent = S.daily[dailyDay] ? S.daily[dailyDay].toFixed(1) : '—';
+  } else {
+    ui.floor.textContent = S.floor; ui.dept.textContent = deptName(S.floor); ui.rage.textContent = fmt(S.rage);
+  }
   const showCombo = combo >= 5 && performance.now() - lastHit < 900;
   ui.combo.style.opacity = showCombo ? 1 : 0;
   if (showCombo) ui.combo.innerHTML = `×${comboMult().toFixed(2)}<small>${combo} HIT RAGE COMBO</small>`;
   if (tables[0] && tables[0].boss) ui.boss.style.width = Math.max(0, tables[0].hp / tables[0].max * 100) + '%';
 }
 
+// ---------------------------------------------------------------- analytics + worldwide counter
+const track = (name, data) => { try { window.va('event', { name, data }); } catch (e) {} };
+let worldTotal = null;
+async function fetchWorld() {
+  try { const r = await fetch('/api/flips'); if (!r.ok) return; const j = await r.json(); worldTotal = j.total; showWorld(); } catch (e) {}
+}
+function showWorld() { $('#worldCount').textContent = worldTotal ? `${Math.round(worldTotal).toLocaleString()} tables flipped worldwide` : ''; }
+function flushFlips(beacon) {
+  if (!pendingFlips) return;
+  const body = JSON.stringify({ n: pendingFlips }); pendingFlips = 0;
+  try {
+    if (beacon && navigator.sendBeacon) navigator.sendBeacon('/api/flips', new Blob([body], { type: 'application/json' }));
+    else fetch('/api/flips', { method: 'POST', body, keepalive: true, headers: { 'Content-Type': 'application/json' } }).then(r => r.ok && r.json()).then(j => { if (j && j.total != null) { worldTotal = j.total; showWorld(); } }).catch(() => {});
+  } catch (e) {}
+}
+
+// ---------------------------------------------------------------- modal
+const modal = $('#modal');
+let modalCard = $('#modalCard'), modalOnClose = null;
+function openModal(html, onClose) {
+  const fresh = modalCard.cloneNode(false); modalCard.replaceWith(fresh); modalCard = fresh; // drop old click handlers
+  modalCard.innerHTML = `<button class="x" data-close aria-label="Close">✕</button>${html}`;
+  modal.hidden = false; modalOnClose = onClose || null;
+  modalCard.querySelector('[data-close]').focus();
+}
+function closeModal() { if (modal.hidden) return; modal.hidden = true; modalCard.innerHTML = ''; const f = modalOnClose; modalOnClose = null; if (f) f(); }
+modal.addEventListener('click', e => { if (e.target === modal || e.target.closest('[data-close]')) closeModal(); });
+
+// ---------------------------------------------------------------- share card: a 1200×630 image of your own office mid-chaos
+function shareCard({ headline, sub, lines }) {
+  renderer.render(scene, camera); // draw now so the WebGL buffer is valid for this synchronous copy
+  const c = document.createElement('canvas'); c.width = 1200; c.height = 630;
+  const g = c.getContext('2d'), src = renderer.domElement;
+  const k = Math.max(1200 / src.width, 630 / src.height), sw = 1200 / k, sh = 630 / k;
+  g.fillStyle = '#15171c'; g.fillRect(0, 0, 1200, 630);
+  g.drawImage(src, (src.width - sw) / 2 + sw * 0.12, (src.height - sh) / 2, sw, sh, 0, 0, 1200, 630);
+  const gr = g.createLinearGradient(0, 0, 1200, 0);
+  gr.addColorStop(0, 'rgba(21,23,28,.95)'); gr.addColorStop(0.42, 'rgba(21,23,28,.78)'); gr.addColorStop(0.7, 'rgba(21,23,28,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 1200, 630);
+  g.textBaseline = 'alphabetic';
+  g.fillStyle = '#ff5a36'; g.font = '28px "Archivo Black"'; g.fillText('FLIPPING TABLES', 60, 92);
+  g.fillStyle = '#f2efe9'; g.font = '800 26px Inter'; g.fillText('(╯°□°)╯︵ ┻━┻', 60, 130);
+  let size = 96; g.font = `${size}px "Archivo Black"`;
+  while (g.measureText(headline).width > 600 && size > 40) { size -= 4; g.font = `${size}px "Archivo Black"`; }
+  g.lineWidth = 10; g.strokeStyle = '#000'; g.lineJoin = 'round'; g.strokeText(headline, 60, 280); g.fillStyle = '#fff'; g.fillText(headline, 60, 280);
+  g.fillStyle = '#ffb02e'; g.font = '30px "Archivo Black"'; g.fillText(sub, 60, 330, 600);
+  g.fillStyle = '#e4e2dc'; g.font = '700 26px Inter';
+  (lines || []).forEach((l, i) => g.fillText(l, 60, 400 + i * 40, 600));
+  g.fillStyle = '#9a9ca6'; g.font = '800 22px Inter'; g.fillText('flippingtables.app', 60, 580);
+  return new Promise(res => c.toBlob(res, 'image/png'));
+}
+const relicCount = () => Object.keys(S.found).length;
+function careerCard() {
+  return { headline: `FLOOR ${S.floor}`, sub: deptName(S.floor), lines: [`${S.flipped.toLocaleString()} tables flipped`, `${relicCount()} / ${RELIC_KEYS.length} office relics found`, `${hrCount().toLocaleString()} open HR complaints`] };
+}
+const careerText = () => `I've flipped ${S.flipped.toLocaleString()} tables and rage-climbed to floor ${S.floor} of an infinite office. ${relicCount() ? `Found ${relicCount()}/${RELIC_KEYS.length} office relics. ` : ''}HR has ${hrCount().toLocaleString()} open complaints. (╯°□°)╯︵ ┻━┻`;
+async function shareFlow(card, text, why) {
+  const url = 'https://flippingtables.app';
+  const blob = await shareCard(card), file = new File([blob], 'flipping-tables.png', { type: 'image/png' });
+  const img = URL.createObjectURL(blob), canFiles = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+  track('share_open', { why });
+  openModal(`<h2>Show off</h2><p>Your office, mid-chaos. Post it somewhere HR can't see it.</p>
+    <img class="shareimg" src="${img}" alt="Your Flipping Tables share card">
+    <div class="btns">
+      ${canFiles || navigator.share ? '<button class="btn" data-a="share">Share…</button>' : ''}
+      <a class="btn dark" data-a="dl" href="${img}" download="flipping-tables.png">Download image</a>
+      <button class="btn dark" data-a="copy">Copy text</button>
+      <a class="btn dark" data-a="x" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}">Post on X</a>
+    </div>`, () => URL.revokeObjectURL(img));
+  modalCard.addEventListener('click', async e => {
+    const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
+    track('share', { how: a, why });
+    if (a === 'share') { try { await navigator.share(canFiles ? { files: [file], text: `${text}\n${url}` } : { title: 'Flipping Tables', text, url }); } catch (err) {} }
+    if (a === 'copy') { try { await navigator.clipboard.writeText(`${text}\n${url}`); e.target.textContent = 'Copied!'; } catch (err) {} }
+  });
+}
+// big moments get a share prompt next to the elevator button
+let bragCtx = null, bragTimer = 0;
+function bragMoment(card, text, why) {
+  if (mode === 'daily') return;
+  bragCtx = { card, text, why };
+  $('#bragBtn').classList.add('show');
+  clearTimeout(bragTimer); bragTimer = setTimeout(() => $('#bragBtn').classList.remove('show'), 14000);
+}
+$('#bragBtn').addEventListener('click', () => { $('#bragBtn').classList.remove('show'); if (bragCtx) shareFlow(bragCtx.card, bragCtx.text, bragCtx.why); });
+
+// ---------------------------------------------------------------- menu: relics, career, severance, settings
+function openMenu() {
+  const gain = sevGain();
+  const relics = RELIC_KEYS.map(k => S.found[k]
+    ? `<div class="relic found"><b>${RELICS[k].name}</b>${RELICS[k].memo}</div>`
+    : `<div class="relic"><b>??? ??? ???</b>Somewhere on some desk. Keep flipping.</div>`).join('');
+  const motionLabel = S.motion === 'reduce' ? 'REDUCED' : S.motion === 'full' ? 'FULL' : 'AUTO';
+  openModal(`<h2>Your Career</h2><p>${deptName(S.floor)}, floor ${S.floor}.</p>
+    <h3>OFFICE RELICS · ${relicCount()} / ${RELIC_KEYS.length}</h3><div class="relics">${relics}</div>
+    <h3>STATS</h3><div class="stats">
+      <div class="stat"><b>${S.flipped.toLocaleString()}</b><span>tables flipped</span></div>
+      <div class="stat"><b>${Math.max(S.bestEver, S.best)}</b><span>highest floor</span></div>
+      <div class="stat"><b>×${sevMult().toFixed(1)}</b><span>severance bonus</span></div>
+      <div class="stat"><b>${worldTotal ? fmt(worldTotal) : '—'}</b><span>flipped worldwide</span></div>
+    </div>
+    <h3>QUIT &amp; REHIRE</h3>
+    <p>${gain ? `HR has prepared a severance package: <b>+${gain}</b> severance (each one is +10% rage and damage, forever). You restart on floor 1 with no rage or upgrades, but keep your relics and flip count.` : `Reach floor 25 to negotiate a severance package. Each one makes you permanently stronger. You have ${S.sev}.`}</p>
+    <div class="btns"><button class="btn" data-a="rehire" ${gain && mode === 'career' ? '' : 'disabled'}>${gain ? `Quit &amp; Rehire (+${gain})` : 'Not yet'}</button>
+    <button class="btn dark" data-a="daily">☀ Floor of the Day #${dayNumber()}</button></div>
+    <h3>SETTINGS</h3>
+    <div class="row">Sound <button class="pill" data-a="sound">${S.muted ? 'OFF' : 'ON'}</button></div>
+    <div class="row">Motion (screen shake, slow-mo) <button class="pill" data-a="motion">${motionLabel}</button></div>
+    <div class="row" style="font-weight:500;color:#9a9ca6;font-size:12px">Keyboard: ←/→ pick a desk · Space hit · E elevator · 1–7 buy · M mute · Esc close</div>
+    <button class="danger" data-a="erase">Erase all progress</button>`);
+  modalCard.addEventListener('click', e => {
+    const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
+    if (a === 'sound') { audio(); setMute(!S.muted); e.target.textContent = S.muted ? 'OFF' : 'ON'; }
+    if (a === 'motion') { S.motion = S.motion == null ? 'reduce' : S.motion === 'reduce' ? 'full' : null; applyMotion(); save(); e.target.textContent = S.motion === 'reduce' ? 'REDUCED' : S.motion === 'full' ? 'FULL' : 'AUTO'; }
+    if (a === 'rehire') rehire();
+    if (a === 'daily') { closeModal(); startDaily(); }
+    if (a === 'erase' && confirm('Erase everything? Rage, upgrades, floors, relics, severance. The tables will be put back. This is the real tragedy.')) { try { localStorage.removeItem(SAVE_KEY); } catch (err) {} location.reload(); }
+  });
+}
+function applyMotion() { document.body.classList.toggle('rm', reducedMotion()); }
+$('#menuBtn').addEventListener('click', () => { audio(); openMenu(); });
+
+// ---------------------------------------------------------------- prestige
+function rehire() {
+  const gain = sevGain(); if (!gain || mode !== 'career') return;
+  S.sev += gain; S.hires++; S.bestEver = Math.max(S.bestEver, S.best, S.floor);
+  S.floor = 1; S.best = 1; S.rage = 0; S.up = Object.fromEntries(Object.keys(DEF.up).map(k => [k, 0]));
+  save(); closeModal(); track('rehire', { gain, total: S.sev });
+  $('#elevBtn').classList.remove('show');
+  buildFloor(S.floor); renderShop(); banner(S.floor);
+  memo(`Welcome back! HR has no record of you. Your severance (×${sevMult().toFixed(1)}) has been quietly applied.`, 'ONBOARDING');
+  bragMoment({ headline: 'QUIT & REHIRED', sub: `Severance ×${sevMult().toFixed(1)}`, lines: [`Made it to floor ${S.bestEver}`, `${S.flipped.toLocaleString()} tables flipped`] }, `I quit my job at floor ${S.bestEver}, got rehired, and came back stronger (×${sevMult().toFixed(1)}). (╯°□°)╯︵ ┻━┻`, 'rehire');
+}
+
+// ---------------------------------------------------------------- Floor of the Day: same floor for everyone, fixed rules, beat the clock
+const DAY0 = Date.UTC(2026, 9, 1);
+const dayNumber = () => Math.floor((Date.now() - DAY0) / 864e5) + 1;
+const DAILY_THEMES = ['office', 'openplan', 'breakroom', 'server'];
+let dailyStart = 0, dailyTime = 0, dailyDay = 0;
+function startDaily() {
+  audio();
+  if (!started) beginShift(true);
+  mode = 'daily'; dailyDay = dayNumber(); dailyStart = 0; dailyTime = 0;
+  $('#elevBtn').classList.remove('show'); $('#bragBtn').classList.remove('show');
+  $('#shop').style.display = 'none';
+  $('#flLbl').textContent = 'TIME'; $('#rgLbl').textContent = 'BEST TODAY';
+  buildFloor(12 + dailyDay % 7, dailyDay);
+  bannerText('FLOOR OF THE DAY', `#${dailyDay} · FLIP EVERYTHING · CLOCK STARTS ON YOUR FIRST HIT`);
+  track('daily_start', { day: dailyDay });
+}
+function endDaily() {
+  mode = 'career';
+  $('#shop').style.display = '';
+  $('#flLbl').textContent = 'FLOOR'; $('#rgLbl').textContent = 'RAGE';
+  buildFloor(S.floor); renderShop(); banner(S.floor);
+}
+function dailyDone() {
+  const best = S.daily[dailyDay], pb = !best || dailyTime < best;
+  if (pb) S.daily[dailyDay] = dailyTime;
+  save(); track('daily_done', { day: dailyDay, time: +dailyTime.toFixed(2) });
+  const desks = tables.length, text = `Flipping Tables · Floor of the Day #${dailyDay}\n${desks} ${tables[0]?.kind === 'rack' ? 'servers' : 'tables'} in ${dailyTime.toFixed(2)}s (╯°□°)╯︵ ┻━┻`;
+  setTimeout(() => {
+    openModal(`<h2>Floor of the Day #${dailyDay}</h2><div class="big-time">${dailyTime.toFixed(2)}s</div>
+      <p>${pb ? (best ? 'New personal best!' : 'First run today. The bar has been set.') : `Your best today: ${best.toFixed(2)}s`} Everyone gets the same floor. Tomorrow there's a new one.</p>
+      <div class="btns"><button class="btn" data-a="share">📸 Share result</button><button class="btn dark" data-a="again">Try again</button><button class="btn dark" data-a="back">Back to work</button></div>`, null);
+    modalCard.addEventListener('click', e => {
+      const a = e.target.closest('[data-a]')?.dataset.a;
+      if (a === 'share') shareFlow({ headline: `${dailyTime.toFixed(2)}s`, sub: `Floor of the Day #${dailyDay}`, lines: [`${desks} desks flipped`, pb ? 'Personal best' : `Best today: ${S.daily[dailyDay].toFixed(2)}s`] }, text, 'daily');
+      if (a === 'again') { closeModal(); startDaily(); }
+      if (a === 'back') { closeModal(); endDaily(); }
+    });
+  }, 900);
+}
+
+// ---------------------------------------------------------------- office ambience: keyboards and phones that go quiet as the floor empties
+let ambT = 1, phoneT = 20;
+function ambience(dt) {
+  if (!AC || S.muted || !tables.length) return;
+  const busy = alive / tables.length;
+  if ((ambT -= dt) <= 0) {
+    ambT = rand(0.06, 0.32) / Math.max(0.15, busy);
+    if (busy > 0) noise(0.018, 0.035 * busy, 'highpass', 2500 + Math.random() * 2500);
+  }
+  if ((phoneT -= dt) <= 0) {
+    phoneT = rand(18, 40);
+    if (busy > 0.4) for (let i = 0; i < 6; i++) tone('sine', i % 2 ? 1250 : 1500, i % 2 ? 1250 : 1500, 0.07, 0.025 * busy, i * 0.08);
+  }
+}
+
+// ---------------------------------------------------------------- keyboard
+let kbSel = null;
+function kbSelect(stepDir) {
+  const live = tables.filter(t => !t.dead);
+  if (!live.length) return;
+  const v = new THREE.Vector3(), xs = live.map(t => ({ t, x: v.copy(t.g.position).project(camera).x + v.y * 0.01 })).sort((a, b) => a.x - b.x);
+  let i = xs.findIndex(o => o.t === kbSel);
+  i = i < 0 ? 0 : (i + stepDir + xs.length) % xs.length;
+  if (kbSel) { kbSel.hover = false; tint(kbSel); }
+  kbSel = xs[i].t; kbSel.hover = true; tint(kbSel);
+}
+addEventListener('keydown', e => {
+  if (!modal.hidden) { if (e.key === 'Escape') closeModal(); return; }
+  if (!started || e.target.closest?.('input,textarea')) return;
+  const k = e.key.toLowerCase();
+  if (k === 'arrowright' || k === 'arrowleft') { kbSelect(k === 'arrowright' ? 1 : -1); e.preventDefault(); }
+  else if (k === ' ' || k === 'enter') {
+    e.preventDefault();
+    if (cleared && mode === 'career') return rideElevator();
+    if (!kbSel || kbSel.dead) { if (hovered && !hovered.dead) kbSel = hovered; else kbSelect(1); }
+    if (kbSel && !kbSel.dead) playerHit(kbSel);
+  }
+  else if (k === 'e' && cleared && mode === 'career') rideElevator();
+  else if (k === 'm') { audio(); setMute(!S.muted); }
+  else if (/^[1-9]$/.test(k)) { const u = UPG.filter(unlocked)[+k - 1]; if (u && mode === 'career') buy(u); }
+});
+
 // ---------------------------------------------------------------- loop
-let last = performance.now(), time = 0, uiAcc = 0, saveAcc = 0;
+let last = performance.now(), time = 0, uiAcc = 0, saveAcc = 0, flushAcc = 0;
 function resize() {
   renderer.setSize(innerWidth, innerHeight, false);
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
@@ -1133,25 +1700,32 @@ function resize() {
 addEventListener('resize', resize);
 
 function loop(now) {
-  const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+  const realDt = Math.min(0.05, (now - last) / 1000); last = now;
+  if (slowT > 0) slowT -= realDt;
+  const dt = realDt * (slowT > 0 ? 0.25 : 1); time += dt;
   if (started) {
     S.rage += emailRate() * dt; S.lifetime += emailRate() * dt;
     for (const it of interns) updateIntern(it, dt);
+    for (const cw of coworkers) updateCoworker(cw, dt);
+    updateHR(dt); updatePrinter(dt);
     uiAcc += dt; if (uiAcc > 0.2) { uiAcc = 0; refreshShop(); }
-    saveAcc += dt; if (saveAcc > 5) { saveAcc = 0; save(); }
+    saveAcc += realDt; if (saveAcc > 5) { saveAcc = 0; save(); }
+    flushAcc += realDt; if (flushAcc > 20) { flushAcc = 0; flushFlips(); }
+    ambience(realDt);
   }
   for (const t of tables) updateTable(t, dt);
   if (elev.d1 && Math.abs(elev.target - elev.open) > 0.001) {
     elev.open += (elev.target - elev.open) * Math.min(1, dt * 5);
     elev.d1.position.z = elev.z - 0.42 - elev.open * 0.8; elev.d2.position.z = elev.z + 0.42 + elev.open * 0.8;
   }
+  rackFaceMat.map = rackFaces[(time * 2.5 | 0) % 2];
   const pulse = 0.12 + 0.18 * (0.5 + 0.5 * Math.sin(time * 4));
   for (const m of RELIC_MATS) m.emissiveIntensity = pulse;
   updateDebris(dt); updatePuffs(dt);
 
   // camera: gentle orbit sway + mouse parallax + shake
-  camShake = Math.max(0, camShake - dt * 2.2);
-  const sway = started ? 0.04 : 0.25;
+  camShake = Math.max(0, camShake - realDt * 2.2);
+  const sway = reducedMotion() ? 0 : started ? 0.04 : 0.25;
   const dir = camDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.sin(time * 0.15) * sway - mouse.x * 0.06);
   camera.position.copy(camTarget).addScaledVector(dir, camDist);
   camera.position.y += mouse.y * 0.8;
@@ -1171,22 +1745,27 @@ renderShop();
 if (S.flipped > 0) {
   $('#startBtn').textContent = `RETURN TO FLOOR ${S.floor}`;
   $('#fine').textContent = `${S.flipped.toLocaleString()} tables flipped so far. They have not been put back.`;
-  $('#resetBtn').hidden = false;
   $('#hint').style.opacity = 0;
 }
+$('#dailyBtn').textContent = `☀ FLOOR OF THE DAY #${dayNumber()}${S.daily[dayNumber()] ? ` · BEST ${S.daily[dayNumber()].toFixed(2)}s` : ''}`;
 $('#hud').style.visibility = 'hidden';
-$('#startBtn').addEventListener('click', () => {
+applyMotion(); fetchWorld();
+$('#dailyBtn').addEventListener('click', () => startDaily());
+$('#startBtn').addEventListener('click', () => beginShift(false));
+function beginShift(daily) {
   audio(); started = true;
   $('#title').classList.add('gone');
   $('#hud').style.visibility = 'visible';
+  track('start', { floor: S.floor, daily });
+  if (daily) return;
   banner(S.floor);
   if (S.t && S.up.email) {
     const secs = Math.min(7200, (Date.now() - S.t) / 1000), gain = emailRate() * secs * 0.5;
     if (gain >= 1) { S.rage += gain; S.lifetime += gain; memo(`While you were away, your Reply-All storm generated ${fmt(gain)} rage.`, 'WELCOME BACK'); }
   }
   save();
-});
-addEventListener('visibilitychange', () => { if (document.hidden && started) save(); });
+}
+addEventListener('visibilitychange', () => { if (document.hidden && started) { save(); flushFlips(true); } });
 requestAnimationFrame(loop);
 </script>
 </body>
