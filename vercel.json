@@ -1,9 +1,3 @@
 {
-  "redirects": [
-    {
-      "source": "/(.*)",
-      "destination": "https://app.mappedin.com/$1",
-      "permanent": true
-    }
-  ]
+  "cleanUrls": true
 }
