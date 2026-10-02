@@ -38,6 +38,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #hud>*{pointer-events:auto}
 .tl{position:absolute;left:24px;top:18px;max-width:46vw}
 .tr{position:absolute;right:24px;top:18px;text-align:right}
+#today{font-weight:800;font-size:13px;margin-top:6px;color:#e4e2dc;text-shadow:0 2px 0 #000,0 0 10px rgba(0,0,0,.8);white-space:nowrap}
+#today span{color:var(--accent2)}
 #dept{font-family:var(--display);font-size:16px;margin-top:8px;color:var(--accent2);text-shadow:0 2px 0 #000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .prog{height:10px;width:200px;border-radius:5px;background:#000;margin-top:10px;overflow:hidden;box-shadow:0 3px 0 rgba(0,0,0,.5)}
 #progBar{height:100%;width:0;background:var(--accent2);border-radius:5px;transition:width .25s}
@@ -81,9 +83,10 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 #elevBtn small{display:block;font-family:var(--body);font-weight:800;font-size:10px;letter-spacing:.14em;opacity:.7;margin-top:2px}
 @keyframes bob{50%{translate:0 -4px}}
 #hint{position:absolute;left:50%;bottom:124px;transform:translateX(-50%);font-weight:800;font-size:15px;padding:10px 16px;border-radius:999px;background:rgba(0,0,0,.6);pointer-events:none;transition:opacity .4s;white-space:nowrap}
-#toasts{position:absolute;left:16px;bottom:120px;display:flex;flex-direction:column;gap:8px;width:min(300px,calc(100vw - 32px));pointer-events:none}
-.memo{background:#f7f3e8;color:#2a2620;border-radius:4px;padding:10px 12px 11px;font-size:12.5px;line-height:1.35;box-shadow:0 8px 24px rgba(0,0,0,.4);transform:rotate(-1deg);animation:memo 5.5s forwards}
-.memo b{display:block;font-size:9px;letter-spacing:.2em;color:#b23a1f;margin-bottom:3px}
+#toasts{position:absolute;left:20px;bottom:120px;display:flex;flex-direction:column;gap:10px;width:min(400px,calc(100vw - 40px));pointer-events:none}
+.memo{background:#f7f3e8;color:#2a2620;border-radius:6px;padding:14px 18px 15px;font-size:15px;font-weight:500;line-height:1.42;box-shadow:0 10px 0 rgba(0,0,0,.35),0 14px 30px rgba(0,0,0,.4);transform:rotate(-1deg);animation:memo 7.5s forwards}
+.memo b{display:block;font-size:11px;font-weight:800;letter-spacing:.18em;color:#b23a1f;margin-bottom:5px}
+.memo i{display:block;font-style:normal;font-size:12px;color:#7a7266;margin-top:6px}
 @keyframes memo{0%{opacity:0;translate:-20px 0}6%{opacity:1;translate:0 0}88%{opacity:1}100%{opacity:0;translate:0 8px}}
 #fx{position:fixed;inset:0;pointer-events:none;overflow:hidden}
 .num{position:absolute;font-family:var(--display);font-size:18px;color:#fff;text-shadow:0 2px 0 #000,0 0 6px rgba(0,0,0,.6);white-space:nowrap;animation:rise .8s ease-out forwards;translate:-50% -50%}
@@ -147,28 +150,29 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
 #elev.closed .elevInd{opacity:1;transition-delay:.35s}
 .elevInd span{font-size:24px;animation:blink .5s steps(2) infinite}
 @keyframes blink{50%{opacity:.2}}
-#title{position:fixed;inset:0;z-index:10;display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(ellipse at center,rgba(21,23,28,.55),rgba(21,23,28,.92) 70%);transition:opacity .5s}
+#title{position:fixed;inset:0;z-index:10;display:grid;place-items:center;text-align:center;padding:24px;background:radial-gradient(ellipse at center,rgba(21,23,28,.72),rgba(21,23,28,.94) 70%);transition:opacity .5s}
 #title.gone{opacity:0;pointer-events:none}
-.kicker{font-weight:800;letter-spacing:.3em;font-size:11px;color:var(--accent2)}
+.kicker{font-weight:800;letter-spacing:.3em;font-size:12px;color:var(--accent2);text-shadow:0 2px 0 #000}
 .logo{font-family:var(--display);font-size:clamp(48px,11vw,128px);line-height:.88;margin:14px 0 10px;letter-spacing:-.01em;text-shadow:0 6px 0 #000}
 .logo em{font-style:normal;color:var(--accent);display:inline-block;animation:tilt 2.4s ease-in-out infinite}
 @keyframes tilt{0%,70%,100%{transform:rotate(0)}78%{transform:rotate(-6deg) translateY(-4px)}86%{transform:rotate(3deg)}}
 .face{font-size:clamp(20px,4vw,34px);font-weight:800;color:var(--text);opacity:.9;white-space:nowrap}
 .face .t{display:inline-block;animation:flip 2.4s cubic-bezier(.5,0,.3,1) infinite;transform-origin:50% 60%}
 @keyframes flip{0%,30%{transform:rotate(0)}55%,100%{transform:rotate(180deg) translateY(-2px)}}
-.tag{color:var(--mute);margin:16px auto 26px;max-width:440px;font-size:15px;line-height:1.5}
+.tag{color:#f2efe9;margin:18px auto 28px;max-width:460px;font-size:17px;font-weight:600;line-height:1.5;text-shadow:0 2px 0 #000,0 0 18px rgba(0,0,0,.9)}
 .cta{font-family:var(--display);font-size:20px;padding:18px 34px;border-radius:14px;background:var(--accent);color:#fff;box-shadow:0 7px 0 #a8321a,0 20px 50px rgba(255,90,54,.35);transition:transform .1s}
 .cta:hover{transform:translateY(-2px)}
 .cta:active{transform:translateY(5px);box-shadow:0 2px 0 #a8321a}
 .quit{display:block;margin:10px auto 0;font-size:11px;color:#6d707a;text-decoration:underline}
 .quit:hover{color:var(--accent)}
-.fine{margin-top:28px;font-size:11px;color:#6d707a;letter-spacing:.04em}
+.fine{margin-top:26px;font-size:13px;font-weight:600;color:#c9cbd2;letter-spacing:.02em;text-shadow:0 1px 0 #000,0 0 12px rgba(0,0,0,.9)}
 @media (max-width:640px){
   .tl{left:calc(14px + env(safe-area-inset-left));top:calc(12px + env(safe-area-inset-top))}
   .tr{right:calc(14px + env(safe-area-inset-right));top:calc(12px + env(safe-area-inset-top))}
   .big{font-size:50px}
   .lbl{font-size:12px}
   #dept{font-size:13px;margin-top:6px}
+  #today{font-size:11px;margin-top:4px}
   .prog{width:130px;height:8px;margin-top:8px}
   #tools{margin-top:10px}
   #tools button{width:40px;height:40px}
@@ -189,7 +193,7 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
   #elevBtn{bottom:calc(136px + env(safe-area-inset-bottom));font-size:16px;padding:14px 20px}
   #hint{font-size:13px;top:auto;bottom:calc(142px + env(safe-area-inset-bottom));transform:translateX(-50%)}
   #toasts{left:50%;right:auto;transform:translateX(-50%);top:calc(140px + env(safe-area-inset-top));bottom:auto;width:calc(100vw - 28px)}
-  .memo{font-size:12px;padding:8px 10px;transform:none}
+  .memo{font-size:13.5px;padding:11px 14px;transform:none}
   #toasts .memo:not(:last-child){display:none}
   #combo{top:auto;bottom:calc(196px + env(safe-area-inset-bottom));font-size:22px}
   #boss{top:calc(130px + env(safe-area-inset-top));width:calc(100vw - 28px)}
@@ -213,7 +217,8 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
   .up .cost{font-size:15px}
   #elevBtn{bottom:86px;padding:10px 18px;font-size:15px}
   #tip{bottom:80px}
-  #toasts{bottom:86px;width:240px}
+  #toasts{bottom:86px;width:300px}
+  .memo{font-size:13px;padding:10px 13px}
   #toasts .memo:not(:last-child){display:none}
   #boss{top:12px;width:min(340px,50vw)}
   #combo{top:auto;bottom:80px;right:20px;left:auto;transform:none;font-size:20px}
@@ -230,6 +235,7 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
     <div class="lbl" id="flLbl">FLOOR</div>
     <div class="big" id="floorNum">1</div>
     <div id="dept">Customer Support</div>
+    <div id="today"></div>
     <div class="prog"><div id="progBar"></div></div>
   </div>
   <div class="tr">
@@ -388,11 +394,26 @@ function noise(dur, vol, ftype, freq, delay = 0) {
   s.buffer = noiseBuf; s.playbackRate.value = rand(0.8, 1.2); f.type = ftype; f.frequency.value = freq;
   env(g, t, 0.004, vol, dur); s.connect(f).connect(g).connect(master); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.02);
 }
+const SCALE = [0, 2, 4, 7, 9];
+function keyRoot() { const k = ((Math.max(1, S.floor) - 1) * 7) % 12; return 196 * Math.pow(2, (k > 6 ? k - 12 : k) / 12); }
+const scaleNote = i => keyRoot() * Math.pow(2, (SCALE[i % 5] + 12 * Math.floor(i / 5)) / 12);
+function mallet(f, vol, delay = 0) { // marimba-ish: fundamental + quick bright overtones
+  tone('sine', f, f, 0.42, vol, delay);
+  tone('sine', f * 4, f * 4, 0.07, vol * 0.22, delay);
+  tone('triangle', f * 2, f * 2, 0.14, vol * 0.1, delay);
+}
 const sfx = {
-  hit(c) { const p = 1 + Math.min(c, 30) * 0.02; tone('triangle', 190 * p, 90 * p, 0.09, 0.35); noise(0.05, 0.25, 'bandpass', 1800 * p); },
-  crit() { tone('square', 120, 40, 0.18, 0.25); noise(0.12, 0.5, 'lowpass', 2500); },
+  // Musical hits: every click plays the next note of a pentatonic scale, so a combo climbs a melody.
+  // Each floor modulates up a fifth (circle of fifths), so progression literally changes key.
+  hit(c) { const i = Math.min(c - 1, 9); mallet(scaleNote(i + 5), 0.2); noise(0.025, 0.1, 'bandpass', 1400); },
+  crit() { const i = Math.min(combo - 1, 9); mallet(scaleNote(i + 5), 0.18); mallet(scaleNote(i + 7), 0.16, 0.02); mallet(scaleNote(i + 10), 0.1, 0.04); tone('sine', 110, 45, 0.25, 0.35); },
   relic() { [784, 988, 1175, 1568].forEach((f, i) => tone('triangle', f, f, 0.18, 0.18, i * 0.07)); },
-  flip() { noise(0.25, 0.2, 'bandpass', 900); tone('sine', 300, 600, 0.2, 0.08); },
+  flip() { // resolve the current melody note into a quick rising arpeggio
+    const i = Math.min(Math.max(combo, 1) - 1, 9);
+    [0, 2, 4, 5].forEach((k, j) => mallet(scaleNote(i + 5 + k), 0.13, 0.05 + j * 0.055));
+    noise(0.22, 0.12, 'bandpass', 900);
+  },
+  cadence() { [0, 2, 4, 5, 7, 9, 10].forEach((k, j) => mallet(scaleNote(k + 5), 0.14, j * 0.075)); }, // floor cleared
   thump(big) { tone('sine', big ? 90 : 130, 35, big ? 0.6 : 0.3, 0.9); noise(big ? 0.5 : 0.2, 0.6, 'lowpass', big ? 500 : 900); },
   clatter() { for (let i = 0; i < 4; i++) noise(0.04, 0.18, 'highpass', 3000 + Math.random() * 3000, i * 0.04 + Math.random() * 0.03); },
   ding() { // two-note elevator bell (ding-dong) built from bell-like partials
@@ -1129,9 +1150,10 @@ function spawnText(pos, text, cls) {
   el.addEventListener('animationend', () => el.remove());
   $('#fx').appendChild(el);
 }
-function memo(text, head = 'INTERNAL MEMO') {
+function memo(text, head = 'INTERNAL MEMO', foot = '') {
   const el = document.createElement('div'); el.className = 'memo';
   el.innerHTML = `<b>${head}</b>`; el.append(text);
+  if (foot) { const i = document.createElement('i'); i.textContent = foot; el.append(i); }
   el.addEventListener('animationend', () => el.remove());
   const box = $('#toasts'); box.appendChild(el); while (box.children.length > 3) box.firstChild.remove();
 }
@@ -1174,7 +1196,7 @@ function kill(t, src, dir) {
   t.dead = true; t.hover = false; alive--; floorFlipped++; S.flipped++;
   const load = 0.6 + 0.2 * t.items.length, relic = t.relic && RELICS[t.relic];
   const gain = mode === 'daily' ? 0 : t.reward * (t.loadMult ?? load) * (relic ? relic.mult : 1) * (src === 'click' ? comboMult() : 1) * sevMult();
-  S.rage += gain; S.lifetime += gain; pendingFlips++;
+  S.rage += gain; S.lifetime += gain; pendingFlips++; countFlip();
   const p = t.g.position.clone(); p.y += 1.2;
   if (gain) spawnText(p, `+${fmt(gain)} RAGE`, 'reward');
   if (relic && mode === 'daily') { /* relics only count in your career */ }
@@ -1241,7 +1263,7 @@ function shake(v) { if (!reducedMotion()) camShake = Math.max(camShake, v); }
 const reducedMotion = () => S.motion === 'reduce' || (S.motion == null && matchMedia('(prefers-reduced-motion: reduce)').matches);
 
 function floorCleared() {
-  cleared = true;
+  cleared = true; sfx.cadence();
   if (mode === 'daily') { dailyTime = dailyStart ? (performance.now() - dailyStart) / 1000 : 0; return dailyDone(); }
   S.best = Math.max(S.best, S.floor + 1); S.bestEver = Math.max(S.bestEver, S.best);
   save(); flushFlips();
@@ -1457,7 +1479,7 @@ $('#muteBtn').addEventListener('click', () => { audio(); setMute(!S.muted); });
 $('#shareBtn').addEventListener('click', () => { audio(); shareFlow(mode === 'daily' ? { headline: 'FLOOR OF THE DAY', sub: `#${dailyDay}`, lines: ['Same floor for everyone.', 'Beat my time.'] } : careerCard(), mode === 'daily' ? `Flipping Tables · Floor of the Day #${dailyDay} (╯°□°)╯︵ ┻━┻` : careerText(), 'button'); });
 const hrCount = () => Math.floor(S.flipped * 1.5 + S.floor * 3);
 
-const ui = { floor: $('#floorNum'), dept: $('#dept'), bar: $('#progBar'), rage: $('#rage'), combo: $('#combo'), boss: $('#bossBar') };
+const ui = { today: $('#today'), floor: $('#floorNum'), dept: $('#dept'), bar: $('#progBar'), rage: $('#rage'), combo: $('#combo'), boss: $('#bossBar') };
 function updateHud() {
   const n = tables.length;
   ui.bar.style.width = (n ? floorFlipped / n * 100 : 0) + '%';
@@ -1468,11 +1490,58 @@ function updateHud() {
   } else {
     ui.floor.textContent = S.floor; ui.dept.textContent = deptName(S.floor); ui.rage.textContent = fmt(S.rage);
   }
+  const w = workday();
+  ui.today.innerHTML = w.flips ? `Today: <span>${w.flips.toLocaleString()}</span> flipped · <span>${w.work.toLocaleString()}</span> on company time` : `Today: nothing flipped yet`;
   const showCombo = combo >= 5 && performance.now() - lastHit < 900;
   ui.combo.style.opacity = showCombo ? 1 : 0;
   if (showCombo) ui.combo.innerHTML = `×${comboMult().toFixed(2)}<small>${combo} HIT RAGE COMBO</small>`;
   if (tables[0] && tables[0].boss) ui.boss.style.width = Math.max(0, tables[0].hp / tables[0].max * 100) + '%';
 }
+
+// ---------------------------------------------------------------- workday: stats + timekeeping memos in the player's own timezone
+const TZ = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'local time'; } catch (e) { return 'local time'; } })();
+const localDay = () => new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in the player's timezone
+const clock = d => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const weekday = d => d.toLocaleDateString([], { weekday: 'long' });
+const isWorkHours = (d = new Date()) => d.getDay() >= 1 && d.getDay() <= 5 && d.getHours() >= 9 && d.getHours() < 17;
+function workday() { const d = localDay(); if (!S.wd || S.wd.date !== d) S.wd = { date: d, flips: 0, work: 0 }; return S.wd; }
+function countFlip() { const w = workday(); w.flips++; if (isWorkHours()) w.work++; }
+function hoursMemo() {
+  const d = new Date(), h = d.getHours(), dow = d.getDay(), t = clock(d), day = weekday(d);
+  let key, text;
+  if (dow === 0 || dow === 6) [key, text] = ['weekend', `It's ${day}, ${t}. Nobody asked you to come in. You came in anyway. The tables respect that, and fear it.`];
+  else if (h >= 22 || h < 4) [key, text] = ['night', `It's ${t}. The cleaning crew has seen you. They will not say anything. They never do.`];
+  else if (h < 7) [key, text] = ['early', `It's ${t}. Not even the coffee machine is awake. Bold.`];
+  else if (h < 9) [key, text] = ['morning', `${t} on a ${day}. Early bird gets the desk. All of the desks, actually.`];
+  else if (dow === 5 && h >= 14 && h < 17) [key, text] = ['friday', `${day}, ${t}. Nothing productive will happen in this building today. Flip accordingly.`];
+  else if (h === 12) [key, text] = ['lunch', `It's ${t}. Lunch break flipping is technically a wellness activity.`];
+  else if (h < 17) [key, text] = ['work', `It's ${t} on a ${day}. Your manager thinks you're in a meeting. Technically, you are meeting the tables.`];
+  else [key, text] = ['after', `It's ${t}. Everyone else went home. The tables thought they were safe.`];
+  if (S.hoursMemo === key + localDay() && Math.random() < 0.6) return; // don't nag with the same one all day
+  S.hoursMemo = key + localDay();
+  memo(text, 'HR · TIMEKEEPING', `Clocked in ${TZ.replace(/_/g, ' ')}`);
+}
+// Idle on company time? HR notices. Escalates, resets on any input.
+let lastInput = performance.now(), idleStage = 0, hiddenAt = 0, hoursT = 0;
+const IDLE_WORK = [[45, 'No desk has been flipped in 45 seconds. During business hours. Is everything okay?'],
+  [180, "You've been idle for 3 minutes on company time. Your status has been set to 'Away'."],
+  [600, '10 minutes of inactivity. HR has scheduled a "quick sync" about your engagement.']];
+function noteInput() { lastInput = performance.now(); idleStage = 0; }
+function idleCheck(dt) {
+  if (document.hidden || !modal.hidden) return;
+  const idle = (performance.now() - lastInput) / 1000;
+  if (isWorkHours()) { const st = IDLE_WORK[idleStage]; if (st && idle > st[0]) { memo(st[1], 'HR · ENGAGEMENT', `${clock(new Date())} · business hours`); idleStage++; } }
+  else if (idleStage === 0 && idle > 120) { memo(`Idle for 2 minutes at ${clock(new Date())}, outside working hours. Honestly? Fair.`, 'HR · TIMEKEEPING'); idleStage = 1; }
+  if ((hoursT -= dt) <= 0) { hoursT = 900; if (started) hoursMemo(); } // check the clock every 15 minutes of play
+}
+addEventListener('pointerdown', noteInput, true);
+addEventListener('keydown', noteInput, true);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) { hiddenAt = Date.now(); return; }
+  const gone = (Date.now() - hiddenAt) / 60000;
+  if (started && hiddenAt && gone > 3 && isWorkHours()) memo(`Welcome back from your "meeting". You were gone ${Math.round(gone)} minutes. The desks noticed.`, 'HR · TIMEKEEPING');
+  noteInput();
+});
 
 // ---------------------------------------------------------------- analytics + worldwide counter
 const track = (name, data) => { try { window.va('event', { name, data }); } catch (e) {} };
@@ -1574,7 +1643,10 @@ function openMenu() {
       <div class="stat"><b>${Math.max(S.bestEver, S.best)}</b><span>highest floor</span></div>
       <div class="stat"><b>×${sevMult().toFixed(1)}</b><span>severance bonus</span></div>
       <div class="stat"><b>${worldTotal ? fmt(worldTotal) : '—'}</b><span>flipped worldwide</span></div>
+      <div class="stat"><b>${workday().flips.toLocaleString()}</b><span>flipped today</span></div>
+      <div class="stat"><b>${workday().work.toLocaleString()}</b><span>on company time (Mon–Fri 9–17)</span></div>
     </div>
+    <p style="font-size:12px;margin-top:8px;color:#9a9ca6">Your workday follows your timezone: ${TZ.replace(/_/g, ' ')}, ${clock(new Date())}.</p>
     <h3>QUIT &amp; REHIRE</h3>
     <p>${gain ? `HR has prepared a severance package: <b>+${gain}</b> severance (each one is +10% rage and damage, forever). You restart on floor 1 with no rage or upgrades, but keep your relics and flip count.` : `Reach floor 25 to negotiate a severance package. Each one makes you permanently stronger. You have ${S.sev}.`}</p>
     <div class="btns"><button class="btn" data-a="rehire" ${gain && mode === 'career' ? '' : 'disabled'}>${gain ? `Quit &amp; Rehire (+${gain})` : 'Not yet'}</button>
@@ -1712,6 +1784,7 @@ function loop(now) {
     saveAcc += realDt; if (saveAcc > 5) { saveAcc = 0; save(); }
     flushAcc += realDt; if (flushAcc > 20) { flushAcc = 0; flushFlips(); }
     ambience(realDt);
+    if (mode === 'career') idleCheck(realDt);
   }
   for (const t of tables) updateTable(t, dt);
   if (elev.d1 && Math.abs(elev.target - elev.open) > 0.001) {
@@ -1757,6 +1830,7 @@ function beginShift(daily) {
   $('#title').classList.add('gone');
   $('#hud').style.visibility = 'visible';
   track('start', { floor: S.floor, daily });
+  noteInput(); hoursT = 900; setTimeout(hoursMemo, 4000);
   if (daily) return;
   banner(S.floor);
   if (S.t && S.up.email) {
