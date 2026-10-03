@@ -332,7 +332,7 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
   </div>
 </div>
 
-<script type="importmap">{"imports":{"three":"./vendor/three-r170-3.min.js"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three-r170-4.min.js"}}</script>
 <script>
   // Vercel Web Analytics (pageviews + custom events) and a tiny client error reporter.
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -434,14 +434,14 @@ const dmg = () => mode === 'daily' ? 1 : dmgAt(S.up.arms) * sevMult();
 // Interns get a third of your base arm strength and none of your severance bonus: they help, they don't carry.
 const internDps = () => mode === 'daily' ? 0 : S.up.interns * 0.3 * dmgAt(S.up.arms) * (1 + 0.4 * S.up.retreat);
 const chairDmg = () => dmg() * 1.5 * S.up.chair;
-const critChance = () => mode === 'daily' ? 0 : Math.min(0.6, S.up.spite * 0.04);
+const critChance = () => mode === 'daily' ? 0 : Math.min(0.4, S.up.spite * 0.02); // 2% a level, tops out at 40%
 const splashR = () => mode === 'daily' || !S.up.shock ? 0 : 1.6 + 0.7 * S.up.shock;
 const emailRate = () => mode === 'daily' ? 0 : S.up.email * tableReward(S.floor) * 0.15 * sevMult();
 
 const UPG = [
   { id: 'arms', unlock: 1, short: 'Arms', blurb: 'More damage per click', ic: '💪', name: 'Forearm Day', base: 10, k: 1.65, fx: () => `${fmt(dmg())} dmg per click` },
   { id: 'interns', unlock: 4, short: 'Intern', blurb: 'Flips tables while you idle', ic: '🧑‍💼', name: 'Unpaid Intern', base: 250, k: 1.8, fx: () => S.up.interns ? `${fmt(internDps())} dmg/s for "exposure"` : 'Flips tables for "exposure"' },
-  { id: 'spite', unlock: 3, short: 'Spite', blurb: 'Chance of 5× critical hits', ic: '😤', name: 'Pure Spite', base: 60, k: 1.7, max: 15, fx: () => `${Math.round(critChance() * 100)}% chance of 5× crit` },
+  { id: 'spite', unlock: 3, short: 'Spite', blurb: 'Chance of 5× critical hits', ic: '😤', name: 'Pure Spite', base: 60, k: 1.75, max: 20, fx: () => `${Math.round(critChance() * 100)}% chance of 5× crit` },
   { id: 'shock', unlock: 5, short: 'Shock', blurb: 'Hits splash onto nearby desks', ic: '💥', name: 'Shockwave', base: 120, k: 1.75, max: 10, fx: () => S.up.shock ? `${splashR().toFixed(1)}m splash radius` : 'Rage gets area of effect' },
   { id: 'email', unlock: 2, short: 'Emails', blurb: 'Passive rage per second', ic: '📧', name: 'Reply-All Storm', base: 45, k: 1.6, fx: () => S.up.email ? `+${fmt(emailRate())} rage/s passively` : 'Generates rage while idle' },
   { id: 'chair', unlock: 7, short: 'Chairs', blurb: 'Flipped desks fling their chairs at other desks', ic: '🪑', name: 'Ergonomic Chair Throw', base: 400, k: 1.8, max: 10, fx: () => S.up.chair ? `Thrown chairs hit for ${fmt(chairDmg())}` : 'Chairs become projectiles' },
@@ -617,7 +617,7 @@ const M = {
   mugs: [std(0xffffff, { roughness: 0.3 }), std(0x2bb3a3, { roughness: 0.3 }), std(0x2f6fed, { roughness: 0.3 }), std(0xffd166, { roughness: 0.3 })],
   leaf: std(0x3f9b52, { roughness: 0.8, flatShading: true }), pot: std(0xc96b45), chair: std(0x30343c, { roughness: 0.85 }),
   wall: std(0xe9e4da, { roughness: 0.95 }), trim: std(0x9b8e7e), gold: std(0xffc94d, { roughness: 0.25, metalness: 0.9 }),
-  binder: std(0x2a3f7a), homeWall: std(0xb9c9b0, { roughness: 0.95 }), cafeWall: std(0x1f3b33, { roughness: 0.9 }), aiWall: std(0x0d0f14, { roughness: 0.7 }),
+  binder: std(0x2a3f7a), cyberWall: std(0x1a1029, { roughness: 0.5, metalness: 0.3 }), homeWall: std(0xb9c9b0, { roughness: 0.95 }), cafeWall: std(0x1f3b33, { roughness: 0.9 }), aiWall: std(0x0d0f14, { roughness: 0.7 }),
   sofa: std(0x6b7fa8, { roughness: 1 }), rug: std(0xd88b6b, { roughness: 1 }), cat: std(0xe08a3c, { roughness: 1 }), book: [std(0xc0392b), std(0x2e86de), std(0xf1c40f), std(0x27ae60), std(0x8e44ad)],
   cup: std(0xffffff, { roughness: 0.5 }), sleeve: std(0x8a5a35, { roughness: 1 }), latte: std(0xc89f74, { roughness: 0.6 }), pastry: std(0xd99a4e, { roughness: 0.8 }),
   espresso: std(0xb8bcc2, { roughness: 0.25, metalness: 0.8 }), glass: std(0xd8f0ff, { roughness: 0.05, transparent: true, opacity: 0.35 }), gpu: std(0x111318, { roughness: 0.35, metalness: 0.6 }), pipe: std(0x22d3ee, { roughness: 0.3, metalness: 0.4, emissive: 0x0e7490, emissiveIntensity: 0.4 }),
@@ -976,6 +976,7 @@ function bannerMat(key, bg, fg, text, font = 'bold 34px "Archivo Black", Inter, 
   return bannerCache[key] || (bannerCache[key] = new THREE.MeshBasicMaterial({ map: labelTex(1024, 84, bg, fg, [text], font) }));
 }
 function roomBanner(f, theme, boss, ri, rng) {
+  if (theme === 'cyber') return bannerMat('cyber' + (ri % 3), '#0b0420', ['#ff2bd6', '#22e5ff', '#f8f32b'][ri % 3], ['KUROSAWA CORP  ·  YOUR SOUL IS OUR PRODUCT', 'ネオ東京  ·  NEO-TOKYO BRANCH  ·  NO FLIPPING', 'UPGRADE YOUR CHROME  ·  LEGS ARE OPTIONAL'][ri % 3]);
   if (theme === 'ai') return bannerMat('ai' + (ri % 3), '#0b0d12', ['#22d3ee', '#a78bfa', '#4cff7a'][ri % 3], ['AI DATA CENTER  ·  TRAINING RUN 94%  ·  DO NOT FLIP', 'GPU HALL ' + 'ABCDEFG'[ri] + '  ·  COOLING: ADEQUATE-ISH', 'LOSS IS GOING DOWN  ·  PLEASE DO NOT TOUCH ANYTHING'][ri % 3]);
   if (theme === 'cafe') return bannerMat('cafe' + (ri % 2), '#1f3b33', '#f4ead5', ri % 2 ? 'WIFI: FLIPIT123  ·  LAPTOP CAMPING: 4 HRS MAX' : 'OAT LATTE  ·  PUMPKIN SPICE  ·  COLD BREW  ·  TABLE (FLIPPED)');
   if (theme === 'home') return bannerMat('home', '#f4ead5', '#5a3a22', 'LIVE  ·  LAUGH  ·  LOVE  ·  FLIP', 'italic bold 36px Georgia, serif');
@@ -1051,9 +1052,17 @@ function setDressing(R, ri, { f, theme, boss, rng, first, last, own }) {
   const { W, D, rg } = R;
   // stacks of paper boxes from a certain Scranton paper company
   if (theme === 'home') homeDecor(R);
+  if (theme === 'cyber') {
+    const s1 = box(W, 0.05, 0.05, NEON[0]); s1.position.set(0, 0.2, -D / 2 + 0.05); s1.castShadow = false;
+    const s2 = box(0.05, 0.05, D, NEON[1]); s2.position.set(-W / 2 + 0.05, 0.2, 0); s2.castShadow = false;
+    rg.add(s1, s2);
+    if (ri === 0) makeHologram(rg, W / 2 - 1.1, D / 2 - 1.2, 0xff4fe0, CYBER_LINES);
+  }
+  // the HYPERVSN avatar lives in one cafeteria: the first break room room of every third break-room floor
+  if (theme === 'breakroom' && ri === 0 && f % 3 === 0) makeHologram(rg, W / 2 - 1.1, D / 2 - 1.2, 0x7ef0ff, HOLO_LINES);
   if (theme === 'cafe') cafeDecor(R, ri);
   if (theme === 'ai') aiDecor(R, ri);
-  if (!boss && !['server', 'ai', 'cafe', 'home'].includes(theme) && rng() < 0.55) paperBoxes(rg, W / 2 - 0.6, -D / 2 + 1.7, 2 + (rng() < 0.5 ? 1 : 0), rng() * 0.4);
+  if (!boss && !['server', 'ai', 'cafe', 'home', 'cyber'].includes(theme) && rng() < 0.55) paperBoxes(rg, W / 2 - 0.6, -D / 2 + 1.7, 2 + (rng() < 0.5 ? 1 : 0), rng() * 0.4);
   // the Jump to Conclusions mat
   if ((f === 5 && first) || (theme === 'office' && rng() < 0.08)) {
     const m = new THREE.Mesh(geo('jmat', () => new THREE.PlaneGeometry(1.6, 1.1)), jumpMatMat); m.rotation.x = -Math.PI / 2; m.position.set(-W / 2 + 1.7, 0.012, D / 2 - 1.0); m.receiveShadow = true; rg.add(m);
@@ -1109,19 +1118,27 @@ function poster(i, x, y, z, facing, frameMat, parent = floorGroup) {
 }
 
 // Floor themes keep the infinite office from getting samey. Deterministic per floor.
-function floorTheme(f) {
+const themeMemo = {};
+function floorTheme(f) { return themeMemo[f] ?? (themeMemo[f] = pickTheme(f)); }
+function pickTheme(f) {
+  if (f >= 19 && f % 25 === 19) return 'cyber';  // 19, 44, 69…
   if (f >= 8 && f % 20 === 8) return 'home';     // 8, 28, 48…
   if (f >= 16 && f % 20 === 16) return 'cafe';   // 16, 36, 56…
   if (f >= 24 && f % 30 === 24) return 'ai';     // 24, 54, 84…
   if (f < 6 || isBoss(f) || [7, 11, 17, 23, 31, 42].includes(f)) return 'office'; // named pop-culture floors keep the office look
   const r = mulberry32(f * 977 + 5)();
-  return r < 0.55 ? 'office' : r < 0.7 ? 'openplan' : r < 0.85 ? 'breakroom' : 'server';
+  const t = r < 0.55 ? 'office' : r < 0.7 ? 'openplan' : r < 0.85 ? 'breakroom' : 'server';
+  // never two cafeterias in a row: no break room right before/after another break room or the coffee shop
+  const eats = x => x === 'breakroom' || x === 'cafe';
+  if (t === 'breakroom' && (eats(floorTheme(f - 1)) || (f + 1) % 20 === 16)) return 'office';
+  return t;
 }
-const THEME_NAMES = { openplan: 'Open-Plan Collaboration Zone', breakroom: 'The Break Room', server: 'Server Room (Do Not Touch)', home: 'Home Office (WFH Day 1,204)', cafe: 'Starbeans Coffee (Your Office Now)', ai: 'AI Data Center' };
+const THEME_NAMES = { openplan: 'Open-Plan Collaboration Zone', breakroom: 'The Break Room', server: 'Server Room (Do Not Touch)', home: 'Home Office (WFH Day 1,204)', cyber: 'Neo-Tokyo Branch (2077)', cafe: 'Starbeans Coffee (Your Office Now)', ai: 'AI Data Center' };
 const THEME_MEMOS = {
   openplan: ['Open-plan seating improves collaboration by 0%. The benches are long, heavy and loaded with monitors.', 'FACILITIES'],
   breakroom: ['Someone microwaved fish again. The break room tables must answer for this.', 'INTERNAL MEMO'],
   server: ['IT asks that you please do not flip the servers. IT is not your manager.', 'IT DEPARTMENT'],
+  cyber: ['Welcome to the Neo-Tokyo branch. The desks have neon underglow, the rain never stops and your manager is a hologram. Flip responsibly, choom.', 'KUROSAWA CORP HR'],
   home: ['You are working from home. Your camera is on. Everyone in the 9:00 standup can see you flipping your kitchen table.', 'HR · REMOTE WORK'],
   cafe: ['You have taken your laptop to a coffee shop. Your name has been written on the cup as "TABEL". This is personal now.', 'BARISTA'],
   ai: ['Welcome to the AI Data Center. These GPU racks were three days away from AGI. Flipping them will set humanity back. Probably fine.', 'MACHINE LEARNING OPS'],
@@ -1144,6 +1161,63 @@ const gpuFaces = [0, 1, 2].map(k => canvasTex(64, 160, (g, w, h) => {
   }
 }));
 const gpuFaceMat = new THREE.MeshBasicMaterial({ map: gpuFaces[0], toneMapped: false });
+const cyberWinTex = canvasTex(256, 128, (g, w, h) => {
+  const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#0b0420'); gr.addColorStop(1, '#3a0d4a'); g.fillStyle = gr; g.fillRect(0, 0, w, h);
+  const r = mulberry32(2077);
+  for (let x = 0; x < w;) { const bw = 10 + r() * 24, bh = h * (0.35 + r() * 0.65); g.fillStyle = '#120a22'; g.fillRect(x, h - bh, bw - 2, bh);
+    for (let i = 0; i < 6; i++) { g.fillStyle = r() < 0.5 ? '#ff2bd6' : '#22e5ff'; g.fillRect(x + 2 + r() * (bw - 6), h - bh + 4 + r() * (bh - 8), 2, 2); }
+    if (r() < 0.3) { g.fillStyle = r() < 0.5 ? '#ff2bd6' : '#22e5ff'; g.fillRect(x + 2, h - bh + 6, 3, bh * 0.4); } x += bw; }
+  g.strokeStyle = 'rgba(160,200,255,.25)'; for (let i = 0; i < 70; i++) { const x = r() * w, y = r() * h; g.beginPath(); g.moveTo(x, y); g.lineTo(x - 3, y + 10); g.stroke(); } // rain
+});
+const cyberScreen = new THREE.MeshBasicMaterial({ toneMapped: false, map: canvasTex(128, 80, (g, w, h) => {
+  g.fillStyle = '#05010c'; g.fillRect(0, 0, w, h); g.font = '8px monospace';
+  const ch = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽ01ﾀﾁﾂﾃﾄ';
+  for (let x = 0; x < 14; x++) for (let y = 0; y < 10; y++) { g.fillStyle = y === (x * 3) % 10 ? '#eaffff' : (x % 3 ? '#22e5ff' : '#ff2bd6'); g.globalAlpha = 0.25 + ((x * 7 + y * 3) % 10) / 13; g.fillText(ch[(x * 5 + y) % ch.length], 3 + x * 9, 8 + y * 8); }
+  g.globalAlpha = 1;
+}) });
+const NEON = [new THREE.MeshBasicMaterial({ color: 0xff2bd6, toneMapped: false }), new THREE.MeshBasicMaterial({ color: 0x22e5ff, toneMapped: false })];
+// HYPERVSN-style holographic fan display with a floating avatar. Spins, flickers, gives unsolicited advice.
+const holoFanTex = canvasTex(256, 256, (g, w, h) => {
+  g.translate(128, 128);
+  for (let i = 0; i < 4; i++) { g.rotate(Math.PI / 2); const gr = g.createLinearGradient(0, 0, 120, 0); gr.addColorStop(0, 'rgba(120,240,255,.0)'); gr.addColorStop(1, 'rgba(120,240,255,.55)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, -4); g.lineTo(122, -14); g.lineTo(122, 14); g.lineTo(0, 4); g.fill(); }
+});
+let holos = [];
+function makeHologram(parent, x, z, color, lines) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(1.4); g.rotation.y = -0.5;
+  const pole = cyl(0.03, 0.03, 1.5, M.leg, 8); pole.position.y = 0.75;
+  const base = cyl(0.22, 0.26, 0.05, M.plastic, 16); base.position.y = 0.025;
+  const ring = new THREE.Mesh(geo('holoRing', () => new THREE.TorusGeometry(0.62, 0.025, 6, 40)), M.plastic); ring.position.y = 1.55;
+  const hub = cyl(0.06, 0.06, 0.08, M.plastic, 12); hub.rotation.x = Math.PI / 2; hub.position.set(0, 1.55, 0.03);
+  const plate = new THREE.Mesh(geo('holoPlate', () => new THREE.PlaneGeometry(0.36, 0.08)), holoPlateMat); plate.position.set(0, 0.25, 0.031);
+  const pbox = box(0.4, 0.12, 0.06, M.plastic); pbox.position.set(0, 0.25, 0); pbox.add(plate); plate.position.set(0, 0, 0.031);
+  const fan = new THREE.Mesh(geo('holoFan', () => new THREE.CircleGeometry(0.6, 32)), new THREE.MeshBasicMaterial({ map: holoFanTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  fan.position.set(0, 1.55, 0.05); perFloor.push(fan.material);
+  const mat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.8, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }); perFloor.push(mat);
+  const av = new THREE.Group(); av.position.set(0, 1.42, 0.12);
+  const head = new THREE.Mesh(geo('holoHead', () => new THREE.SphereGeometry(0.13, 16, 12)), mat); head.position.y = 0.2;
+  const torso = new THREE.Mesh(geo('holoTorso', () => new THREE.CylinderGeometry(0.1, 0.24, 0.3, 14)), mat); torso.position.y = -0.06;
+  const arm = new THREE.Mesh(geo('holoArm', () => new THREE.BoxGeometry(0.05, 0.22, 0.05)), mat); arm.position.set(0.24, 0.0, 0); arm.rotation.z = -2.2;
+  av.add(head, torso, arm);
+  g.add(base, pole, ring, hub, pbox, fan, av); parent.add(g);
+  holos.push({ g, fan, av, arm, mat, lines, t: rand(4, 9) });
+  return g;
+}
+const holoPlateMat = new THREE.MeshBasicMaterial({ map: labelTex(256, 56, '#0b0d12', '#7ef0ff', ['HYPERVSN'], 'bold 30px Inter, sans-serif'), toneMapped: false });
+const HOLO_LINES = ["Hydration reminder! 💧", "Hi! I'm your AI wellness avatar.", 'Please stop flipping the tables.', 'Mandatory fun in 5 minutes!', 'I am a hologram. I cannot stop you.', 'Have you tried mindfulness instead?', 'Your posture score: 3/10'];
+const CYBER_LINES = ['Wake up, choom. We have desks to flip.', 'Your quarterly chrome upgrade is due.', 'Corporate thanks you for your compliance.', 'This hologram is your manager now.', 'Neon synergy levels: critical.'];
+function updateHolos(dt) {
+  for (const h of holos) {
+    h.fan.rotation.z -= dt * 22;
+    h.av.rotation.y += dt * 0.8;
+    h.arm.rotation.z = -2.2 + Math.sin(time * 4) * 0.35;
+    h.mat.opacity = 0.7 + Math.random() * 0.2 + (Math.random() < 0.02 ? -0.4 : 0); // flicker
+    if (started && (h.t -= dt) <= 0) {
+      h.t = rand(9, 16);
+      const wp2 = new THREE.Vector3(); h.g.getWorldPosition(wp2);
+      if (Math.hypot(wp2.x - room().cx, wp2.z - room().cz) < Math.max(room().W, room().D)) spawnText(wp2.setY(2.35), pick(h.lines), 'yelp');
+    }
+  }
+}
 const plankTex = canvasTex(256, 256, (g, w, h) => {
   for (let y = 0; y < 8; y++) { const off = (y % 2) * 64; for (let x = -64; x < w; x += 128) { const v = 200 + Math.random() * 40 | 0; g.fillStyle = `rgb(${v},${v - 10},${v - 25})`; g.fillRect(x + off, y * 32, 126, 30); } }
   g.fillStyle = 'rgba(0,0,0,.25)'; for (let y = 0; y < 8; y++) g.fillRect(0, y * 32 + 30, w, 2);
@@ -1216,16 +1290,16 @@ function planRooms(rng, k, counts, sx, sz, tall, boss) {
 function buildFloor(f, daily = 0) {
   if (floorGroup) scene.remove(floorGroup);
   perFloor.forEach(x => x.dispose()); perFloor.length = 0; interns = [];
-  debris.length = 0; puffs.length = 0; tables = []; rooms = []; conns = []; activeRoom = 0; printers = [];
+  debris.length = 0; puffs.length = 0; tables = []; rooms = []; conns = []; activeRoom = 0; printers = []; holos = [];
   floorGroup = new THREE.Group(); scene.add(floorGroup);
   coworkers = []; hr = null;
   const rng = mulberry32(daily ? daily * 7919 + 1 : f * 131 + 7), boss = !daily && isBoss(f), theme = daily ? DAILY_THEMES[daily % 4] : floorTheme(f);
-  screenOverride = f === 23 && !daily ? MDR_SCREEN : null;
+  screenOverride = f === 23 && !daily ? MDR_SCREEN : theme === 'cyber' ? cyberScreen : null;
   const n = daily ? { office: 12, openplan: 6, breakroom: 9, server: 12 }[theme] : theme === 'openplan' ? Math.ceil(tableCount(f) / 2) : theme === 'breakroom' ? Math.ceil(tableCount(f) * 0.7)
     : theme === 'home' ? 5 : theme === 'cafe' ? Math.min(12, Math.ceil(tableCount(f) * 0.6)) : theme === 'ai' ? Math.max(30, tableCount(f) + 8) : tableCount(f);
   const [sx, sz] = theme === 'openplan' ? [5.4, 3.7] : theme === 'breakroom' ? [2.9, 2.9] : theme === 'server' ? [1.5, 3.2] : theme === 'ai' ? [1.7, 3.4] : theme === 'cafe' ? [2.6, 2.6] : theme === 'home' ? [3.6, 3.2] : [3.4, 3.1];
   const tall = innerWidth / innerHeight < 0.9;
-  const cap = (tall ? { office: 3, openplan: 2, breakroom: 4, server: 6, home: 6, cafe: 4, ai: 6 } : { office: 6, openplan: 4, breakroom: 6, server: 8, home: 6, cafe: 6, ai: 6 })[theme];
+  const cap = (tall ? { office: 3, openplan: 2, breakroom: 4, server: 6, home: 6, cafe: 4, ai: 6, cyber: 3 } : { office: 6, openplan: 4, breakroom: 6, server: 8, home: 6, cafe: 6, ai: 6, cyber: 6 })[theme] || 6;
   // the AI data center is a big campus: always 5-7 halls of racks
   const k = boss || theme === 'home' ? 1 : theme === 'ai' ? clamp(Math.ceil(n / cap), 5, 7) : clamp(Math.ceil(n / cap), 1, 4);
   // uneven split so rooms differ in size too
@@ -1235,11 +1309,11 @@ function buildFloor(f, daily = 0) {
 
   // shared per-floor materials
   const hue = (f * 0.137) % 1;
-  const wallMat = boss ? std(0x3a2a22, { roughness: 0.6 }) : theme === 'server' ? M.serverWall : theme === 'breakroom' ? M.breakWall
+  const wallMat = boss ? std(0x3a2a22, { roughness: 0.6 }) : theme === 'cyber' ? M.cyberWall : theme === 'server' ? M.serverWall : theme === 'breakroom' ? M.breakWall
     : theme === 'home' ? M.homeWall : theme === 'cafe' ? M.cafeWall : theme === 'ai' ? M.aiWall : M.wall;
   if (boss) perFloor.push(wallMat);
-  const wt = windowTex(f); perFloor.push(wt);
-  const winMat = new THREE.MeshBasicMaterial({ map: wt, toneMapped: false }); perFloor.push(winMat);
+  const wt = theme === 'cyber' ? null : windowTex(f); if (wt) perFloor.push(wt);
+  const winMat = new THREE.MeshBasicMaterial({ map: wt || cyberWinTex, toneMapped: false }); perFloor.push(winMat);
   const frameMat = boss ? M.gold : M.plastic;
   const pillarMat = boss ? std(0x2a1d17) : M.pillar;
   if (boss) perFloor.push(pillarMat);
@@ -1295,9 +1369,10 @@ function buildFloor(f, daily = 0) {
     const walls = new THREE.Group(), stub = new THREE.Group(); rg.add(walls, stub);
     Object.assign(R, { rg, walls, stub, doorsHere: [] });
     rooms.push(R);
-    const floorTex = theme === 'breakroom' ? tileTex : theme === 'server' || theme === 'ai' ? raisedTex : theme === 'home' || theme === 'cafe' ? plankTex : carpetTex;
+    const floorTex = theme === 'breakroom' ? tileTex : theme === 'server' || theme === 'ai' || theme === 'cyber' ? raisedTex : theme === 'home' || theme === 'cafe' ? plankTex : carpetTex;
     const carpet = std(new THREE.Color().setHSL((hue + ri * 0.03) % 1, boss ? 0.45 : 0.22, boss ? 0.22 : 0.42 - (ri % 2) * 0.03), { map: floorTex.clone(), roughness: theme === 'office' || theme === 'openplan' ? 1 : 0.6 });
     if (theme === 'breakroom') carpet.color.set(0xffffff); if (theme === 'server') carpet.color.set(0xc4c9d0);
+    if (theme === 'cyber') { carpet.color.set(0x4a3a70); carpet.roughness = 0.15; carpet.metalness = 0.45; } // rain-slick floor
     if (theme === 'ai') carpet.color.set(0x4a5160); if (theme === 'home') carpet.color.set(0xd9a46a); if (theme === 'cafe') carpet.color.set(0x7a5236);
     carpet.map.repeat.set(W / tile, D / tile); carpet.map.needsUpdate = true; perFloor.push(carpet, carpet.map);
     R.carpet = carpet;
@@ -1420,6 +1495,10 @@ function buildFloor(f, daily = 0) {
       const z = boss ? 0.3 : (r - (rowsHere - 1) / 2) * sz + (rng() - 0.5) * 0.3 + 0.3;
       const t = makeTable(R.cx + x, R.cz + z, kind, hpBase * mult[0], tableReward(f) * mult[1], (rng() - 0.5) * 0.14, relic);
       t.room = ri; tables.push(t);
+      if (theme === 'cyber' && !boss) { // neon underglow that flips with the desk
+        const glow = new THREE.Mesh(geo('underglow', () => new THREE.BoxGeometry(1.7, 0.03, 0.04)), NEON[li % 2]);
+        glow.position.set(0, -0.06, (t.half ? t.half[1] : 0.5) - 0.02); t.g.add(glow);
+      }
     }
   });
   if (THEME_MEMOS[theme] && !daily && !S['seen_' + theme]) { S['seen_' + theme] = true; setTimeout(() => memo(...THEME_MEMOS[theme]), 2600); }
@@ -1429,7 +1508,7 @@ function buildFloor(f, daily = 0) {
   if (standings && !daily && !S.seenStanding) { S.seenStanding = true; setTimeout(() => memo('Facilities has installed standing desks. They are taller, pay double, and nobody has ever stood at one.', 'FACILITIES'), 3200); }
   if (corners && !daily && !S.seenCorner) { S.seenCorner = true; setTimeout(() => memo('Facilities has installed corner desks. They are heavier, load-bearing (probably) and covered in expensive equipment.', 'FACILITIES'), 2600); }
   if (cubicles && !daily && !S.seenCubicle) { S.seenCubicle = true; setTimeout(() => memo('Cubicles have arrived. Three walls, one desk, zero hope. They are very heavy and pay very well.', 'FACILITIES'), 3600); }
-  if (k > 1 && !daily && !S.seenRooms) { S.seenRooms = true; setTimeout(() => memo(`This floor has ${k} rooms. Clear one and follow the arrow to the next. The elevator is in the last room.`, 'FACILITIES'), 1800); }
+  if (k > 1 && !daily && !S.seenRooms) { S.seenRooms = true; setTimeout(() => memo(`This floor has ${k} rooms. Clear one and the door to the next opens. The elevator is in the last room.`, 'FACILITIES'), 1800); }
   alive = n; floorFlipped = 0; cleared = false;
 
   fitCamera(); camTarget.copy(camGoal);
@@ -1453,7 +1532,6 @@ function roomCleared() {
   setTimeout(() => {
     activeRoom++; noise(0.5, 0.12, 'lowpass', 500);
     fitCamera();
-    bannerText(`ROOM ${activeRoom + 1} / ${rooms.length}`, activeRoom === rooms.length - 1 ? 'THE ELEVATOR IS IN HERE' : 'FOLLOW THE ARROWS');
   }, 650);
 }
 // Walkers move room to room through the door waypoints.
@@ -2048,7 +2126,7 @@ const hrCount = () => Math.floor(S.flipped * 1.5 + S.floor * 3);
 const ui = { roomTag: $('#roomTag'), today: $('#today'), floor: $('#floorNum'), dept: $('#dept'), bar: $('#progBar'), rage: $('#rage'), combo: $('#combo'), boss: $('#bossBar') };
 function updateHud() {
   const n = tables.length;
-  ui.roomTag.textContent = rooms.length > 1 ? `ROOM ${activeRoom + 1}/${rooms.length}` : '';
+  ui.roomTag.textContent = '';
   ui.bar.style.width = (n ? floorFlipped / n * 100 : 0) + '%';
   if (mode === 'daily') {
     const tm = cleared ? dailyTime : dailyStart ? (performance.now() - dailyStart) / 1000 : 0;
@@ -2320,6 +2398,7 @@ addEventListener('keydown', e => {
   if (k === 'arrowright' || k === 'arrowleft') { kbSelect(k === 'arrowright' ? 1 : -1); e.preventDefault(); }
   else if (k === ' ' || k === 'enter') {
     e.preventDefault();
+    if (e.repeat) return; // holding the key down is not a turbo button: one press, one hit
     if (cleared && mode === 'career') return rideElevator();
     if (!kbSel || kbSel.dead) { if (hovered && !hovered.dead) kbSel = hovered; else kbSelect(1); }
     if (kbSel && !kbSel.dead) playerHit(kbSel);
@@ -2360,6 +2439,7 @@ function loop(now) {
   }
   rackFaceMat.map = rackFaces[(time * 2.5 | 0) % 2];
   gpuFaceMat.map = gpuFaces[(time * 3 | 0) % 3];
+  updateHolos(dt);
   const pulse = 0.12 + 0.18 * (0.5 + 0.5 * Math.sin(time * 4));
   for (const m of RELIC_MATS) m.emissiveIntensity = pulse;
   updateDebris(dt); updatePuffs(dt);
