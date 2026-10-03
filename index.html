@@ -332,7 +332,7 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
   </div>
 </div>
 
-<script type="importmap">{"imports":{"three":"./vendor/three-r170.min.js"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three-r170-2.min.js"}}</script>
 <script>
   // Vercel Web Analytics (pageviews + custom events) and a tiny client error reporter.
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -461,7 +461,7 @@ function fmt(n) {
 const PRE = ['Synergy', 'Quarterly', 'Legacy', 'Strategic', 'Agile', 'Blockchain', 'Holistic', 'Cross-Functional', 'Disruptive', 'Paradigm', 'Vertical', 'Omnichannel', 'Cloud', 'Lean', 'Growth', 'Wellness', 'Enterprise', 'AI-First', 'Thought', 'Hybrid', 'Mission-Critical', 'Brand'];
 const SUF = ['Alignment', 'Operations', 'Compliance', 'Synergies', 'Deliverables', 'Leadership', 'Stakeholders', 'Initiatives', 'Optimization', 'Enablement', 'Bandwidth', 'Circle-Back Unit', 'Task Force', 'Center of Excellence', 'Pivot Team', 'Feedback Loop', 'Workstream', 'Offsite Planning', 'Mindshare', 'Learnings'];
 function deptName(f) {
-  const special = { 1: 'Customer Support', 2: 'Accounting', 3: 'IT (Have You Tried Restarting?)', 5: 'Initech Software Division', 11: 'Elbonia Outsourcing Liaison', 13: '[REDACTED]', 23: 'Macrodata Refinement', 42: 'Meaning of Work', 99: 'Middle Management', 100: 'The C-Suite', 404: 'Department Not Found', 1000: 'The Shareholders' };
+  const special = { 1: 'Customer Support', 2: 'Accounting', 3: 'IT (Have You Tried Restarting?)', 5: 'Initech Software Division', 7: 'Scranton Branch', 11: 'Elbonia Outsourcing Liaison', 13: '[REDACTED]', 17: 'Hooli XYZ Moonshots', 23: 'Macrodata Refinement', 31: 'Sterling Cooper Creative', 42: 'Meaning of Work', 99: 'Middle Management', 100: 'The C-Suite', 404: 'Department Not Found', 1000: 'The Shareholders' };
   if (special[f]) return special[f];
   if (isBoss(f)) return 'Executive Boardroom';
   if (THEME_NAMES[floorTheme(f)]) return THEME_NAMES[floorTheme(f)];
@@ -476,6 +476,9 @@ const MEMOS = [
   'Congrats on your promotion to Senior Table Flipper!', 'IT has disabled your mouse. You are using a different mouse.', 'Friday pizza cancelled. You know why.',
   'Yeah… if you could go ahead and stop flipping the tables, that would be great. Mmkay?', 'Looks like somebody has a case of the Mondays.',
   'Catbert, Evil Director of HR, has scheduled your performance review.', 'Reminder: the work is mysterious and important.',
+  'Ahh, I\'m gonna need you to go ahead and come in on Saturday. Mmkay? Thanks.', 'Please enjoy each desk equally.',
+  'Pretzel Day has been postponed due to unrelated table activity.', 'Michael has called an emergency meeting about the tables. Attendance is mandatory. Jim is laughing.',
+  'Your outie flipped 40 tables yesterday. Your innie would like to know why their arms hurt.', 'Hello IT. Have you tried turning the table off and on again?',
   'Someone flipped the boss\'s desk. Asking for a friend: was it you?', 'Return-to-office mandate: successful.', 'New KPI: tables per minute. You\'re crushing it.',
 ];
 
@@ -580,12 +583,25 @@ function canvasTex(w, h, draw) {
   const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t;
 }
+const MDR_TEX = canvasTex(128, 80, (g, w, h) => { g.fillStyle = '#071a2b'; g.fillRect(0, 0, w, h); g.fillStyle = '#9ff4ff'; g.font = '8px monospace'; for (let y = 0; y < 7; y++) for (let x = 0; x < 11; x++) g.fillText(String((x * 7 + y * 3) % 10), 6 + x * 11, 12 + y * 9); g.fillStyle = '#9ff4ff'; g.fillRect(0, 70, w, 1); g.font = 'bold 6px monospace'; g.fillText('COLD HARBOR  42%', 6, 78); });
 const SCREENS = [
   canvasTex(128, 80, (g, w, h) => { g.fillStyle = '#f4f6f8'; g.fillRect(0, 0, w, h); g.fillStyle = '#1f7a46'; g.fillRect(0, 0, w, 10); g.strokeStyle = '#cdd3d9'; for (let x = 0; x < w; x += 18) { g.beginPath(); g.moveTo(x, 10); g.lineTo(x, h); g.stroke(); } for (let y = 10; y < h; y += 7) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); } g.fillStyle = '#9aa3ad'; for (let i = 0; i < 30; i++) g.fillRect((i % 6) * 18 + 3, 12 + (i / 6 | 0) * 7 * 1.5, 10, 3); }),
   canvasTex(128, 80, (g, w, h) => { g.fillStyle = '#1b1e26'; g.fillRect(0, 0, w, h); const cs = ['#ff7b72', '#79c0ff', '#d2a8ff', '#7ee787', '#e3b341']; for (let y = 6; y < h; y += 7) { let x = 6 + (Math.random() * 4 | 0) * 8; g.fillStyle = pick(cs); g.fillRect(x, y, 10 + Math.random() * 60, 3); } }),
   canvasTex(128, 80, (g, w, h) => { g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.fillStyle = '#d24726'; g.fillRect(0, 0, w, 14); g.fillStyle = '#333'; g.font = 'bold 13px sans-serif'; g.fillText('Q4 SYNERGY', 8, 32); const bars = [20, 28, 18, 40, 52]; bars.forEach((b, i) => { g.fillStyle = i === 4 ? '#d24726' : '#999'; g.fillRect(14 + i * 20, 76 - b, 13, b); }); }),
   canvasTex(128, 80, (g, w, h) => { const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#3a7bd5'); gr.addColorStop(1, '#00d2ff'); g.fillStyle = gr; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(255,255,255,.9)'; g.font = 'bold 12px sans-serif'; g.fillText('Meeting in 5 min', 18, 44); }),
+  // blue screen of death
+  canvasTex(128, 80, (g, w, h) => { g.fillStyle = '#0a2fa8'; g.fillRect(0, 0, w, h); g.fillStyle = '#c8cdd8'; g.fillRect(44, 8, 40, 9); g.fillStyle = '#0a2fa8'; g.font = 'bold 8px monospace'; g.fillText('WINDOWS', 47, 15); g.fillStyle = '#fff'; g.font = '7px monospace'; ['A fatal exception', 'TABLE_FLIPPED has', 'occurred at 0028:C0', '', 'Press any key to', 'flip another table'].forEach((l, i) => g.fillText(l, 8, 30 + i * 8)); }),
+  // solitaire
+  canvasTex(128, 80, (g, w, h) => { g.fillStyle = '#0b7a2e'; g.fillRect(0, 0, w, h); for (let i = 0; i < 7; i++) for (let j = 0; j <= i % 4; j++) { g.fillStyle = '#fff'; g.fillRect(6 + i * 17, 26 + j * 8, 14, 20); g.fillStyle = j % 2 ? '#c00' : '#111'; g.fillRect(8 + i * 17, 28 + j * 8, 4, 4); } for (let i = 0; i < 4; i++) { g.strokeStyle = '#9fd3a8'; g.strokeRect(58 + i * 17, 4, 14, 18); } g.fillStyle = '#244bbd'; g.fillRect(6, 4, 14, 18); }),
+  // the helpful paperclip
+  canvasTex(128, 80, (g, w, h) => { g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.fillStyle = '#2b579a'; g.fillRect(0, 0, w, 9); g.fillStyle = '#ccc'; for (let i = 0; i < 6; i++) g.fillRect(8, 14 + i * 6, 60 - (i % 3) * 10, 2); g.fillStyle = '#ffffc8'; g.strokeStyle = '#555'; g.fillRect(50, 36, 72, 30); g.strokeRect(50, 36, 72, 30); g.fillStyle = '#111'; g.font = '6.5px sans-serif'; ["It looks like you're", 'flipping a table.', 'Would you like help?'].forEach((l, i) => g.fillText(l, 54, 45 + i * 8)); g.strokeStyle = '#8a8f99'; g.lineWidth = 2; g.beginPath(); g.ellipse(36, 58, 5, 14, 0, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.ellipse(36, 60, 2.5, 9, 0, 0, Math.PI * 2); g.stroke(); g.fillStyle = '#111'; g.fillRect(33, 52, 2, 2); g.fillRect(38, 52, 2, 2); }),
+  // rolling green hill wallpaper
+  canvasTex(128, 80, (g, w, h) => { const sk = g.createLinearGradient(0, 0, 0, h); sk.addColorStop(0, '#2a6fe0'); sk.addColorStop(1, '#a8d4ff'); g.fillStyle = sk; g.fillRect(0, 0, w, h); g.fillStyle = 'rgba(255,255,255,.9)'; g.beginPath(); g.ellipse(30, 18, 16, 5, 0, 0, 7); g.ellipse(90, 12, 20, 5, 0, 0, 7); g.fill(); g.fillStyle = '#3fa63a'; g.beginPath(); g.moveTo(0, 60); g.quadraticCurveTo(60, 30, 128, 52); g.lineTo(128, 80); g.lineTo(0, 80); g.fill(); }),
+  // mysterious and important numbers
+  MDR_TEX,
 ].map(map => new THREE.MeshBasicMaterial({ map, toneMapped: false }));
+const MDR_SCREEN = SCREENS[SCREENS.length - 1];
+let screenOverride = null;
 const carpetTex = canvasTex(256, 256, (g, w, h) => {
   g.fillStyle = '#fff'; g.fillRect(0, 0, w, h);
   for (let i = 0; i < 9000; i++) { const v = 200 + Math.random() * 55 | 0; g.fillStyle = `rgb(${v},${v},${v})`; g.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
@@ -601,7 +617,11 @@ const M = {
   mugs: [std(0xffffff, { roughness: 0.3 }), std(0x2bb3a3, { roughness: 0.3 }), std(0x2f6fed, { roughness: 0.3 }), std(0xffd166, { roughness: 0.3 })],
   leaf: std(0x3f9b52, { roughness: 0.8, flatShading: true }), pot: std(0xc96b45), chair: std(0x30343c, { roughness: 0.85 }),
   wall: std(0xe9e4da, { roughness: 0.95 }), trim: std(0x9b8e7e), gold: std(0xffc94d, { roughness: 0.25, metalness: 0.9 }),
-  binder: std(0x2a3f7a), partition: std(0x7d8794, { roughness: 1 }), sticky: std(0xffe066, { roughness: 0.9 }), door: std(0xb9bec6, { roughness: 0.4, metalness: 0.4 }), serverWall: std(0x3c414b, { roughness: 0.8 }), breakWall: std(0xf1e6c8, { roughness: 0.9 }),
+  binder: std(0x2a3f7a), chiliPot: std(0x8a8f96, { roughness: 0.35, metalness: 0.6 }), chili: new THREE.MeshStandardMaterial({ roughness: 0.5, transparent: true, map: canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = '#b5652a'; g.beginPath(); for (let a = 0; a < 6.3; a += 0.35) { const r = 92 + Math.sin(a * 5) * 18 + Math.cos(a * 3) * 10; g.lineTo(128 + Math.cos(a) * r, 128 + Math.sin(a) * r); } g.fill();
+    for (let i = 0; i < 70; i++) { const a = Math.random() * 6.3, r = Math.random() * 80; g.fillStyle = i % 3 ? '#6e2a10' : '#d8893b'; g.beginPath(); g.ellipse(128 + Math.cos(a) * r, 128 + Math.sin(a) * r, 7, 4.5, Math.random() * 3, 0, 7); g.fill(); }
+  }) }),
+  whisky: std(0xc9822b, { roughness: 0.05, transparent: true, opacity: 0.75 }), partition: std(0x7d8794, { roughness: 1 }), sticky: std(0xffe066, { roughness: 0.9 }), door: std(0xb9bec6, { roughness: 0.4, metalness: 0.4 }), serverWall: std(0x3c414b, { roughness: 0.8 }), breakWall: std(0xf1e6c8, { roughness: 0.9 }),
   counter: std(0x8a6d52, { roughness: 0.7 }), counterTop: std(0xe9e6df, { roughness: 0.3 }), felt: std(0x5b6f8a, { roughness: 1 }),
   donutBox: std(0xf4a6c0, { roughness: 0.8 }), pizzaBox: std(0xc9a274, { roughness: 0.9 }), rack: std(0x23262d, { roughness: 0.4, metalness: 0.5 }),
   spark: new THREE.MeshBasicMaterial({ color: 0xffe08a, toneMapped: false }),
@@ -620,7 +640,7 @@ function itMonitor() {
   const base = box(0.28, 0.02, 0.18, M.metal); base.position.y = -0.24;
   const neck = box(0.04, 0.24, 0.04, M.metal); neck.position.set(0, -0.12, -0.02);
   const scr = box(0.66, 0.42, 0.035, M.plastic); scr.position.y = 0.08;
-  const face = new THREE.Mesh(geo('pface', () => new THREE.PlaneGeometry(0.61, 0.37)), pick(SCREENS)); face.position.set(0, 0.08, 0.019);
+  const face = new THREE.Mesh(geo('pface', () => new THREE.PlaneGeometry(0.61, 0.37)), screenOverride || pick(SCREENS)); face.position.set(0, 0.08, 0.019);
   return item(0.25, 0.1, base, neck, scr, face);
 }
 function itKeyboard() { return item(0.012, 0.012, box(0.44, 0.024, 0.14, M.plastic)); }
@@ -628,6 +648,14 @@ function itMug() { const c = cyl(0.045, 0.04, 0.11, pick(M.mugs)); const h = box
 function itPapers() { const p = box(0.3, 0.03, 0.22, M.paper); return item(0.015, 0.015, p); }
 function itPlant() { const p = cyl(0.07, 0.055, 0.13, M.pot); p.position.y = -0.04; const l = new THREE.Mesh(geo('leaf', () => new THREE.IcosahedronGeometry(0.12, 0)), M.leaf); l.position.y = 0.1; l.castShadow = true; return item(0.105, 0.08, p, l); }
 function itLaptop() { const b = box(0.34, 0.016, 0.24, M.metal); const lid = box(0.34, 0.23, 0.012, M.metal); lid.position.set(0, 0.11, -0.13); lid.rotation.x = -0.25; const f = new THREE.Mesh(geo('lface', () => new THREE.PlaneGeometry(0.3, 0.19)), pick(SCREENS)); f.position.set(0, 0.11, -0.122); f.rotation.x = -0.25; return item(0.008, 0.06, b, lid, f); }
+// The Dundies: a little gold trophy that shows up on the occasional desk.
+function itDundie() {
+  const base = box(0.1, 0.05, 0.1, M.plastic); base.position.y = -0.08;
+  const body = cyl(0.025, 0.03, 0.11, M.gold, 10); body.position.y = 0.0;
+  const head = new THREE.Mesh(geo('dhead', () => new THREE.SphereGeometry(0.03, 10, 8)), M.gold); head.position.y = 0.08; head.castShadow = true;
+  const arm = box(0.11, 0.018, 0.018, M.gold); arm.position.set(0, 0.035, 0); arm.rotation.z = 0.5;
+  return item(0.105, 0.05, base, body, head, arm);
+}
 function itBinder() { return item(0.14, 0.03, box(0.07, 0.28, 0.24, M.binder)); }
 // Relics: rare pop-culture props. They glow faintly so sharp-eyed players spot them, and pay a big bonus.
 const glow = (color, o = {}) => std(color, { emissive: color, emissiveIntensity: 0.2, roughness: 0.3, ...o });
@@ -685,6 +713,7 @@ const IM = {
   pants: std(0x2f3542, { roughness: 0.9 }), shoe: std(0x15161a), tie: std(0xd4141c), badge: std(0xffffff), lanyard: std(0x2f6fed),
   polo: [std(0x2d4a7a), std(0x7a2d3a), std(0x3d6b4a), std(0xb8902f), std(0x5b4a7a), std(0x6b6f76)],
   suit: std(0x2b2e36, { roughness: 0.6 }), hrTie: std(0x55606e), clip: std(0x8a6a44),
+  flair: [std(0xffd166, { roughness: 0.3 }), std(0x4cc9f0, { roughness: 0.3 }), std(0xf72585, { roughness: 0.3 }), std(0x7ae582, { roughness: 0.3 }), std(0xff8c42, { roughness: 0.3 })],
 };
 let interns = [], elevPos = new THREE.Vector3(), exitPos = new THREE.Vector3();
 function makeIntern(i, role = 'intern') {
@@ -699,6 +728,11 @@ function makeIntern(i, role = 'intern') {
   const strap = box(0.2, 0.02, 0.02, IM.lanyard); strap.position.set(0, 1.27, 0.13); strap.rotation.z = 0.5;
   const badge = box(0.09, 0.12, 0.015, IM.badge); badge.position.set(0.1, 1.0, 0.135);
   if (role !== 'intern') { strap.visible = badge.visible = false; tie.visible = role === 'hr' || i % 3 === 0; }
+  const flair = [];
+  if (role === 'intern') for (let k = 0; k < 5; k++) { // pieces of flair; the bare minimum is fifteen, interns can't afford more
+    const btn = new THREE.Mesh(geo('flair', () => new THREE.CylinderGeometry(0.032, 0.032, 0.012, 12)), IM.flair[(i + k) % IM.flair.length]);
+    btn.rotation.x = Math.PI / 2; btn.position.set(-0.15 + (k % 3) * 0.075 + (k > 2 ? 0.03 : 0), 1.2 - (k > 2 ? 0.1 : 0) - (k % 2) * 0.02, 0.13); flair.push(btn);
+  }
   const armL = limb(0.12, 0.56, 0.13, shirt, 1.3), armR = limb(0.12, 0.56, 0.13, shirt, 1.3);
   armL.position.x = -0.29; armR.position.x = 0.29;
   for (const arm of [armL, armR]) { const hand = box(0.11, 0.11, 0.11, pk(IM.skin)); hand.position.y = -0.6; arm.add(hand); }
@@ -708,7 +742,7 @@ function makeIntern(i, role = 'intern') {
   hair.position.set(0, 1.55, -0.015); hair.rotation.x = -0.25; hair.castShadow = true;
   const eyeMat = IM.shoe, eyeL = box(0.03, 0.04, 0.02, eyeMat), eyeR = eyeL.clone();
   eyeL.position.set(-0.06, 1.55, 0.16); eyeR.position.set(0.06, 1.55, 0.16);
-  const body = new THREE.Group(); body.add(torso, tie, strap, badge, armL, armR, head, hair, eyeL, eyeR);
+  const body = new THREE.Group(); body.add(torso, tie, strap, badge, armL, armR, head, hair, eyeL, eyeR, ...flair);
   g.add(legL, legR, body);
   g.scale.setScalar(0.95);
   return { g, body, legL, legR, armL, armR, name: INTERN_NAMES[i % INTERN_NAMES.length], ang: ((i % 5) - 2) * 0.55, spot: new THREE.Vector3(), state: 'walk', target: null, phase: Math.random() * 6, swing: Math.random() * 0.4, struck: false };
@@ -924,8 +958,71 @@ const POSTERS = [
   ['LEADERSHIP', 'Someone has to point at things.', (g, x, y, w, h) => { sunset(g, x, y, w, h, '#f6b26b', '#fbe3c4'); g.strokeStyle = '#2b2b2b'; g.lineWidth = 4; const bird = (bx, by, s) => { g.beginPath(); g.moveTo(bx - s, by - s * 0.5); g.lineTo(bx, by); g.lineTo(bx + s, by - s * 0.5); g.stroke(); }; bird(x + w * 0.2, y + h * 0.5, 16); for (let i = 1; i < 5; i++) for (const sgn of [-1, 1]) bird(x + w * (0.2 + i * 0.15), y + h * (0.5 + sgn * i * 0.09), 10); }],
   ['PRODUCTIVITY', 'This poster took three meetings to approve.', (g, x, y, w, h) => { g.fillStyle = '#20242e'; g.fillRect(x, y, w, h); const cx = x + w / 2, cy = y + h / 2, r = Math.min(w, h) * 0.36; g.fillStyle = '#f4f1ea'; g.beginPath(); g.arc(cx, cy, r, 0, Math.PI * 2); g.fill(); g.strokeStyle = '#20242e'; g.lineWidth = 5; g.lineCap = 'round'; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx, cy - r * 0.8); g.moveTo(cx, cy); g.lineTo(cx + r * 0.5, cy + r * 0.1); g.stroke(); for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; g.fillStyle = '#20242e'; g.fillRect(cx + Math.cos(a) * r * 0.85 - 2, cy + Math.sin(a) * r * 0.85 - 2, 4, 4); } }],
   ['INNOVATION', 'We tried turning it off and on again.', (g, x, y, w, h) => { g.fillStyle = '#121620'; g.fillRect(x, y, w, h); const cx = x + w / 2, cy = y + h * 0.44; const gl = g.createRadialGradient(cx, cy, 4, cx, cy, w * 0.45); gl.addColorStop(0, 'rgba(255,220,120,.9)'); gl.addColorStop(1, 'rgba(255,220,120,0)'); g.fillStyle = gl; g.fillRect(x, y, w, h); g.fillStyle = '#ffe9a8'; g.beginPath(); g.arc(cx, cy, w * 0.18, 0, Math.PI * 2); g.fill(); g.fillStyle = '#8a8f99'; g.fillRect(cx - w * 0.08, cy + w * 0.15, w * 0.16, h * 0.14); }],
+  ['FLAIR', 'Fifteen pieces is the bare minimum. Do you want to do the bare minimum?', (g, x, y, w, h) => { g.fillStyle = '#7a1414'; g.fillRect(x, y, w, h); const cs = ['#ffd166', '#4cc9f0', '#f72585', '#7ae582', '#fff', '#ff8c42']; for (let i = 0; i < 15; i++) { const cx = x + 26 + (i % 5) * (w - 52) / 4, cy = y + 30 + Math.floor(i / 5) * (h - 60) / 2; g.fillStyle = cs[i % 6]; g.beginPath(); g.arc(cx, cy, 17, 0, 7); g.fill(); g.fillStyle = 'rgba(0,0,0,.25)'; g.beginPath(); g.arc(cx, cy, 8, 0, 7); g.fill(); } }],
+  ['PRETZEL DAY', 'The best day of the year. Free pretzels. Free will.', (g, x, y, w, h) => { sunset(g, x, y, w, h, '#f6c26b', '#fbe7c0'); g.strokeStyle = '#8a4b1c'; g.lineWidth = 14; g.lineCap = 'round'; const cx = x + w / 2, cy = y + h / 2; g.beginPath(); g.moveTo(cx - 50, cy + 40); g.bezierCurveTo(cx - 90, cy - 50, cx + 10, cy - 60, cx + 30, cy + 10); g.moveTo(cx + 50, cy + 40); g.bezierCurveTo(cx + 90, cy - 50, cx - 10, cy - 60, cx - 30, cy + 10); g.stroke(); g.fillStyle = '#fff'; for (let i = 0; i < 9; i++) g.fillRect(cx - 50 + i * 12, cy - 20 + (i % 3) * 14, 3, 3); }],
+  ['BEARS. BEETS.', 'Battlestar Galactica.', (g, x, y, w, h) => { sunset(g, x, y, w, h, '#2e3b1f', '#7a9a4a'); const cx = x + w / 2, cy = y + h * 0.58; g.fillStyle = '#8b1e3f'; g.beginPath(); g.ellipse(cx, cy, 42, 48, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(cx - 10, cy + 40); g.lineTo(cx, cy + 80); g.lineTo(cx + 10, cy + 40); g.fill(); g.fillStyle = '#3f8a3a'; for (const a of [-0.5, 0, 0.5]) { g.save(); g.translate(cx, cy - 44); g.rotate(a); g.beginPath(); g.ellipse(0, -28, 10, 28, 0, 0, 7); g.fill(); g.restore(); } }],
+  ['EMERGENCY', 'New number: 0118 999 881 999 119 725 3', (g, x, y, w, h) => { g.fillStyle = '#c8241c'; g.fillRect(x, y, w, h); const cx = x + w / 2, cy = y + h * 0.55; g.fillStyle = '#ffb02e'; g.beginPath(); g.moveTo(cx, cy - 70); g.bezierCurveTo(cx + 60, cy - 10, cx + 40, cy + 50, cx, cy + 50); g.bezierCurveTo(cx - 40, cy + 50, cx - 60, cy - 10, cx, cy - 70); g.fill(); g.fillStyle = '#fff1a8'; g.beginPath(); g.moveTo(cx, cy - 20); g.bezierCurveTo(cx + 26, cy + 10, cx + 18, cy + 46, cx, cy + 46); g.bezierCurveTo(cx - 18, cy + 46, cx - 26, cy + 10, cx, cy - 20); g.fill(); }],
+  ['MYSTERIOUS', 'The work is mysterious and important.', (g, x, y, w, h) => { g.fillStyle = '#071a2b'; g.fillRect(x, y, w, h); g.fillStyle = '#9ff4ff'; g.font = '18px monospace'; for (let r = 0; r < 8; r++) for (let c = 0; c < 9; c++) g.fillText(String((r * 3 + c * 7) % 10), x + 12 + c * (w - 24) / 9, y + 26 + r * (h - 30) / 8); }],
+  ['MONDAYS', 'Looks like somebody has a case of them.', (g, x, y, w, h) => { sunset(g, x, y, w, h, '#5b6b7e', '#aab6c4'); const cx = x + w / 2, cy = y + h * 0.58; g.fillStyle = '#fff'; g.fillRect(cx - 40, cy - 40, 80, 90); g.strokeStyle = '#fff'; g.lineWidth = 12; g.beginPath(); g.arc(cx + 44, cy + 5, 22, -1.2, 1.2); g.stroke(); g.fillStyle = '#5a3a22'; g.fillRect(cx - 34, cy - 34, 68, 10); g.strokeStyle = 'rgba(255,255,255,.7)'; g.lineWidth = 4; for (const dx of [-14, 6]) { g.beginPath(); g.moveTo(cx + dx, cy - 50); g.bezierCurveTo(cx + dx - 10, cy - 66, cx + dx + 10, cy - 78, cx + dx, cy - 94); g.stroke(); } }],
   ['TEAMWORK', 'Because nobody can be blamed alone.', (g, x, y, w, h) => { sunset(g, x, y, w, h, '#3a6ea5', '#a7d0f0'); g.fillStyle = '#1d4f7a'; g.fillRect(x, y + h * 0.7, w, h * 0.3); g.fillStyle = '#1a1a1a'; g.fillRect(x + w * 0.1, y + h * 0.66, w * 0.8, 6); for (let i = 0; i < 5; i++) { const px = x + w * (0.18 + i * 0.16); g.beginPath(); g.arc(px, y + h * 0.5, 7, 0, Math.PI * 2); g.fill(); g.fillRect(px - 4, y + h * 0.53, 8, h * 0.13); } }],
 ];
+// ---------------------------------------------------------------- pop-culture set dressing
+const bannerCache = {};
+function bannerMat(key, bg, fg, text, font = 'bold 34px "Archivo Black", Inter, sans-serif') {
+  return bannerCache[key] || (bannerCache[key] = new THREE.MeshBasicMaterial({ map: labelTex(1024, 84, bg, fg, [text], font) }));
+}
+function roomBanner(f, theme, boss, ri, rng) {
+  if (f === 5 && ri === 0) return bannerMat('initech', '#f4f1ea', '#1f3c88', 'INITECH  ·  IS THIS GOOD FOR THE COMPANY?');
+  if (f === 23) return bannerMat('lumon', '#e9f7f5', '#0e5c6b', 'THE WORK IS MYSTERIOUS AND IMPORTANT');
+  if (f === 3 || theme === 'server') return bannerMat('itcrowd', '#111', '#ff5a36', 'HAVE YOU TRIED TURNING IT OFF AND ON AGAIN?');
+  if (theme === 'breakroom' && ri === 0) return bannerMat('pretzel', '#ffd166', '#5a2d0c', 'PRETZEL DAY  ·  FREE PRETZELS  ·  FREE WILL');
+  if (boss) return bannerMat('dundies', '#2b1a12', '#ffc94d', 'THE DUNDIES  ·  BEST BOSS CATEGORY');
+  if (rng() < 0.12) return bannerMat('saturday', '#f4f1ea', '#333', "YEAH… WE'RE GONNA NEED YOU TO COME IN ON SATURDAY");
+  if (rng() < 0.1) return bannerMat('hotdog', '#ffffff', '#d4141c', 'NOT HOTDOG  ·  NOT HOTDOG  ·  NOT HOTDOG');
+  return null;
+}
+const boxMat = (() => {
+  const side = std(0xffffff, { map: labelTex(256, 160, '#e3d3b4', '#2d2a26', ['DUNDER MIFFLIN', 'PAPER COMPANY'], 'bold 26px Inter, sans-serif'), roughness: 0.9 });
+  const plain = std(0xd9c7a5, { roughness: 0.9 });
+  return [plain, plain, plain, plain, side, plain];
+})();
+function paperBoxes(rg, x, z, n, rot) {
+  for (let i = 0; i < n; i++) {
+    const b = new THREE.Mesh(geo('pbox', () => new THREE.BoxGeometry(0.62, 0.38, 0.46)), boxMat);
+    b.castShadow = b.receiveShadow = true;
+    b.position.set(x + (i === 2 ? 0.06 : 0), 0.19 + (i === 2 ? 0.38 : 0), z + (i === 1 ? 0.5 : 0)); b.rotation.y = rot + (i - 1) * 0.08;
+    rg.add(b);
+  }
+}
+const jumpMatMat = new THREE.MeshStandardMaterial({ roughness: 1, map: canvasTex(320, 220, (g, w, h) => {
+  g.fillStyle = '#d6d6d6'; g.fillRect(0, 0, w, h); g.fillStyle = '#1f3c88'; g.fillRect(8, 8, w - 16, 36);
+  g.fillStyle = '#fff'; g.font = 'bold 22px Inter, sans-serif'; g.textAlign = 'center'; g.fillText('JUMP TO CONCLUSIONS', w / 2, 34);
+  const labels = ['YES', 'NO', 'MAYBE', 'YES', 'MAYBE', 'NO', 'NO', 'YES', 'MAYBE'];
+  for (let i = 0; i < 9; i++) { const cx = 20 + (i % 3) * 100, cy = 56 + Math.floor(i / 3) * 52; g.fillStyle = i === 4 ? '#c8241c' : '#f4f1ea'; g.fillRect(cx, cy, 80, 44); g.fillStyle = i === 4 ? '#fff' : '#333'; g.font = 'bold 15px Inter, sans-serif'; g.fillText(labels[i], cx + 40, cy + 28); }
+}) });
+function setDressing(R, ri, { f, theme, boss, rng, first, last, own }) {
+  const { W, D, rg } = R;
+  // stacks of paper boxes from a certain Scranton paper company
+  if (!boss && theme !== 'server' && rng() < 0.55) paperBoxes(rg, W / 2 - 0.6, -D / 2 + 1.7, 2 + (rng() < 0.5 ? 1 : 0), rng() * 0.4);
+  // the Jump to Conclusions mat
+  if ((f === 5 && first) || (theme === 'office' && rng() < 0.08)) {
+    const m = new THREE.Mesh(geo('jmat', () => new THREE.PlaneGeometry(1.6, 1.1)), jumpMatMat); m.rotation.x = -Math.PI / 2; m.position.set(-W / 2 + 1.7, 0.012, D / 2 - 1.0); m.receiveShadow = true; rg.add(m);
+  }
+  // Kevin's famous chili, mid-disaster
+  if (theme === 'breakroom' && first) {
+    const pot = cyl(0.26, 0.22, 0.3, M.chiliPot, 18); pot.position.set(-W / 2 + 1.4, 0.15, D / 2 - 1.6); pot.rotation.z = 1.35; rg.add(pot);
+    const spill = new THREE.Mesh(geo('spill', () => new THREE.PlaneGeometry(1.6, 1.6)), M.chili); spill.rotation.x = -Math.PI / 2; spill.scale.set(1.3, 0.8, 1); spill.position.set(-W / 2 + 2.0, 0.013, D / 2 - 1.5); rg.add(spill);
+  }
+  // boardroom: a whisky cart, because of course
+  if (boss) {
+    const cart = box(0.9, 0.7, 0.5, M.darkwood); cart.position.set(W / 2 - 2.2, 0.35, -D / 2 + 0.5);
+    const dec = cyl(0.08, 0.1, 0.28, M.whisky, 12); dec.position.set(-0.2, 0.49, 0); cart.add(dec);
+    for (const gx of [0.08, 0.24]) { const gl = cyl(0.05, 0.045, 0.09, M.whisky, 10); gl.position.set(gx, 0.4, 0.05); cart.add(gl); }
+    rg.add(cart);
+  }
+  // Macrodata Refinement: everyone's desk is a monitor of mysterious numbers, and the carpet is that green
+  if (f === 23) R.carpet.color.set(0x5f8f6e);
+}
 const posterMats = [];
 function posterMat(i) {
   if (posterMats[i]) return posterMats[i];
@@ -963,7 +1060,7 @@ function poster(i, x, y, z, facing, frameMat, parent = floorGroup) {
 
 // Floor themes keep the infinite office from getting samey. Deterministic per floor.
 function floorTheme(f) {
-  if (f < 6 || isBoss(f)) return 'office';
+  if (f < 6 || isBoss(f) || [7, 11, 17, 23, 31, 42].includes(f)) return 'office'; // named pop-culture floors keep the office look
   const r = mulberry32(f * 977 + 5)();
   return r < 0.55 ? 'office' : r < 0.7 ? 'openplan' : r < 0.85 ? 'breakroom' : 'server';
 }
@@ -1053,6 +1150,7 @@ function buildFloor(f, daily = 0) {
   floorGroup = new THREE.Group(); scene.add(floorGroup);
   coworkers = []; hr = null;
   const rng = mulberry32(daily ? daily * 7919 + 1 : f * 131 + 7), boss = !daily && isBoss(f), theme = daily ? DAILY_THEMES[daily % 4] : floorTheme(f);
+  screenOverride = f === 23 && !daily ? MDR_SCREEN : null;
   const n = daily ? { office: 12, openplan: 6, breakroom: 9, server: 12 }[theme] : theme === 'openplan' ? Math.ceil(tableCount(f) / 2) : theme === 'breakroom' ? Math.ceil(tableCount(f) * 0.7) : tableCount(f);
   const [sx, sz] = theme === 'openplan' ? [5.4, 3.7] : theme === 'breakroom' ? [2.9, 2.9] : theme === 'server' ? [1.5, 3.2] : [3.4, 3.1];
   const tall = innerWidth / innerHeight < 0.9;
@@ -1162,7 +1260,10 @@ function buildFloor(f, daily = 0) {
         const gp = box(0.86, 0.015, 0.01, M.leg); gp.position.set(0, 0, 0.222); cab.add(gp); rg.add(cab);
       }
     });
-    if (slots.length >= 2) {
+    const banner = roomBanner(f, theme, boss, ri, rng);
+    if (banner && slots.length >= 2) { // a banner over the windows replaces the clock
+      const bm = new THREE.Mesh(own(new THREE.PlaneGeometry(Math.min(W - 2, 5.2), 0.42)), banner); bm.position.set(0, 2.92, -D / 2 + 0.03); walls.add(bm);
+    } else if (slots.length >= 2) {
       const clock = new THREE.Mesh(geo('clock', () => new THREE.CylinderGeometry(0.22, 0.22, 0.05, 32)), [M.plastic, clockMat, M.plastic]);
       clock.rotation.x = Math.PI / 2; clock.position.set((slots[0] + slots[1]) / 2, 2.9, -D / 2 + 0.03); walls.add(clock);
     }
@@ -1185,6 +1286,7 @@ function buildFloor(f, daily = 0) {
       poster(deck.pop(), -W / 2 + 0.03, 1.65, pz, 'x', frameMat, walls);
     }
     makePrinter(R.cx + W / 2 - 0.7, R.cz - D / 2 + 0.65);
+    setDressing(R, ri, { f, theme, boss, rng, first, last, own });
     const plant = (x, z) => { const pt = cyl(0.28, 0.22, 0.6, M.pot); pt.position.set(x, 0.3, z); const l = new THREE.Mesh(geo('bigleaf', () => new THREE.IcosahedronGeometry(0.55, 0)), M.leaf); l.position.set(x, 1.05, z); l.castShadow = true; rg.add(pt, l); };
     if (first) {
       const cooler = box(0.4, 1.0, 0.4, M.cooler); cooler.position.set(-W / 2 + 0.45, 0.5, ez + 1.6);
@@ -1406,6 +1508,7 @@ function makeTable(x, z, kind, hp, reward, yaw, relic) {
     if (Math.random() < extra) add(itMug(), side * rand(0.6, 0.82), rand(0, 0.3), rand(0, 6));
     if (Math.random() < extra) add(itPapers(), -side * rand(0.55, 0.75), rand(0, 0.3), rand(-0.4, 0.4));
     if (Math.random() < extra * 0.5) add(Math.random() < 0.5 ? itPlant() : itBinder(), side * 0.8, -0.3, rand(-0.3, 0.3));
+    if (Math.random() < 0.07) add(itDundie(), -side * 0.78, -0.3, rand(-0.5, 0.5));
     if (relic) add(RELICS[relic].make(), -side * rand(0.45, 0.7), -0.3, rand(-0.5, 0.5));
     if (standing) return t; // nobody sits at a standing desk (nobody stands at one either)
     const ch = makeChair(); ch.position.set(x + rand(-0.2, 0.2), 0.45, z + d / 2 + 0.4); ch.rotation.y = rand(-0.4, 0.4); floorGroup.add(ch); t.chairs.push(ch);
