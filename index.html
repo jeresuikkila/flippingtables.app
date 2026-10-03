@@ -452,7 +452,7 @@ function audio() {
 }
 // iOS: web audio is silenced by the ringer switch unless the page's audio session is "playback".
 // Newer Safari exposes navigator.audioSession; older ones switch over once an <audio> element plays.
-let unlocked = false, silentEl = null;
+let audioUnlocked = false, silentEl = null;
 function unlockAudio() {
   try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
   const ctx = audio();
@@ -462,8 +462,8 @@ function unlockAudio() {
     silentEl.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQQAAAAAAAAA';
   }
   if (silentEl.paused && !S.muted) silentEl.play().catch(() => {});
-  if (!unlocked) { // play one silent sample inside the gesture: required by older iOS to start the context
-    try { const b = ctx.createBuffer(1, 1, 22050), src = ctx.createBufferSource(); src.buffer = b; src.connect(ctx.destination); src.start(0); unlocked = true; } catch (e) {}
+  if (!audioUnlocked) { // play one silent sample inside the gesture: required by older iOS to start the context
+    try { const b = ctx.createBuffer(1, 1, 22050), src = ctx.createBufferSource(); src.buffer = b; src.connect(ctx.destination); src.start(0); audioUnlocked = true; } catch (e) {}
   }
 }
 for (const ev of ['touchend', 'pointerup', 'click', 'keydown']) addEventListener(ev, () => { if (!AC || AC.state !== 'running' || (silentEl && silentEl.paused && !S.muted)) unlockAudio(); }, true);
