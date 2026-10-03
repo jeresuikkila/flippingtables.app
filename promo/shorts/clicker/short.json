@@ -1,0 +1,5 @@
+{
+  "type": "custom",
+  "note": "Hand-authored composition (index.html). Clip trims (mstart) are tuned to these recordings: re-check them after re-recording.",
+  "scenarios": ["fresh", "midgame", "elevator"]
+}

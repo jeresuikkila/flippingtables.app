@@ -1,0 +1,14 @@
+{
+  "type": "elevator-tour",
+  "hook": { "kicker": "Flipping Tables · floor tour", "lines": ["Every floor", "is a new", "office."] },
+  "beats": [
+    { "scenario": "scranton", "floor": "7", "dept": "Scranton Branch", "dur": 3.9, "caps": [["Corner desks take three hits. Worth it.", 0.55, 3.25]] },
+    { "scenario": "server", "floor": "12", "dept": "Server Room", "dur": 3.9, "caps": [["IT asked nicely. Flip the servers anyway.", 0.55, 3.25]] },
+    { "scenario": "breakroom", "floor": "15", "dept": "The Break Room", "dur": 3.9, "caps": [["Somebody microwaved fish. Again.", 0.55, 3.25]] },
+    { "scenario": "macrodata", "floor": "23", "dept": "Macrodata Refinement", "dur": 4.2, "caps": [["Cubicles. Very heavy. Very satisfying.", 0.55, 3.55]] },
+    { "scenario": "openplan", "floor": "33", "dept": "Open-Plan Zone", "dur": 3.9, "caps": [["Open plan. Zero collaboration.", 0.55, 3.25]] },
+    { "scenario": "boss", "floor": "29", "dept": "Almost the top", "dur": 7.0, "caps": [["Clear the floor. Take the elevator.", 0.55, 2.3], ["Every 10th floor: the boardroom.", 3.05, 6.4]] }
+  ],
+  "end": { "floor": "∞", "dept": "Your office" },
+  "cta": { "sub": "an <b>infinite clicker</b> for your office", "fine": "free · in your browser · infinite floors" }
+}

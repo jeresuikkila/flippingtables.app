@@ -1,0 +1,11 @@
+node_modules/
+# outputs: regenerate with `npm run make -- <short>`
+renders/
+snapshots/
+shorts/*/assets/clips/
+shorts/*/assets/sfx/
+shorts/*/assets/fonts/
+# elevator tours generate index.html from templates/elevator-tour.html + short.json;
+# hand-authored shorts opt back in here
+shorts/*/index.html
+!shorts/clicker/index.html
