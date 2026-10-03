@@ -410,7 +410,7 @@ function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = 
 
 // ---------------------------------------------------------------- state
 const SAVE_KEY = 'flippingtables-v1';
-const DEF = { rage: 0, lifetime: 0, flipped: 0, floor: 1, best: 1, bestEver: 1, sev: 0, hires: 0, found: {}, daily: {}, up: { arms: 0, interns: 0, spite: 0, shock: 0, email: 0, chair: 0, retreat: 0 }, muted: false, motion: null, t: 0 };
+const DEF = { rage: 0, lifetime: 0, flipped: 0, floor: 1, best: 1, bestEver: 1, sev: 0, hires: 0, found: {}, eggs: {}, daily: {}, up: { arms: 0, interns: 0, spite: 0, shock: 0, email: 0, chair: 0, retreat: 0 }, muted: false, motion: null, t: 0 };
 const S = load();
 function load() {
   try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s) return { ...structuredClone(DEF), ...s, up: { ...DEF.up, ...s.up } }; } catch (e) {}
@@ -552,6 +552,10 @@ const sfx = {
   },
   buy() { tone('square', 660, 660, 0.06, 0.08); tone('square', 990, 990, 0.09, 0.08, 0.06); },
   doors() { noise(0.6, 0.15, 'lowpass', 400); },
+  tick() { tone('triangle', 1700, 1100, 0.05, 0.07); }, // a poster knocked on its nail
+  bark() { tone('sawtooth', 380, 210, 0.13, 0.12); noise(0.08, 0.12, 'bandpass', 900); tone('sawtooth', 430, 230, 0.11, 0.1, 0.17); noise(0.07, 0.1, 'bandpass', 950, 0.17); },
+  meow() { tone('sine', 620, 820, 0.12, 0.08); tone('sine', 820, 540, 0.25, 0.08, 0.12); },
+  clink() { tone('sine', 2640, 2600, 0.25, 0.06); tone('sine', 3960, 3900, 0.18, 0.03, 0.01); tone('sine', 2640, 2600, 0.22, 0.05, 0.14); },
 };
 
 // ---------------------------------------------------------------- three setup
@@ -618,7 +622,7 @@ const M = {
   leaf: std(0x3f9b52, { roughness: 0.8, flatShading: true }), pot: std(0xc96b45), chair: std(0x30343c, { roughness: 0.85 }),
   wall: std(0xe9e4da, { roughness: 0.95 }), trim: std(0x9b8e7e), gold: std(0xffc94d, { roughness: 0.25, metalness: 0.9 }),
   binder: std(0x2a3f7a), cyberWall: std(0x1a1029, { roughness: 0.5, metalness: 0.3 }), homeWall: std(0xb9c9b0, { roughness: 0.95 }), cafeWall: std(0x1f3b33, { roughness: 0.9 }), aiWall: std(0x0d0f14, { roughness: 0.7 }),
-  sofa: std(0x6b7fa8, { roughness: 1 }), rug: std(0xd88b6b, { roughness: 1 }), cat: std(0xe08a3c, { roughness: 1 }), book: [std(0xc0392b), std(0x2e86de), std(0xf1c40f), std(0x27ae60), std(0x8e44ad)],
+  sofa: std(0x6b7fa8, { roughness: 1 }), rug: std(0xd88b6b, { roughness: 1 }), cat: std(0xe08a3c, { roughness: 1 }), dog: std(0xd9a04a, { roughness: 1 }), dogEar: std(0xb3782f, { roughness: 1 }), dogNose: std(0x1a1a1a, { roughness: 0.4 }), tongue: std(0xe8728f, { roughness: 0.8 }), book: [std(0xc0392b), std(0x2e86de), std(0xf1c40f), std(0x27ae60), std(0x8e44ad)],
   cup: std(0xffffff, { roughness: 0.5 }), sleeve: std(0x8a5a35, { roughness: 1 }), latte: std(0xc89f74, { roughness: 0.6 }), pastry: std(0xd99a4e, { roughness: 0.8 }),
   espresso: std(0xb8bcc2, { roughness: 0.25, metalness: 0.8 }), glass: std(0xd8f0ff, { roughness: 0.05, transparent: true, opacity: 0.35 }), gpu: std(0x111318, { roughness: 0.35, metalness: 0.6 }), pipe: std(0x22d3ee, { roughness: 0.3, metalness: 0.4, emissive: 0x0e7490, emissiveIntensity: 0.4 }),
   board: std(0xe8e3d6, { roughness: 0.8 }), chiliPot: std(0x8a8f96, { roughness: 0.35, metalness: 0.6 }), chili: new THREE.MeshStandardMaterial({ roughness: 0.5, transparent: true, map: canvasTex(256, 256, (g, w, h) => {
@@ -846,6 +850,7 @@ function seatCoworker(t, ch, i) {
   floorGroup.add(cw.g); coworkers.push(cw);
 }
 function startle(t, flipped) {
+  dogStartle(t, flipped);
   for (const cw of coworkers) {
     if (cw.state === 'flee' || cw.state === 'gone') continue;
     const near = Math.hypot(cw.g.position.x - t.base.x, cw.g.position.z - t.base.z) < 3;
@@ -1017,6 +1022,12 @@ function homeDecor(R) {
   const cat = new THREE.Group(), cb = box(0.34, 0.16, 0.18, M.cat); const ch = box(0.16, 0.14, 0.15, M.cat); ch.position.set(0.2, 0.08, 0); const e1 = box(0.04, 0.06, 0.03, M.cat); e1.position.set(0.22, 0.17, -0.05); const e2 = e1.clone(); e2.position.z = 0.05;
   cat.add(cb, ch, e1, e2); cat.position.set(0.6, 0.5, 0.1); cat.rotation.y = 0.4;
   sofa.add(seat, back, a1, a2, cat); sofa.position.set(W / 2 - 1.6, 0, D / 2 - 0.9); sofa.rotation.y = Math.PI; rg.add(sofa);
+  const catEgg = addEgg(cat, R, 'cat', e => { e.t = 0; sfx.meow(); spawnText(worldPos(cat).setY(1.2), pick(['Mrrp.', 'Meow?', '*judges you*', '...']), 'yelp'); });
+  catEgg.update = (e, dt) => { if (e.t == null) return; e.t += dt; ch.rotation.y = Math.sin(Math.min(1, e.t / 1.2) * Math.PI) * 0.9; if (e.t > 1.2) e.t = null; };
+  // the dog's bed, and the dog
+  const bed = cyl(0.55, 0.6, 0.12, M.sofa, 20); bed.position.set(-W / 2 + 1.5, 0.06, D / 2 - 1.5);
+  const cushion = cyl(0.42, 0.42, 0.05, M.rug, 20); cushion.position.set(-W / 2 + 1.5, 0.13, D / 2 - 1.5); rg.add(bed, cushion);
+  spawnDog(R, -W / 2 + 1.5, D / 2 - 1.5, 0.9, 0.12);
   const tvStand = box(1.6, 0.45, 0.4, M.darkwood); tvStand.position.set(W / 2 - 1.6, 0.225, D / 2 - 3.6);
   const tv = box(1.4, 0.8, 0.06, M.plastic); tv.position.set(0, 0.65, 0); const scr = new THREE.Mesh(geo('tvscr', () => new THREE.PlaneGeometry(1.32, 0.72)), SCREENS[7] || SCREENS[0]); scr.position.set(0, 0.65, 0.031); tvStand.add(tv, scr); rg.add(tvStand);
   // bookshelf
@@ -1066,10 +1077,12 @@ function setDressing(R, ri, { f, theme, boss, rng, first, last, own }) {
   // the Jump to Conclusions mat
   if ((f === 5 && first) || (theme === 'office' && rng() < 0.08)) {
     const m = new THREE.Mesh(geo('jmat', () => new THREE.PlaneGeometry(1.6, 1.1)), jumpMatMat); m.rotation.x = -Math.PI / 2; m.position.set(-W / 2 + 1.7, 0.012, D / 2 - 1.0); m.receiveShadow = true; rg.add(m);
+    addEgg(m, R, 'jumpmat', () => { sfx.buy(); spawnText(worldPos(m).setY(0.7), pick(['YES', 'NO', 'MAYBE']), 'relic'); });
   }
   // Kevin's famous chili, mid-disaster
   if (theme === 'breakroom' && first) {
     const pot = cyl(0.26, 0.22, 0.3, M.chiliPot, 18); pot.position.set(-W / 2 + 1.4, 0.15, D / 2 - 1.6); pot.rotation.z = 1.35; rg.add(pot);
+    addEgg(pot, R, 'chili', () => { sfx.thump(false); spawnText(worldPos(pot).setY(1.1), pick(['KEVIN!', 'Not the chili!', '*squelch*']), 'yelp'); });
     const spill = new THREE.Mesh(geo('spill', () => new THREE.PlaneGeometry(1.6, 1.6)), M.chili); spill.rotation.x = -Math.PI / 2; spill.scale.set(1.3, 0.8, 1); spill.position.set(-W / 2 + 2.0, 0.013, D / 2 - 1.5); rg.add(spill);
   }
   // boardroom: a whisky cart, because of course
@@ -1078,6 +1091,7 @@ function setDressing(R, ri, { f, theme, boss, rng, first, last, own }) {
     const dec = cyl(0.08, 0.1, 0.28, M.whisky, 12); dec.position.set(-0.2, 0.49, 0); cart.add(dec);
     for (const gx of [0.08, 0.24]) { const gl = cyl(0.05, 0.045, 0.09, M.whisky, 10); gl.position.set(gx, 0.4, 0.05); cart.add(gl); }
     rg.add(cart);
+    addEgg(cart, R, 'whisky', () => { sfx.clink(); spawnText(worldPos(cart).setY(1.3), pick(["It's 5 o'clock somewhere.", '*clink*', 'Single malt synergy.']), 'yelp'); });
   }
   // Macrodata Refinement: everyone's desk is a monitor of mysterious numbers, and the carpet is that green
   if (f === 23) R.carpet.color.set(0x5f8f6e);
@@ -1085,7 +1099,7 @@ function setDressing(R, ri, { f, theme, boss, rng, first, last, own }) {
 const posterMats = [];
 function posterMat(i) {
   if (posterMats[i]) return posterMats[i];
-  const [title, caption, draw] = POSTERS[i];
+  const [title, caption, draw] = i < POSTERS.length ? POSTERS[i] : SPECIAL_POSTERS[i - POSTERS.length].slice(1);
   const tex = canvasTex(300, 400, (g, w, h) => {
     g.fillStyle = '#0d0d0f'; g.fillRect(0, 0, w, h);
     draw(g, 22, 22, w - 44, h * 0.58);
@@ -1109,12 +1123,162 @@ const clockMat = std(0xffffff, { roughness: 0.4, map: canvasTex(128, 128, (g, w,
   g.strokeStyle = '#d32'; g.lineWidth = 2; g.beginPath(); g.moveTo(64, 64); g.lineTo(64, 18); g.stroke();
 }) });
 // A framed poster; `facing` is the wall normal ('z' for the back wall, 'x' for the left wall).
-function poster(i, x, y, z, facing, frameMat, parent = floorGroup) {
-  const g = new THREE.Group();
+// Hung from a nail (the pivot) so it can swing when tapped; `key` marks a gold-framed collectible.
+function poster(i, x, y, z, facing, frameMat, parent = floorGroup, R = null, key = null) {
+  const g = new THREE.Group(), pivot = new THREE.Group();
   const frame = box(1.1, 1.46, 0.05, frameMat); frame.castShadow = false;
   const art = new THREE.Mesh(geo('poster', () => new THREE.PlaneGeometry(1.02, 1.36)), posterMat(i)); art.position.z = 0.027;
-  g.add(frame, art); g.position.set(x, y, z); if (facing === 'x') g.rotation.y = Math.PI / 2;
+  frame.position.y = art.position.y = -0.7; pivot.position.y = 0.7;
+  pivot.add(frame, art); g.add(pivot); g.position.set(x, y, z); if (facing === 'x') g.rotation.y = Math.PI / 2;
   parent.add(g);
+  if (R) posterEgg(g, pivot, R, key);
+}
+
+// ---------------------------------------------------------------- easter eggs
+// Tappable props. Every tap plays the gag; the first tap of each named egg counts toward the collection in the menu.
+// Rare gold-framed posters (one in ~5 floors, unfound ones first) fall off the wall when tapped.
+const SPECIAL_POSTERS = [
+  ['believe', 'I WANT TO BELIEVE', 'The truth is out there. So is your 2 PM.', (g, x, y, w, h) => { const gr = g.createLinearGradient(0, y, 0, y + h); gr.addColorStop(0, '#0b1430'); gr.addColorStop(1, '#1d3355'); g.fillStyle = gr; g.fillRect(x, y, w, h); g.fillStyle = '#fff'; for (let i = 0; i < 16; i++) g.fillRect(x + (i * 53) % w, y + (i * 31) % (h * 0.3), 2, 2); g.fillStyle = 'rgba(255,240,170,.35)'; g.beginPath(); g.moveTo(x + w * 0.44, y + h * 0.36); g.lineTo(x + w * 0.56, y + h * 0.36); g.lineTo(x + w * 0.74, y + h); g.lineTo(x + w * 0.26, y + h); g.fill(); g.fillStyle = '#b9c2cf'; g.beginPath(); g.ellipse(x + w * 0.5, y + h * 0.32, w * 0.26, h * 0.07, 0, 0, 7); g.fill(); g.fillStyle = '#8fd3ff'; g.beginPath(); g.ellipse(x + w * 0.5, y + h * 0.27, w * 0.1, h * 0.07, 0, Math.PI, 0); g.fill(); g.fillStyle = '#0a0f1c'; for (let i = 0; i < 7; i++) { const tx = x + i * w / 6; g.beginPath(); g.moveTo(tx - 18, y + h); g.lineTo(tx, y + h * 0.72 - (i % 2) * 14); g.lineTo(tx + 18, y + h); g.fill(); } }],
+  ['fine', 'THIS IS FINE', 'Everything is fine. The desks are on fire.', (g, x, y, w, h) => { g.fillStyle = '#f4c26b'; g.fillRect(x, y, w, h); for (let i = 0; i < 9; i++) { const fx = x + i * w / 8; g.fillStyle = i % 2 ? '#e8572a' : '#f08a24'; g.beginPath(); g.moveTo(fx - 22, y + h); g.quadraticCurveTo(fx - 26, y + h * 0.45, fx, y + h * (0.2 + (i % 3) * 0.08)); g.quadraticCurveTo(fx + 24, y + h * 0.5, fx + 22, y + h); g.fill(); } g.fillStyle = '#8a5a2b'; g.fillRect(x + w * 0.15, y + h * 0.76, w * 0.7, 8); g.fillStyle = '#f2c94c'; g.fillRect(x + w * 0.33, y + h * 0.6, w * 0.18, h * 0.16); g.beginPath(); g.arc(x + w * 0.42, y + h * 0.52, w * 0.13, 0, 7); g.fill(); g.fillStyle = '#6b4423'; g.fillRect(x + w * 0.27, y + h * 0.41, w * 0.3, 6); g.fillRect(x + w * 0.34, y + h * 0.34, w * 0.16, h * 0.08); g.fillStyle = '#222'; g.fillRect(x + w * 0.46, y + h * 0.5, 4, 4); g.fillStyle = '#fff'; g.fillRect(x + w * 0.6, y + h * 0.68, 14, 16); }],
+  ['cake', 'THE CAKE IS A LIE', 'There will be cake at the all-hands.', (g, x, y, w, h) => { g.fillStyle = '#e9eef2'; g.fillRect(x, y, w, h); const cx = x + w / 2, by = y + h * 0.82; g.fillStyle = '#5b3a22'; g.fillRect(cx - w * 0.3, by - h * 0.3, w * 0.6, h * 0.3); g.fillStyle = '#f6f1e7'; g.fillRect(cx - w * 0.3, by - h * 0.33, w * 0.6, h * 0.06); g.fillStyle = '#d8435f'; for (let i = 0; i < 6; i++) { g.beginPath(); g.arc(cx - w * 0.25 + i * w * 0.1, by - h * 0.33, 5, 0, 7); g.fill(); } g.fillStyle = '#fff'; g.fillRect(cx + w * 0.12, by - h * 0.52, 6, h * 0.19); g.fillStyle = '#ffb000'; g.beginPath(); g.ellipse(cx + w * 0.12 + 3, by - h * 0.56, 4, 7, 0, 0, 7); g.fill(); g.fillStyle = '#c9d1d9'; g.fillRect(cx - w * 0.38, by, w * 0.76, 6); }],
+  ['shining', 'ALL WORK, NO PLAY', 'Makes Jack a dull boy.', (g, x, y, w, h) => { g.fillStyle = '#f3efe4'; g.fillRect(x, y, w, h); g.fillStyle = '#2a2a2a'; g.font = '9px monospace'; g.textAlign = 'left'; for (let r = 0; r < 16; r++) g.fillText('all work and no play makes jack a dull boy', x + 6 + (r % 3) * 4, y + 12 + r * (h - 16) / 16, w - 12); }],
+  ['rickroll', 'NEVER GONNA', 'Never gonna let you down.', (g, x, y, w, h) => { const gr = g.createLinearGradient(0, y, 0, y + h); gr.addColorStop(0, '#f7b267'); gr.addColorStop(1, '#f25f5c'); g.fillStyle = gr; g.fillRect(x, y, w, h); const cx = x + w * 0.5; g.fillStyle = '#3d405b'; g.beginPath(); g.moveTo(cx - w * 0.16, y + h); g.lineTo(cx - w * 0.1, y + h * 0.42); g.lineTo(cx + w * 0.1, y + h * 0.42); g.lineTo(cx + w * 0.16, y + h); g.fill(); g.strokeStyle = '#3d405b'; g.lineWidth = 10; g.lineCap = 'round'; g.beginPath(); g.moveTo(cx - w * 0.09, y + h * 0.48); g.lineTo(cx - w * 0.3, y + h * 0.36); g.moveTo(cx + w * 0.09, y + h * 0.48); g.lineTo(cx + w * 0.27, y + h * 0.62); g.stroke(); g.fillStyle = '#2b2d42'; g.beginPath(); g.arc(cx, y + h * 0.28, w * 0.11, 0, 7); g.fill(); g.fillStyle = '#f1d3b3'; g.beginPath(); g.arc(cx + 3, y + h * 0.31, w * 0.075, 0, 7); g.fill(); g.fillStyle = '#fff'; g.font = 'bold 26px Georgia, serif'; g.fillText('♪', x + w * 0.18, y + h * 0.2); g.fillText('♫', x + w * 0.78, y + h * 0.3); }],
+];
+const SPECIAL_KEYS = SPECIAL_POSTERS.map(p => p[0]);
+const EGGS = {
+  believe: { name: 'I WANT TO BELIEVE', memo: 'Mulder has been reassigned to the basement. Again. The truth remains out there, next to the shredder.' },
+  fine: { name: 'THIS IS FINE', memo: 'Facilities inspected the fire and declared it fine. The meeting will continue.' },
+  cake: { name: 'THE CAKE IS A LIE', memo: 'There was no cake at the all-hands. There was, however, an all-hands.' },
+  shining: { name: 'ALL WORK, NO PLAY', memo: 'Jack has been promoted to Middle Management. Heeere\'s Jack!' },
+  rickroll: { name: 'NEVER GONNA', memo: 'You have been rickrolled by Facilities. Never gonna run around and desert your desk.' },
+  dog: { name: 'GOOD BOY', memo: 'Who\'s a good boy? He is. The tables are not.', hint: 'Somebody brought their dog to work. Pet him before he bolts.' },
+  cat: { name: 'THE CAT', memo: 'The cat has filed a complaint with HR. HR sided with the cat.', hint: 'Working from home has a supervisor.' },
+  jumpmat: { name: 'JUMP TO CONCLUSIONS', memo: 'You jumped to a conclusion. Tom would be proud. Tom is still waiting for his million dollars.', hint: 'A game of decisions, lying on the floor somewhere.' },
+  chili: { name: 'KEVIN\'S CHILI', memo: 'The trick is to undercook the onions. Everybody is going to get to know each other in the pot.', hint: 'The break room smells like ambition.' },
+  whisky: { name: 'BOARDROOM WHISKY', memo: 'The board appreciates your initiative. Please don\'t tell the board.', hint: 'The board keeps refreshments.' },
+};
+for (const k of SPECIAL_KEYS) EGGS[k].hint = 'A gold-framed poster on some floor. Give it a tap.';
+const EGG_KEYS = Object.keys(EGGS);
+const eggCount = () => EGG_KEYS.filter(k => S.eggs[k]).length;
+let eggs = [];
+const worldPos = o => o.getWorldPosition(new THREE.Vector3());
+function addEgg(obj, R, key, tap) {
+  const e = { obj, R, key, tap, update: null };
+  obj.userData.egg = e; eggs.push(e); return e;
+}
+const shown = o => { for (; o; o = o.parent) if (!o.visible) return false; return true; };
+// The egg under the pointer (the ray is already set by pickTable). A desk in front of it wins.
+function pickEgg(t) {
+  const live = eggs.filter(e => e.R === rooms[activeRoom] && shown(e.obj));
+  const hits = live.length ? ray.intersectObjects(live.map(e => e.obj), true) : [];
+  if (!hits.length) return null;
+  if (t) { const th = ray.intersectObject(t.g, true); if (th.length && th[0].distance < hits[0].distance) return null; }
+  let o = hits[0].object; while (o && !o.userData.egg) o = o.parent;
+  return o ? o.userData.egg : null;
+}
+function tapEgg(e) {
+  e.tap(e);
+  if (!e.key || mode !== 'career' || S.eggs[e.key]) return;
+  S.eggs[e.key] = 1;
+  const n = eggCount();
+  setTimeout(() => { sfx.relic(); buzz([20, 30, 20]); memo(EGGS[e.key].memo, `EASTER EGG · ${n} / ${EGG_KEYS.length}`); }, 350);
+  track('egg', { key: e.key, n }); save();
+}
+function updateEggs(dt) { for (const e of eggs) if (e.update) e.update(e, dt); }
+function posterEgg(g, pivot, R, key) {
+  const y0 = g.position.y;
+  const e = addEgg(g, R, key, e => {
+    if (e.fall != null) return;
+    sfx.tick();
+    if (key) { e.fall = 0; return; } // the gold-framed ones come right off the wall
+    e.amp = e.swing != null ? Math.min(0.55, e.amp + 0.15) : 0.3; e.swing = 0;
+  });
+  e.update = (e, dt) => {
+    if (e.fall != null) { // slide down the wall and come to rest leaning on it, crooked
+      if (e.fall >= 1) return;
+      e.fall = Math.min(1, e.fall + dt / 0.5); const k = e.fall;
+      pivot.rotation.z = 0.35 * k; pivot.rotation.x = -0.22 * k; g.position.y = y0 - (y0 - 0.78) * k * k;
+      if (k >= 1) sfx.thump(false);
+      return;
+    }
+    if (e.swing == null) return;
+    e.swing += dt; pivot.rotation.z = e.amp * Math.exp(-e.swing * 2.4) * Math.sin(e.swing * 10);
+    if (e.swing > 2.6) { e.swing = null; pivot.rotation.z = 0; }
+  };
+}
+
+// ---------------------------------------------------------------- the office dog
+// A golden retriever. Lives in the home office and turns up on the odd office floor. Tap him and he's delighted;
+// desks getting hit nearby make him nervous, and the third hit (or any flip in his room) sends him bolting for the elevator.
+let dog = null;
+function makeDog() {
+  const g = new THREE.Group(), body = new THREE.Group(); g.add(body);
+  const torso = box(0.32, 0.28, 0.72, M.dog); torso.position.y = 0.5;
+  const chest = box(0.28, 0.3, 0.2, M.dog); chest.position.set(0, 0.62, 0.34);
+  const head = new THREE.Group(); head.position.set(0, 0.8, 0.46);
+  const skull = box(0.26, 0.24, 0.28, M.dog);
+  const snout = box(0.14, 0.11, 0.18, M.dog); snout.position.set(0, -0.05, 0.2);
+  const nose = box(0.07, 0.05, 0.04, M.dogNose); nose.position.set(0, -0.01, 0.3);
+  const eyeL = box(0.035, 0.035, 0.02, M.dogNose); eyeL.position.set(-0.07, 0.04, 0.14); const eyeR = eyeL.clone(); eyeR.position.x = 0.07;
+  const earL = box(0.05, 0.17, 0.12, M.dogEar); earL.position.set(-0.15, -0.04, -0.02); const earR = earL.clone(); earR.position.x = 0.15;
+  const tongue = box(0.06, 0.08, 0.02, M.tongue); tongue.position.set(0, -0.12, 0.25); tongue.visible = false;
+  head.add(skull, snout, nose, eyeL, eyeR, earL, earR, tongue);
+  const legs = [[-0.1, 0.27], [0.1, 0.27], [-0.1, -0.27], [0.1, -0.27]].map(([x, z]) => {
+    const hip = new THREE.Group(); hip.position.set(x, 0.38, z);
+    const l = box(0.08, 0.38, 0.08, M.dog); l.position.y = -0.19; hip.add(l); body.add(hip); return hip;
+  });
+  const tail = new THREE.Group(); tail.position.set(0, 0.6, -0.36);
+  const tm = box(0.06, 0.06, 0.36, M.dog); tm.position.z = -0.18; tail.add(tm);
+  body.add(torso, chest, head, tail);
+  return { g, body, head, legs, tail, tongue, ears: [earL, earR], state: 'idle', t: 0, phase: 0, nerves: 3 };
+}
+function spawnDog(R, lx, lz, yaw, y = 0) {
+  dog = makeDog(); dog.R = R;
+  dog.g.position.set(R.cx + lx, y, R.cz + lz); dog.g.rotation.y = yaw;
+  floorGroup.add(dog.g);
+  addEgg(dog.g, R, 'dog', () => {
+    const p = dog.g.position.clone(); p.y = 1.35;
+    if (dog.state === 'flee') return spawnText(p, 'ZOOMIES!', 'yelp');
+    dog.state = 'happy'; dog.t = 0; sfx.bark(); buzz(15);
+    spawnText(p, '♥ Good boy!', 'relic');
+  });
+}
+function dogStartle(t, flipped) {
+  if (!dog || dog.state === 'flee' || dog.state === 'gone' || rooms[t.room] !== dog.R) return;
+  const near = Math.hypot(dog.g.position.x - t.base.x, dog.g.position.z - t.base.z) < 5;
+  if (!near && !flipped) return;
+  const p = dog.g.position.clone(); p.y = 1.35;
+  if (flipped || --dog.nerves <= 0) {
+    dog.state = 'flee'; dog.t = 0; dog.g.position.y = 0; sfx.bark();
+    spawnText(p, pick(['BORK!', 'WOOF?!', 'NOPE.', '*yelp*']), 'yelp');
+  } else { dog.state = 'spooked'; dog.t = 0; }
+}
+function updateDog(dt) {
+  const d = dog; if (!d || d.state === 'gone') return;
+  d.t += dt; d.phase += dt;
+  if (d.state === 'flee') { // gallop to the elevator and take it
+    const to = tmpV.copy(elevPos).sub(d.g.position).setY(0), dist = to.length();
+    if (dist < 0.5) { d.state = 'gone'; d.g.visible = false; return; }
+    to.normalize();
+    d.g.position.addScaledVector(to, Math.min(dist, 6.5 * dt));
+    avoid(d.g.position, d, null);
+    d.g.rotation.y = Math.atan2(to.x, to.z);
+    const sw = Math.sin(d.phase * 22);
+    d.legs[0].rotation.x = d.legs[1].rotation.x = sw * 0.9; d.legs[2].rotation.x = d.legs[3].rotation.x = -sw * 0.9;
+    d.body.position.y = Math.abs(Math.cos(d.phase * 22)) * 0.08;
+    d.tail.rotation.set(0.1, 0, 0); d.tongue.visible = true;
+    for (const e of d.ears) e.rotation.x = -0.6;
+    return;
+  }
+  const happy = d.state === 'happy', spooked = d.state === 'spooked';
+  d.tail.rotation.x = spooked ? -0.5 : 0.6; // tail up and wagging, or tucked
+  d.tail.rotation.y = Math.sin(d.phase * (happy ? 26 : 9)) * (spooked ? 0.08 : 0.55);
+  d.head.rotation.x = spooked ? 0.3 : Math.sin(d.phase * 1.3) * 0.06;
+  d.head.rotation.z = happy ? Math.sin(d.phase * 6) * 0.15 : 0;
+  d.body.position.y = happy ? Math.abs(Math.sin(d.phase * 9)) * 0.07 : spooked ? -0.05 : 0;
+  for (const e of d.ears) e.rotation.x = spooked ? -0.5 : 0;
+  d.tongue.visible = happy;
+  if ((happy && d.t > 1.6) || (spooked && d.t > 1.0)) { d.state = 'idle'; d.t = 0; }
 }
 
 // Floor themes keep the infinite office from getting samey. Deterministic per floor.
@@ -1139,7 +1303,7 @@ const THEME_MEMOS = {
   breakroom: ['Someone microwaved fish again. The break room tables must answer for this.', 'INTERNAL MEMO'],
   server: ['IT asks that you please do not flip the servers. IT is not your manager.', 'IT DEPARTMENT'],
   cyber: ['Welcome to the Neo-Tokyo branch. The desks have neon underglow, the rain never stops and your manager is a hologram. Flip responsibly, choom.', 'KUROSAWA CORP HR'],
-  home: ['You are working from home. Your camera is on. Everyone in the 9:00 standup can see you flipping your kitchen table.', 'HR · REMOTE WORK'],
+  home: ['You are working from home. One desk, one camera, one golden retriever. Everyone in the 9:00 standup can see you.', 'HR · REMOTE WORK'],
   cafe: ['You have taken your laptop to a coffee shop. Your name has been written on the cup as "TABEL". This is personal now.', 'BARISTA'],
   ai: ['Welcome to the AI Data Center. These GPU racks were three days away from AGI. Flipping them will set humanity back. Probably fine.', 'MACHINE LEARNING OPS'],
 };
@@ -1239,15 +1403,15 @@ const arrowTex = canvasTex(128, 128, (g, w, h) => {
 });
 
 // Lay out rooms: varied sizes, a path that turns, no overlaps, door spots that line up.
-function planRooms(rng, k, counts, sx, sz, tall, boss) {
+function planRooms(rng, k, counts, sx, sz, tall, boss, fixed = null) { // fixed: [W, D] for a one-room floor that isn't sized by its desks
   const out = [];
   const overlap = (a, b) => a.x0 < b.x1 + 0.6 && b.x0 < a.x1 + 0.6 && a.z0 < b.z1 + 0.6 && b.z0 < a.z1 + 0.6;
   for (let i = 0; i < k; i++) {
     const c = counts[i];
     // pick a shape: some rooms wide, some deep, some square
     const opts = []; for (let cols = 1; cols <= Math.min(c, tall ? 2 : 4); cols++) { const rows = Math.ceil(c / cols); if (rows <= (tall ? 5 : 4)) opts.push([cols, rows]); }
-    const [cols, rows] = boss ? [1, 1] : opts[rng() * opts.length | 0] || [Math.min(c, 2), Math.ceil(c / 2)];
-    const W = boss ? 13 : Math.max(7, cols * sx + 3.4 + rng() * 1.6), D = boss ? 10 : Math.max(6.6, rows * sz + 3.2 + rng() * 1.4);
+    const [cols, rows] = boss || fixed ? [1, 1] : opts[rng() * opts.length | 0] || [Math.min(c, 2), Math.ceil(c / 2)];
+    const W = boss ? 13 : fixed ? fixed[0] : Math.max(7, cols * sx + 3.4 + rng() * 1.6), D = boss ? 10 : fixed ? fixed[1] : Math.max(6.6, rows * sz + 3.2 + rng() * 1.4);
     const R = { W, D, cols, rows, count: c, cx: 0, cz: 0 };
     const box = () => ({ x0: R.cx - W / 2, x1: R.cx + W / 2, z0: R.cz - D / 2, z1: R.cz + D / 2 });
     if (i === 0) { Object.assign(R, box()); out.push(R); continue; }
@@ -1290,13 +1454,13 @@ function planRooms(rng, k, counts, sx, sz, tall, boss) {
 function buildFloor(f, daily = 0) {
   if (floorGroup) scene.remove(floorGroup);
   perFloor.forEach(x => x.dispose()); perFloor.length = 0; interns = [];
-  debris.length = 0; puffs.length = 0; tables = []; rooms = []; conns = []; activeRoom = 0; printers = []; holos = [];
+  debris.length = 0; puffs.length = 0; tables = []; rooms = []; conns = []; activeRoom = 0; printers = []; holos = []; eggs = []; dog = null;
   floorGroup = new THREE.Group(); scene.add(floorGroup);
   coworkers = []; hr = null;
   const rng = mulberry32(daily ? daily * 7919 + 1 : f * 131 + 7), boss = !daily && isBoss(f), theme = daily ? DAILY_THEMES[daily % 4] : floorTheme(f);
   screenOverride = f === 23 && !daily ? MDR_SCREEN : theme === 'cyber' ? cyberScreen : null;
   const n = daily ? { office: 12, openplan: 6, breakroom: 9, server: 12 }[theme] : theme === 'openplan' ? Math.ceil(tableCount(f) / 2) : theme === 'breakroom' ? Math.ceil(tableCount(f) * 0.7)
-    : theme === 'home' ? 5 : theme === 'cafe' ? Math.min(12, Math.ceil(tableCount(f) * 0.6)) : theme === 'ai' ? Math.max(30, tableCount(f) + 8) : tableCount(f);
+    : theme === 'home' ? 1 : theme === 'cafe' ? Math.min(12, Math.ceil(tableCount(f) * 0.6)) : theme === 'ai' ? Math.max(30, tableCount(f) + 8) : tableCount(f);
   const [sx, sz] = theme === 'openplan' ? [5.4, 3.7] : theme === 'breakroom' ? [2.9, 2.9] : theme === 'server' ? [1.5, 3.2] : theme === 'ai' ? [1.7, 3.4] : theme === 'cafe' ? [2.6, 2.6] : theme === 'home' ? [3.6, 3.2] : [3.4, 3.1];
   const tall = innerWidth / innerHeight < 0.9;
   const cap = (tall ? { office: 3, openplan: 2, breakroom: 4, server: 6, home: 6, cafe: 4, ai: 6, cyber: 3 } : { office: 6, openplan: 4, breakroom: 6, server: 8, home: 6, cafe: 6, ai: 6, cyber: 6 })[theme] || 6;
@@ -1305,7 +1469,7 @@ function buildFloor(f, daily = 0) {
   // uneven split so rooms differ in size too
   const counts = Array(k).fill(Math.floor(n / k)); for (let i = 0; i < n % k; i++) counts[i]++;
   if (k > 1) for (let s2 = 0; s2 < k; s2++) { const a = rng() * k | 0, b2 = rng() * k | 0; if (a !== b2 && counts[a] > 2) { counts[a]--; counts[b2]++; } }
-  const plan = planRooms(rng, k, counts, sx, sz, tall, boss);
+  const plan = planRooms(rng, k, counts, sx, sz, tall, boss, theme === 'home' ? [10.5, 8.4] : null);
 
   // shared per-floor materials
   const hue = (f * 0.137) % 1;
@@ -1318,6 +1482,11 @@ function buildFloor(f, daily = 0) {
   const pillarMat = boss ? std(0x2a1d17) : M.pillar;
   if (boss) perFloor.push(pillarMat);
   const deck = [...POSTERS.keys()].sort(() => rng() - 0.5);
+  const eggRng = mulberry32(daily ? daily * 104729 + 3 : f * 733 + 11);
+  // one floor in ~5 hangs a gold-framed collectible poster (ones you haven't found first) in one of its rooms
+  const unfound = SPECIAL_KEYS.filter(key => !S.eggs[key]), pool = unfound.length ? unfound : SPECIAL_KEYS;
+  let special = !daily && !boss && !['ai', 'server'].includes(theme) && eggRng() < 0.2 ? pool[eggRng() * pool.length | 0] : null;
+  const specialRoom = eggRng() * k | 0;
   const tile = theme === 'office' || theme === 'openplan' ? 3 : 1.2;
   const own = g => (perFloor.push(g), g);
 
@@ -1385,6 +1554,10 @@ function buildFloor(f, daily = 0) {
     const sb2 = box(0.3, 0.32, D, wallMat); sb2.position.set(-W / 2 - 0.15, 0.16, 0);
     stub.add(sb1, sb2); stub.visible = false;
     const nearDoor = (list, v, r) => list.some(d => Math.abs(d - v) < r);
+    const hang = (x, y, z, facing) => {
+      const sp = ri === specialRoom ? special : null; if (sp) special = null;
+      poster(sp ? POSTERS.length + SPECIAL_KEYS.indexOf(sp) : deck.pop(), x, y, z, facing, sp ? M.gold : frameMat, walls, R, sp);
+    };
     // back wall: windows, a poster, cabinets, kitchenette; skip door openings
     const slots = []; for (let x = -W / 2 + 1.6; x < W / 2 - 1; x += 2.3) if (!nearDoor(R.backDoors, x, 2.1)) slots.push(x);
     const posterSlot = slots.length >= 3 ? 1 + (rng() * (slots.length - 2) | 0) : -1;
@@ -1394,7 +1567,7 @@ function buildFloor(f, daily = 0) {
         if (i === 0) { const sign = new THREE.Mesh(geo('ssign', () => new THREE.PlaneGeometry(1.8, 0.6)), M.serverSign); sign.position.set(x, 1.9, -D / 2 + 0.03); walls.add(sign); }
         return;
       }
-      if (i === posterSlot && deck.length) { poster(deck.pop(), x, 1.75, -D / 2 + 0.03, 'z', frameMat, walls); return; }
+      if (i === posterSlot && deck.length) { hang(x, 1.75, -D / 2 + 0.03, 'z'); return; }
       const frame = box(1.9, 1.75, 0.06, frameMat); frame.position.set(x, 1.75, -D / 2 + 0.02);
       const pane = new THREE.Mesh(geo('pane', () => new THREE.PlaneGeometry(1.78, 1.63)), winMat); pane.position.set(x, 1.75, -D / 2 + 0.06);
       const sill = box(2.0, 0.05, 0.16, M.trim); sill.position.set(x, 0.86, -D / 2 + 0.08);
@@ -1434,7 +1607,7 @@ function buildFloor(f, daily = 0) {
       if (first && pz > ez + 1.2 && pz < ez + 2.2) continue; // water cooler
       if (nearDoor(R.leftDoors, pz, 1.9)) continue;
       if (rng() < 0.35) continue;
-      poster(deck.pop(), -W / 2 + 0.03, 1.65, pz, 'x', frameMat, walls);
+      hang(-W / 2 + 0.03, 1.65, pz, 'x');
     }
     if (theme !== 'ai' && theme !== 'cafe') makePrinter(R.cx + W / 2 - 0.7, R.cz - D / 2 + 0.65);
     setDressing(R, ri, { f, theme, boss, rng, first, last, own });
@@ -1477,10 +1650,10 @@ function buildFloor(f, daily = 0) {
     for (let li = 0; li < R.count; li++, i++) {
       const roll = rng();
       const kind = boss ? 'boss' : theme === 'openplan' ? 'bench' : theme === 'breakroom' ? 'round' : theme === 'server' ? 'rack'
-        : theme === 'ai' ? 'gpu' : theme === 'cafe' ? 'cafe' : theme === 'home' ? ['homedesk', 'kitchen', 'coffee', 'ironing', 'kitchen'][li % 5]
+        : theme === 'ai' ? 'gpu' : theme === 'cafe' ? 'cafe' : theme === 'home' ? 'homedesk'
         : roll < cornerOdds ? 'corner' : roll < cornerOdds + cubOdds ? 'cubicle' : (daily || f >= 6) && roll < cornerOdds + cubOdds + 0.15 ? 'standing' : 'desk';
       const mult = { boss: [14, 8], corner: [3, 2.5], cubicle: [6, 4.5], standing: [1.5, 2], bench: [2.2, 1.6], round: [0.8, 1], rack: [1.6, 1.8],
-        gpu: [5, 3.5], cafe: [0.9, 1.5], homedesk: [1.5, 2.5], kitchen: [2, 2.5], coffee: [1, 2], ironing: [0.6, 2] }[kind] || [1, 1];
+        gpu: [5, 3.5], cafe: [0.9, 1.5], homedesk: [7, 11.5], /* WFH: the one desk carries the whole floor */ kitchen: [2, 2.5], coffee: [1, 2], ironing: [0.6, 2] }[kind] || [1, 1];
       let relic = null;
       if (kind === 'standing') standings++;
       if (kind === 'cubicle') cubicles++;
@@ -1505,6 +1678,13 @@ function buildFloor(f, daily = 0) {
   let seated = 0;
   for (const t of tables) for (const ch of t.chairs) if (!t.boss && theme !== 'home' && seated < 7 && rng() < (theme === 'cafe' ? 0.45 : 0.3)) seatCoworker(t, ch, seated++);
   if (boss) spawnHR();
+  // bring-your-dog-to-work day (the home office dog lives in homeDecor)
+  if (!daily && !boss && theme === 'office' && f >= 4 && eggRng() < 0.12) {
+    const R = rooms[0];
+    const spot = [[-R.W / 2 + 1.6, R.D / 2 - 1.0], [R.W / 2 - 1.3, R.D / 2 - 1.0], [0, R.D / 2 - 0.9]]
+      .find(([x, z]) => tables.every(t => Math.hypot(t.base.x - R.cx - x, t.base.z - R.cz - z) > t.radius + 0.8));
+    if (spot) spawnDog(R, spot[0], spot[1], eggRng() * 6.28);
+  }
   if (standings && !daily && !S.seenStanding) { S.seenStanding = true; setTimeout(() => memo('Facilities has installed standing desks. They are taller, pay double, and nobody has ever stood at one.', 'FACILITIES'), 3200); }
   if (corners && !daily && !S.seenCorner) { S.seenCorner = true; setTimeout(() => memo('Facilities has installed corner desks. They are heavier, load-bearing (probably) and covered in expensive equipment.', 'FACILITIES'), 2600); }
   if (cubicles && !daily && !S.seenCubicle) { S.seenCubicle = true; setTimeout(() => memo('Cubicles have arrived. Three walls, one desk, zero hope. They are very heavy and pay very well.', 'FACILITIES'), 3600); }
@@ -2038,17 +2218,18 @@ function pickTable(e) {
 const buzz = p => { if (!S.muted && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} };
 canvas.addEventListener('pointermove', e => {
   if (!started || e.pointerType !== 'mouse') return;
-  const t = pickTable(e);
+  const t = pickTable(e), egg = pickEgg(t);
   const overElev = !t && cleared && mode === 'career' && ray.intersectObjects(elev.meshes).length > 0;
   if (t !== hovered) { if (hovered) { hovered.hover = false; tint(hovered); } hovered = t; if (t) { t.hover = true; tint(t); } }
-  canvas.style.cursor = t || overElev ? 'pointer' : 'default';
+  canvas.style.cursor = t || egg || overElev ? 'pointer' : 'default';
   mouse.set(e.clientX / innerWidth - 0.5, e.clientY / innerHeight - 0.5);
 });
 const mouse = new THREE.Vector2();
 canvas.addEventListener('pointerdown', e => {
   if (!started) return;
   audio();
-  const t = pickTable(e);
+  const t = pickTable(e), egg = pickEgg(t);
+  if (egg) { e.preventDefault(); tapEgg(egg); return; }
   if (!t) {
     if (ray.intersectObjects(elev.meshes).length && mode === 'career') {
       if (cleared) rideElevator();
@@ -2280,9 +2461,13 @@ function openMenu() {
   const relics = RELIC_KEYS.map(k => S.found[k]
     ? `<div class="relic found"><b>${RELICS[k].name}</b>${RELICS[k].memo}</div>`
     : `<div class="relic"><b>??? ??? ???</b>Somewhere on some desk. Keep flipping.</div>`).join('');
+  const eggList = EGG_KEYS.map(k => S.eggs[k]
+    ? `<div class="relic found"><b>${EGGS[k].name}</b>${EGGS[k].memo}</div>`
+    : `<div class="relic"><b>??? ??? ???</b>${EGGS[k].hint}</div>`).join('');
   const motionLabel = S.motion === 'reduce' ? 'REDUCED' : S.motion === 'full' ? 'FULL' : 'AUTO';
   openModal(`<h2>Your Career</h2><p>${deptName(S.floor)}, floor ${S.floor}.</p>
     <h3>OFFICE RELICS · ${relicCount()} / ${RELIC_KEYS.length}</h3><div class="relics">${relics}</div>
+    <h3>EASTER EGGS · ${eggCount()} / ${EGG_KEYS.length}</h3><div class="relics">${eggList}</div>
     <h3>STATS</h3><div class="stats">
       <div class="stat"><b>${S.flipped.toLocaleString()}</b><span>tables flipped</span></div>
       <div class="stat"><b>${Math.max(S.bestEver, S.best)}</b><span>highest floor</span></div>
@@ -2425,7 +2610,7 @@ function loop(now) {
     S.rage += emailRate() * dt; S.lifetime += emailRate() * dt;
     for (const it of interns) updateIntern(it, dt);
     for (const cw of coworkers) updateCoworker(cw, dt);
-    updateHR(dt); updatePrinter(dt);
+    updateHR(dt); updatePrinter(dt); updateEggs(dt); updateDog(dt);
     uiAcc += dt; if (uiAcc > 0.2) { uiAcc = 0; refreshShop(); }
     saveAcc += realDt; if (saveAcc > 5) { saveAcc = 0; save(); }
     flushAcc += realDt; if (flushAcc > 20) { flushAcc = 0; flushFlips(); }
