@@ -447,9 +447,27 @@ function audio() {
     noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate);
     const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
   }
-  if (AC.state === 'suspended') AC.resume();
+  if (AC.state !== 'running') AC.resume().catch(() => {}); // 'suspended', or iOS's 'interrupted' after a call / app switch
   return AC;
 }
+// iOS: web audio is silenced by the ringer switch unless the page's audio session is "playback".
+// Newer Safari exposes navigator.audioSession; older ones switch over once an <audio> element plays.
+let unlocked = false, silentEl = null;
+function unlockAudio() {
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+  const ctx = audio();
+  if (!silentEl) { // a looping silent clip keeps the session in playback mode
+    silentEl = document.createElement('audio');
+    silentEl.setAttribute('playsinline', ''); silentEl.loop = true; silentEl.volume = 0.01;
+    silentEl.src = 'data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQQAAAAAAAAA';
+  }
+  if (silentEl.paused && !S.muted) silentEl.play().catch(() => {});
+  if (!unlocked) { // play one silent sample inside the gesture: required by older iOS to start the context
+    try { const b = ctx.createBuffer(1, 1, 22050), src = ctx.createBufferSource(); src.buffer = b; src.connect(ctx.destination); src.start(0); unlocked = true; } catch (e) {}
+  }
+}
+for (const ev of ['touchend', 'pointerup', 'click', 'keydown']) addEventListener(ev, () => { if (!AC || AC.state !== 'running' || (silentEl && silentEl.paused && !S.muted)) unlockAudio(); }, true);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && AC) AC.resume().catch(() => {}); });
 function env(g, t, a, peak, dur) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); }
 function tone(type, f0, f1, dur, vol, delay = 0) {
   if (!AC || S.muted) return;
@@ -1550,7 +1568,7 @@ function tip(html) {
   const el = $('#tip'); el.innerHTML = html; el.classList.add('show');
   clearTimeout(tipTimer); tipTimer = setTimeout(() => el.classList.remove('show'), 2400);
 }
-function setMute(m) { S.muted = m; if (master) master.gain.value = m ? 0 : 0.55; $('#muteBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/>${m ? '<path d="M17 9l5 6M22 9l-5 6"/>' : '<path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'}</svg>`; save(); }
+function setMute(m) { S.muted = m; if (master) master.gain.value = m ? 0 : 0.55; if (silentEl) { if (m) silentEl.pause(); else silentEl.play().catch(() => {}); } $('#muteBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/>${m ? '<path d="M17 9l5 6M22 9l-5 6"/>' : '<path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'}</svg>`; save(); }
 $('#muteBtn').addEventListener('click', () => { audio(); setMute(!S.muted); });
 $('#shareBtn').addEventListener('click', () => { audio(); shareFlow(mode === 'daily' ? { headline: 'FLOOR OF THE DAY', sub: `#${dailyDay}`, lines: ['Same floor for everyone.', 'Beat my time.'] } : careerCard(), mode === 'daily' ? `Flipping Tables · Floor of the Day #${dailyDay} (╯°□°)╯︵ ┻━┻` : careerText(), 'button'); });
 const hrCount = () => Math.floor(S.flipped * 1.5 + S.floor * 3);
