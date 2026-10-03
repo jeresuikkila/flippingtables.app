@@ -36,6 +36,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 .big{font-family:var(--display);font-size:76px;line-height:.92;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;text-shadow:0 5px 0 #000,0 0 30px rgba(0,0,0,.35)}
 #hud{position:fixed;inset:0;pointer-events:none}
 #hud>*{pointer-events:auto}
+#hud .tl,#hud .tr,#hud #combo,#hud #boss{pointer-events:none}
+#hud #tools{pointer-events:auto}
 .tl{position:absolute;left:24px;top:18px;max-width:46vw}
 .tr{position:absolute;right:24px;top:18px;text-align:right}
 #today{font-weight:800;font-size:13px;margin-top:6px;color:#e4e2dc;text-shadow:0 2px 0 #000,0 0 10px rgba(0,0,0,.8);white-space:nowrap}
@@ -343,18 +345,44 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
     ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }, opt); });
     document.addEventListener('touchmove', function (e) { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, opt);
     var lastEnd = 0;
+    document.addEventListener('touchstart', function (e) { if (e.touches.length > 1) e.preventDefault(); }, opt);
     document.addEventListener('touchend', function (e) {
       var now = Date.now();
-      if (now - lastEnd < 350 && !(e.target.closest && e.target.closest('button,a,.memo'))) e.preventDefault();
+      if (now - lastEnd < 400) { // second tap of a double-tap: never let iOS treat it as zoom
+        e.preventDefault();
+        var t = e.target.closest && e.target.closest('button,a,.memo');
+        if (t) t.click(); // keep fast double-taps on buttons working
+      }
       lastEnd = now;
     }, opt);
+    document.addEventListener('dblclick', function (e) { e.preventDefault(); }, opt);
     var meta = document.querySelector('meta[name=viewport]'), base = meta.content;
     function unzoom() {
       if (!window.visualViewport || visualViewport.scale <= 1.01) return;
       meta.content = base + ',minimum-scale=1';
       setTimeout(function () { meta.content = base; dispatchEvent(new Event('resize')); }, 60);
     }
-    if (window.visualViewport) visualViewport.addEventListener('resize', function () { setTimeout(unzoom, 400); });
+    var chip = null;
+    function zoomChip() { // if iOS still zoomed in, offer a one-tap way out
+      var zoomed = window.visualViewport && visualViewport.scale > 1.05;
+      if (zoomed && !chip) {
+        chip = document.createElement('button');
+        chip.textContent = '🔍 Zoomed in · tap to reset';
+        chip.style.cssText = 'position:fixed;z-index:50;padding:10px 14px;border-radius:12px;background:#ffd166;color:#111;font:800 14px Inter,system-ui,sans-serif;box-shadow:0 4px 0 #a35a00';
+        chip.addEventListener('click', function () { unzoom(); setTimeout(zoomChip, 400); });
+        document.body.appendChild(chip);
+      }
+      if (chip) {
+        if (!zoomed) { chip.remove(); chip = null; return; }
+        var v = visualViewport, k = 1 / v.scale; // keep it pinned to the visible corner at readable size
+        chip.style.left = (v.offsetLeft + 10 * k) + 'px'; chip.style.top = (v.offsetTop + 10 * k) + 'px';
+        chip.style.transform = 'scale(' + k + ')'; chip.style.transformOrigin = '0 0';
+      }
+    }
+    if (window.visualViewport) {
+      visualViewport.addEventListener('resize', function () { setTimeout(unzoom, 400); setTimeout(zoomChip, 700); });
+      visualViewport.addEventListener('scroll', zoomChip);
+    }
     addEventListener('orientationchange', function () { setTimeout(unzoom, 500); });
     document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(unzoom, 200); });
   })();
