@@ -332,7 +332,7 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
   </div>
 </div>
 
-<script type="importmap">{"imports":{"three":"./vendor/three-r170-2.min.js"}}</script>
+<script type="importmap">{"imports":{"three":"./vendor/three-r170-3.min.js"}}</script>
 <script>
   // Vercel Web Analytics (pageviews + custom events) and a tiny client error reporter.
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
@@ -617,7 +617,11 @@ const M = {
   mugs: [std(0xffffff, { roughness: 0.3 }), std(0x2bb3a3, { roughness: 0.3 }), std(0x2f6fed, { roughness: 0.3 }), std(0xffd166, { roughness: 0.3 })],
   leaf: std(0x3f9b52, { roughness: 0.8, flatShading: true }), pot: std(0xc96b45), chair: std(0x30343c, { roughness: 0.85 }),
   wall: std(0xe9e4da, { roughness: 0.95 }), trim: std(0x9b8e7e), gold: std(0xffc94d, { roughness: 0.25, metalness: 0.9 }),
-  binder: std(0x2a3f7a), chiliPot: std(0x8a8f96, { roughness: 0.35, metalness: 0.6 }), chili: new THREE.MeshStandardMaterial({ roughness: 0.5, transparent: true, map: canvasTex(256, 256, (g, w, h) => {
+  binder: std(0x2a3f7a), homeWall: std(0xb9c9b0, { roughness: 0.95 }), cafeWall: std(0x1f3b33, { roughness: 0.9 }), aiWall: std(0x0d0f14, { roughness: 0.7 }),
+  sofa: std(0x6b7fa8, { roughness: 1 }), rug: std(0xd88b6b, { roughness: 1 }), cat: std(0xe08a3c, { roughness: 1 }), book: [std(0xc0392b), std(0x2e86de), std(0xf1c40f), std(0x27ae60), std(0x8e44ad)],
+  cup: std(0xffffff, { roughness: 0.5 }), sleeve: std(0x8a5a35, { roughness: 1 }), latte: std(0xc89f74, { roughness: 0.6 }), pastry: std(0xd99a4e, { roughness: 0.8 }),
+  espresso: std(0xb8bcc2, { roughness: 0.25, metalness: 0.8 }), glass: std(0xd8f0ff, { roughness: 0.05, transparent: true, opacity: 0.35 }), gpu: std(0x111318, { roughness: 0.35, metalness: 0.6 }), pipe: std(0x22d3ee, { roughness: 0.3, metalness: 0.4, emissive: 0x0e7490, emissiveIntensity: 0.4 }),
+  board: std(0xe8e3d6, { roughness: 0.8 }), chiliPot: std(0x8a8f96, { roughness: 0.35, metalness: 0.6 }), chili: new THREE.MeshStandardMaterial({ roughness: 0.5, transparent: true, map: canvasTex(256, 256, (g, w, h) => {
     g.fillStyle = '#b5652a'; g.beginPath(); for (let a = 0; a < 6.3; a += 0.35) { const r = 92 + Math.sin(a * 5) * 18 + Math.cos(a * 3) * 10; g.lineTo(128 + Math.cos(a) * r, 128 + Math.sin(a) * r); } g.fill();
     for (let i = 0; i < 70; i++) { const a = Math.random() * 6.3, r = Math.random() * 80; g.fillStyle = i % 3 ? '#6e2a10' : '#d8893b'; g.beginPath(); g.ellipse(128 + Math.cos(a) * r, 128 + Math.sin(a) * r, 7, 4.5, Math.random() * 3, 0, 7); g.fill(); }
   }) }),
@@ -825,7 +829,7 @@ function updateIntern(it, dt) {
 // keep walkers from ghosting through each other and through desks they're not heading for
 function avoid(pos, self, target) {
   const push = (x, z, r) => { const dx = pos.x - x, dz = pos.z - z, d = Math.hypot(dx, dz); if (d < r && d > 1e-4) { pos.x += dx / d * (r - d) * 0.5; pos.z += dz / d * (r - d) * 0.5; } };
-  for (const o of interns) if (o !== self && o.g.visible) push(o.g.position.x, o.g.position.z, 0.6);
+  if (!self || !self.routing) for (const o of interns) if (o !== self && o.g.visible) push(o.g.position.x, o.g.position.z, 0.6);
   for (const o of tables) if (!o.dead && o !== target) push(o.base.x, o.base.z, o.radius * 0.85);
 }
 // ---------------------------------------------------------------- coworkers, HR, printer
@@ -972,6 +976,9 @@ function bannerMat(key, bg, fg, text, font = 'bold 34px "Archivo Black", Inter, 
   return bannerCache[key] || (bannerCache[key] = new THREE.MeshBasicMaterial({ map: labelTex(1024, 84, bg, fg, [text], font) }));
 }
 function roomBanner(f, theme, boss, ri, rng) {
+  if (theme === 'ai') return bannerMat('ai' + (ri % 3), '#0b0d12', ['#22d3ee', '#a78bfa', '#4cff7a'][ri % 3], ['AI DATA CENTER  ·  TRAINING RUN 94%  ·  DO NOT FLIP', 'GPU HALL ' + 'ABCDEFG'[ri] + '  ·  COOLING: ADEQUATE-ISH', 'LOSS IS GOING DOWN  ·  PLEASE DO NOT TOUCH ANYTHING'][ri % 3]);
+  if (theme === 'cafe') return bannerMat('cafe' + (ri % 2), '#1f3b33', '#f4ead5', ri % 2 ? 'WIFI: FLIPIT123  ·  LAPTOP CAMPING: 4 HRS MAX' : 'OAT LATTE  ·  PUMPKIN SPICE  ·  COLD BREW  ·  TABLE (FLIPPED)');
+  if (theme === 'home') return bannerMat('home', '#f4ead5', '#5a3a22', 'LIVE  ·  LAUGH  ·  LOVE  ·  FLIP', 'italic bold 36px Georgia, serif');
   if (f === 5 && ri === 0) return bannerMat('initech', '#f4f1ea', '#1f3c88', 'INITECH  ·  IS THIS GOOD FOR THE COMPANY?');
   if (f === 23) return bannerMat('lumon', '#e9f7f5', '#0e5c6b', 'THE WORK IS MYSTERIOUS AND IMPORTANT');
   if (f === 3 || theme === 'server') return bannerMat('itcrowd', '#111', '#ff5a36', 'HAVE YOU TRIED TURNING IT OFF AND ON AGAIN?');
@@ -1000,10 +1007,53 @@ const jumpMatMat = new THREE.MeshStandardMaterial({ roughness: 1, map: canvasTex
   const labels = ['YES', 'NO', 'MAYBE', 'YES', 'MAYBE', 'NO', 'NO', 'YES', 'MAYBE'];
   for (let i = 0; i < 9; i++) { const cx = 20 + (i % 3) * 100, cy = 56 + Math.floor(i / 3) * 52; g.fillStyle = i === 4 ? '#c8241c' : '#f4f1ea'; g.fillRect(cx, cy, 80, 44); g.fillStyle = i === 4 ? '#fff' : '#333'; g.font = 'bold 15px Inter, sans-serif'; g.fillText(labels[i], cx + 40, cy + 28); }
 }) });
+function homeDecor(R) {
+  const { W, D, rg } = R;
+  const rug = box(3.4, 0.015, 2.4, M.rug); rug.castShadow = false; rug.position.set(0.6, 0.008, D / 2 - 2.0); rg.add(rug);
+  // sofa facing the TV, with the cat who will judge you
+  const sofa = new THREE.Group(), seat = box(2.2, 0.42, 0.9, M.sofa); seat.position.y = 0.21;
+  const back = box(2.2, 0.55, 0.22, M.sofa); back.position.set(0, 0.6, 0.34); const a1 = box(0.22, 0.6, 0.9, M.sofa); a1.position.set(-1.1, 0.3, 0); const a2 = a1.clone(); a2.position.x = 1.1;
+  const cat = new THREE.Group(), cb = box(0.34, 0.16, 0.18, M.cat); const ch = box(0.16, 0.14, 0.15, M.cat); ch.position.set(0.2, 0.08, 0); const e1 = box(0.04, 0.06, 0.03, M.cat); e1.position.set(0.22, 0.17, -0.05); const e2 = e1.clone(); e2.position.z = 0.05;
+  cat.add(cb, ch, e1, e2); cat.position.set(0.6, 0.5, 0.1); cat.rotation.y = 0.4;
+  sofa.add(seat, back, a1, a2, cat); sofa.position.set(W / 2 - 1.6, 0, D / 2 - 0.9); sofa.rotation.y = Math.PI; rg.add(sofa);
+  const tvStand = box(1.6, 0.45, 0.4, M.darkwood); tvStand.position.set(W / 2 - 1.6, 0.225, D / 2 - 3.6);
+  const tv = box(1.4, 0.8, 0.06, M.plastic); tv.position.set(0, 0.65, 0); const scr = new THREE.Mesh(geo('tvscr', () => new THREE.PlaneGeometry(1.32, 0.72)), SCREENS[7] || SCREENS[0]); scr.position.set(0, 0.65, 0.031); tvStand.add(tv, scr); rg.add(tvStand);
+  // bookshelf
+  const shelf = box(1.0, 1.9, 0.32, M.darkwood); shelf.position.set(-W / 2 + 0.25, 0.95, D / 2 - 1.2); shelf.rotation.y = Math.PI / 2;
+  for (let r = 0; r < 4; r++) for (let b = 0; b < 6; b++) { const bk = box(0.11, 0.28, 0.24, M.book[(r * 3 + b) % 5]); bk.position.set(-0.38 + b * 0.15, -0.7 + r * 0.45, 0.04); shelf.add(bk); }
+  rg.add(shelf);
+  // ring light for the 9:00 standup
+  const pole = cyl(0.02, 0.02, 1.6, M.leg, 8); pole.position.set(-W / 2 + 1.2, 0.8, -D / 2 + 3.2);
+  const ring = new THREE.Mesh(geo('ring', () => new THREE.TorusGeometry(0.22, 0.03, 8, 24)), M.elevLight); ring.position.set(-W / 2 + 1.2, 1.65, -D / 2 + 3.2); ring.rotation.y = 0.8;
+  rg.add(pole, ring);
+}
+function cafeDecor(R, ri) {
+  const { W, D, rg } = R;
+  if (ri !== 0) return;
+  // the counter along the back: espresso machine, pastry case, register
+  const counter = box(Math.min(W - 3, 6.5), 1.05, 0.75, M.darkwood); counter.position.set(0.6, 0.525, -D / 2 + 0.75);
+  const top = box(Math.min(W - 3, 6.5) + 0.1, 0.05, 0.85, M.counterTop); top.position.set(0, 0.55, 0); counter.add(top);
+  const esp = box(0.75, 0.5, 0.45, M.espresso); esp.position.set(-1.6, 0.83, -0.05); counter.add(esp);
+  const case_ = box(1.2, 0.4, 0.6, M.glass); case_.position.set(0.6, 0.78, 0.05); counter.add(case_);
+  for (let i = 0; i < 6; i++) { const pz = new THREE.Mesh(geo('croissant', () => new THREE.TorusGeometry(0.06, 0.03, 8, 12, Math.PI)), M.pastry); pz.rotation.x = -Math.PI / 2; pz.position.set(0.15 + (i % 3) * 0.3, 0.66 + Math.floor(i / 3) * 0.16, 0.05); counter.add(pz); }
+  const reg = box(0.35, 0.22, 0.3, M.plastic); reg.position.set(2.0, 0.69, 0.1); counter.add(reg);
+  for (let i = 0; i < 4; i++) { const c = cyl(0.045, 0.036, 0.13, M.cup, 12); c.position.set(-0.6 + i * 0.12, 0.64, 0.25); counter.add(c); }
+  rg.add(counter);
+}
+function aiDecor(R, ri) {
+  const { W, D, rg } = R;
+  // overhead cable trays and glowing coolant lines
+  for (const z of [-D / 4, D / 4]) { const tray = box(W - 0.6, 0.08, 0.5, M.cabinet); tray.position.set(0, 2.9, z); tray.castShadow = false; rg.add(tray);
+    const pipe = cyl(0.06, 0.06, W - 0.6, M.pipe, 10); pipe.rotation.z = Math.PI / 2; pipe.position.set(0, 3.05, z + 0.35); pipe.castShadow = false; rg.add(pipe); }
+  if (ri === 0) { const sign = new THREE.Mesh(geo('ssign', () => new THREE.PlaneGeometry(1.8, 0.6)), M.serverSign); sign.position.set(-W / 2 + 0.03, 1.9, 0); sign.rotation.y = Math.PI / 2; rg.add(sign); }
+}
 function setDressing(R, ri, { f, theme, boss, rng, first, last, own }) {
   const { W, D, rg } = R;
   // stacks of paper boxes from a certain Scranton paper company
-  if (!boss && theme !== 'server' && rng() < 0.55) paperBoxes(rg, W / 2 - 0.6, -D / 2 + 1.7, 2 + (rng() < 0.5 ? 1 : 0), rng() * 0.4);
+  if (theme === 'home') homeDecor(R);
+  if (theme === 'cafe') cafeDecor(R, ri);
+  if (theme === 'ai') aiDecor(R, ri);
+  if (!boss && !['server', 'ai', 'cafe', 'home'].includes(theme) && rng() < 0.55) paperBoxes(rg, W / 2 - 0.6, -D / 2 + 1.7, 2 + (rng() < 0.5 ? 1 : 0), rng() * 0.4);
   // the Jump to Conclusions mat
   if ((f === 5 && first) || (theme === 'office' && rng() < 0.08)) {
     const m = new THREE.Mesh(geo('jmat', () => new THREE.PlaneGeometry(1.6, 1.1)), jumpMatMat); m.rotation.x = -Math.PI / 2; m.position.set(-W / 2 + 1.7, 0.012, D / 2 - 1.0); m.receiveShadow = true; rg.add(m);
@@ -1060,15 +1110,21 @@ function poster(i, x, y, z, facing, frameMat, parent = floorGroup) {
 
 // Floor themes keep the infinite office from getting samey. Deterministic per floor.
 function floorTheme(f) {
+  if (f >= 8 && f % 20 === 8) return 'home';     // 8, 28, 48…
+  if (f >= 16 && f % 20 === 16) return 'cafe';   // 16, 36, 56…
+  if (f >= 24 && f % 30 === 24) return 'ai';     // 24, 54, 84…
   if (f < 6 || isBoss(f) || [7, 11, 17, 23, 31, 42].includes(f)) return 'office'; // named pop-culture floors keep the office look
   const r = mulberry32(f * 977 + 5)();
   return r < 0.55 ? 'office' : r < 0.7 ? 'openplan' : r < 0.85 ? 'breakroom' : 'server';
 }
-const THEME_NAMES = { openplan: 'Open-Plan Collaboration Zone', breakroom: 'The Break Room', server: 'Server Room (Do Not Touch)' };
+const THEME_NAMES = { openplan: 'Open-Plan Collaboration Zone', breakroom: 'The Break Room', server: 'Server Room (Do Not Touch)', home: 'Home Office (WFH Day 1,204)', cafe: 'Starbeans Coffee (Your Office Now)', ai: 'AI Data Center' };
 const THEME_MEMOS = {
   openplan: ['Open-plan seating improves collaboration by 0%. The benches are long, heavy and loaded with monitors.', 'FACILITIES'],
   breakroom: ['Someone microwaved fish again. The break room tables must answer for this.', 'INTERNAL MEMO'],
   server: ['IT asks that you please do not flip the servers. IT is not your manager.', 'IT DEPARTMENT'],
+  home: ['You are working from home. Your camera is on. Everyone in the 9:00 standup can see you flipping your kitchen table.', 'HR · REMOTE WORK'],
+  cafe: ['You have taken your laptop to a coffee shop. Your name has been written on the cup as "TABEL". This is personal now.', 'BARISTA'],
+  ai: ['Welcome to the AI Data Center. These GPU racks were three days away from AGI. Flipping them will set humanity back. Probably fine.', 'MACHINE LEARNING OPS'],
 };
 const tileTex = canvasTex(128, 128, (g, w, h) => { for (let y = 0; y < 2; y++) for (let x = 0; x < 2; x++) { g.fillStyle = (x + y) % 2 ? '#d9d4c9' : '#f4f1ea'; g.fillRect(x * 64, y * 64, 64, 64); } });
 tileTex.wrapS = tileTex.wrapT = THREE.RepeatWrapping;
@@ -1079,6 +1135,20 @@ const rackFaces = [0, 1].map(k => canvasTex(64, 128, (g, w, h) => {
   for (let y = 4; y < h - 4; y += 10) { g.fillStyle = '#23262d'; g.fillRect(4, y, w - 8, 8); for (let i = 0; i < 3; i++) { const on = ((y * 7 + i * 13 + k * 5) % 11) < 6; g.fillStyle = on ? (i === 2 ? '#4cc3ff' : '#4cff7a') : '#1d3a26'; g.fillRect(w - 18 + i * 5, y + 3, 3, 2); } }
 }));
 const rackFaceMat = new THREE.MeshBasicMaterial({ map: rackFaces[0], toneMapped: false });
+const gpuFaces = [0, 1, 2].map(k => canvasTex(64, 160, (g, w, h) => {
+  g.fillStyle = '#07080c'; g.fillRect(0, 0, w, h);
+  for (let y = 4; y < h - 4; y += 12) {
+    g.fillStyle = '#14161d'; g.fillRect(3, y, w - 6, 10);
+    g.fillStyle = ((y / 12 + k) % 3) ? '#7c3aed' : '#22d3ee'; g.fillRect(5, y + 4, w - 10, 2); // light bars
+    for (let i = 0; i < 4; i++) { g.fillStyle = ((y + i * 7 + k * 11) % 9) < 5 ? '#4cff7a' : '#173a24'; g.fillRect(8 + i * 5, y + 7, 2, 2); }
+  }
+}));
+const gpuFaceMat = new THREE.MeshBasicMaterial({ map: gpuFaces[0], toneMapped: false });
+const plankTex = canvasTex(256, 256, (g, w, h) => {
+  for (let y = 0; y < 8; y++) { const off = (y % 2) * 64; for (let x = -64; x < w; x += 128) { const v = 200 + Math.random() * 40 | 0; g.fillStyle = `rgb(${v},${v - 10},${v - 25})`; g.fillRect(x + off, y * 32, 126, 30); } }
+  g.fillStyle = 'rgba(0,0,0,.25)'; for (let y = 0; y < 8; y++) g.fillRect(0, y * 32 + 30, w, 2);
+});
+plankTex.wrapS = plankTex.wrapT = THREE.RepeatWrapping;
 M.serverSign = new THREE.MeshBasicMaterial({ map: labelTex(360, 120, '#c8241c', '#fff', ['SERVER ROOM', 'AUTHORIZED PERSONNEL ONLY'], 'bold 22px Inter, sans-serif') });
 
 // A floor is a winding path of differently shaped rooms joined by corridors. The path heads
@@ -1151,11 +1221,13 @@ function buildFloor(f, daily = 0) {
   coworkers = []; hr = null;
   const rng = mulberry32(daily ? daily * 7919 + 1 : f * 131 + 7), boss = !daily && isBoss(f), theme = daily ? DAILY_THEMES[daily % 4] : floorTheme(f);
   screenOverride = f === 23 && !daily ? MDR_SCREEN : null;
-  const n = daily ? { office: 12, openplan: 6, breakroom: 9, server: 12 }[theme] : theme === 'openplan' ? Math.ceil(tableCount(f) / 2) : theme === 'breakroom' ? Math.ceil(tableCount(f) * 0.7) : tableCount(f);
-  const [sx, sz] = theme === 'openplan' ? [5.4, 3.7] : theme === 'breakroom' ? [2.9, 2.9] : theme === 'server' ? [1.5, 3.2] : [3.4, 3.1];
+  const n = daily ? { office: 12, openplan: 6, breakroom: 9, server: 12 }[theme] : theme === 'openplan' ? Math.ceil(tableCount(f) / 2) : theme === 'breakroom' ? Math.ceil(tableCount(f) * 0.7)
+    : theme === 'home' ? 5 : theme === 'cafe' ? Math.min(12, Math.ceil(tableCount(f) * 0.6)) : theme === 'ai' ? Math.max(30, tableCount(f) + 8) : tableCount(f);
+  const [sx, sz] = theme === 'openplan' ? [5.4, 3.7] : theme === 'breakroom' ? [2.9, 2.9] : theme === 'server' ? [1.5, 3.2] : theme === 'ai' ? [1.7, 3.4] : theme === 'cafe' ? [2.6, 2.6] : theme === 'home' ? [3.6, 3.2] : [3.4, 3.1];
   const tall = innerWidth / innerHeight < 0.9;
-  const cap = (tall ? { office: 3, openplan: 2, breakroom: 4, server: 6 } : { office: 6, openplan: 4, breakroom: 6, server: 8 })[theme];
-  const k = boss ? 1 : clamp(Math.ceil(n / cap), 1, 4);
+  const cap = (tall ? { office: 3, openplan: 2, breakroom: 4, server: 6, home: 6, cafe: 4, ai: 6 } : { office: 6, openplan: 4, breakroom: 6, server: 8, home: 6, cafe: 6, ai: 6 })[theme];
+  // the AI data center is a big campus: always 5-7 halls of racks
+  const k = boss || theme === 'home' ? 1 : theme === 'ai' ? clamp(Math.ceil(n / cap), 5, 7) : clamp(Math.ceil(n / cap), 1, 4);
   // uneven split so rooms differ in size too
   const counts = Array(k).fill(Math.floor(n / k)); for (let i = 0; i < n % k; i++) counts[i]++;
   if (k > 1) for (let s2 = 0; s2 < k; s2++) { const a = rng() * k | 0, b2 = rng() * k | 0; if (a !== b2 && counts[a] > 2) { counts[a]--; counts[b2]++; } }
@@ -1163,7 +1235,8 @@ function buildFloor(f, daily = 0) {
 
   // shared per-floor materials
   const hue = (f * 0.137) % 1;
-  const wallMat = boss ? std(0x3a2a22, { roughness: 0.6 }) : theme === 'server' ? M.serverWall : theme === 'breakroom' ? M.breakWall : M.wall;
+  const wallMat = boss ? std(0x3a2a22, { roughness: 0.6 }) : theme === 'server' ? M.serverWall : theme === 'breakroom' ? M.breakWall
+    : theme === 'home' ? M.homeWall : theme === 'cafe' ? M.cafeWall : theme === 'ai' ? M.aiWall : M.wall;
   if (boss) perFloor.push(wallMat);
   const wt = windowTex(f); perFloor.push(wt);
   const winMat = new THREE.MeshBasicMaterial({ map: wt, toneMapped: false }); perFloor.push(winMat);
@@ -1222,8 +1295,10 @@ function buildFloor(f, daily = 0) {
     const walls = new THREE.Group(), stub = new THREE.Group(); rg.add(walls, stub);
     Object.assign(R, { rg, walls, stub, doorsHere: [] });
     rooms.push(R);
-    const carpet = std(new THREE.Color().setHSL((hue + ri * 0.03) % 1, boss ? 0.45 : 0.22, boss ? 0.22 : 0.42 - (ri % 2) * 0.03), { map: (theme === 'breakroom' ? tileTex : theme === 'server' ? raisedTex : carpetTex).clone(), roughness: theme === 'office' || theme === 'openplan' ? 1 : 0.6 });
+    const floorTex = theme === 'breakroom' ? tileTex : theme === 'server' || theme === 'ai' ? raisedTex : theme === 'home' || theme === 'cafe' ? plankTex : carpetTex;
+    const carpet = std(new THREE.Color().setHSL((hue + ri * 0.03) % 1, boss ? 0.45 : 0.22, boss ? 0.22 : 0.42 - (ri % 2) * 0.03), { map: floorTex.clone(), roughness: theme === 'office' || theme === 'openplan' ? 1 : 0.6 });
     if (theme === 'breakroom') carpet.color.set(0xffffff); if (theme === 'server') carpet.color.set(0xc4c9d0);
+    if (theme === 'ai') carpet.color.set(0x4a5160); if (theme === 'home') carpet.color.set(0xd9a46a); if (theme === 'cafe') carpet.color.set(0x7a5236);
     carpet.map.repeat.set(W / tile, D / tile); carpet.map.needsUpdate = true; perFloor.push(carpet, carpet.map);
     R.carpet = carpet;
     const fl = new THREE.Mesh(own(new THREE.BoxGeometry(W, 0.4, D)), [M.trim, M.trim, carpet, M.trim, M.trim, M.trim]);
@@ -1239,6 +1314,7 @@ function buildFloor(f, daily = 0) {
     const slots = []; for (let x = -W / 2 + 1.6; x < W / 2 - 1; x += 2.3) if (!nearDoor(R.backDoors, x, 2.1)) slots.push(x);
     const posterSlot = slots.length >= 3 ? 1 + (rng() * (slots.length - 2) | 0) : -1;
     slots.forEach((x, i) => {
+      if (theme === 'ai') return; // windowless, like all the best data centers
       if (theme === 'server') {
         if (i === 0) { const sign = new THREE.Mesh(geo('ssign', () => new THREE.PlaneGeometry(1.8, 0.6)), M.serverSign); sign.position.set(x, 1.9, -D / 2 + 0.03); walls.add(sign); }
         return;
@@ -1278,21 +1354,21 @@ function buildFloor(f, daily = 0) {
     if (first) { ez = elevator(walls, R, last); elevPos.set(R.cx - W / 2 + 0.7, 0, R.cz + ez); }
     else if (last) ez = elevator(walls, R, true);
     // posters on the left wall, clear of elevator and doors
-    for (let pz = -D / 2 + 1.1; pz < D / 2 - 1.0 && deck.length; pz += 1.7) {
+    for (let pz = -D / 2 + 1.1; pz < D / 2 - 1.0 && deck.length && theme !== 'ai'; pz += 1.7) {
       if (ez != null && Math.abs(pz - ez) < 2.2) continue;
       if (first && pz > ez + 1.2 && pz < ez + 2.2) continue; // water cooler
       if (nearDoor(R.leftDoors, pz, 1.9)) continue;
       if (rng() < 0.35) continue;
       poster(deck.pop(), -W / 2 + 0.03, 1.65, pz, 'x', frameMat, walls);
     }
-    makePrinter(R.cx + W / 2 - 0.7, R.cz - D / 2 + 0.65);
+    if (theme !== 'ai' && theme !== 'cafe') makePrinter(R.cx + W / 2 - 0.7, R.cz - D / 2 + 0.65);
     setDressing(R, ri, { f, theme, boss, rng, first, last, own });
     const plant = (x, z) => { const pt = cyl(0.28, 0.22, 0.6, M.pot); pt.position.set(x, 0.3, z); const l = new THREE.Mesh(geo('bigleaf', () => new THREE.IcosahedronGeometry(0.55, 0)), M.leaf); l.position.set(x, 1.05, z); l.castShadow = true; rg.add(pt, l); };
-    if (first) {
+    if (first && theme !== 'home' && theme !== 'cafe' && theme !== 'ai') {
       const cooler = box(0.4, 1.0, 0.4, M.cooler); cooler.position.set(-W / 2 + 0.45, 0.5, ez + 1.6);
       const jug = cyl(0.16, 0.16, 0.45, M.water); jug.position.set(-W / 2 + 0.45, 1.25, ez + 1.6); rg.add(cooler, jug);
     }
-    if (theme !== 'server' && !nearDoor(R.leftDoors, D / 2 - 0.6, 1.4)) plant(-W / 2 + 0.6, D / 2 - 0.6);
+    if (theme !== 'server' && theme !== 'ai' && !nearDoor(R.leftDoors, D / 2 - 0.6, 1.4)) plant(-W / 2 + 0.6, D / 2 - 0.6);
   });
 
   // corridors, doors and wayfinding arrows between consecutive rooms
@@ -1326,8 +1402,10 @@ function buildFloor(f, daily = 0) {
     for (let li = 0; li < R.count; li++, i++) {
       const roll = rng();
       const kind = boss ? 'boss' : theme === 'openplan' ? 'bench' : theme === 'breakroom' ? 'round' : theme === 'server' ? 'rack'
+        : theme === 'ai' ? 'gpu' : theme === 'cafe' ? 'cafe' : theme === 'home' ? ['homedesk', 'kitchen', 'coffee', 'ironing', 'kitchen'][li % 5]
         : roll < cornerOdds ? 'corner' : roll < cornerOdds + cubOdds ? 'cubicle' : (daily || f >= 6) && roll < cornerOdds + cubOdds + 0.15 ? 'standing' : 'desk';
-      const mult = { boss: [14, 8], corner: [3, 2.5], cubicle: [6, 4.5], standing: [1.5, 2], bench: [2.2, 1.6], round: [0.8, 1], rack: [1.6, 1.8] }[kind] || [1, 1];
+      const mult = { boss: [14, 8], corner: [3, 2.5], cubicle: [6, 4.5], standing: [1.5, 2], bench: [2.2, 1.6], round: [0.8, 1], rack: [1.6, 1.8],
+        gpu: [5, 3.5], cafe: [0.9, 1.5], homedesk: [1.5, 2.5], kitchen: [2, 2.5], coffee: [1, 2], ironing: [0.6, 2] }[kind] || [1, 1];
       let relic = null;
       if (kind === 'standing') standings++;
       if (kind === 'cubicle') cubicles++;
@@ -1346,7 +1424,7 @@ function buildFloor(f, daily = 0) {
   });
   if (THEME_MEMOS[theme] && !daily && !S['seen_' + theme]) { S['seen_' + theme] = true; setTimeout(() => memo(...THEME_MEMOS[theme]), 2600); }
   let seated = 0;
-  for (const t of tables) for (const ch of t.chairs) if (!t.boss && seated < 7 && rng() < 0.3) seatCoworker(t, ch, seated++);
+  for (const t of tables) for (const ch of t.chairs) if (!t.boss && theme !== 'home' && seated < 7 && rng() < (theme === 'cafe' ? 0.45 : 0.3)) seatCoworker(t, ch, seated++);
   if (boss) spawnHR();
   if (standings && !daily && !S.seenStanding) { S.seenStanding = true; setTimeout(() => memo('Facilities has installed standing desks. They are taller, pay double, and nobody has ever stood at one.', 'FACILITIES'), 3200); }
   if (corners && !daily && !S.seenCorner) { S.seenCorner = true; setTimeout(() => memo('Facilities has installed corner desks. They are heavier, load-bearing (probably) and covered in expensive equipment.', 'FACILITIES'), 2600); }
@@ -1381,11 +1459,13 @@ function roomCleared() {
 // Walkers move room to room through the door waypoints.
 function routeStep(it, dest, destRoom) {
   if (it.ri == null) it.ri = 0;
+  it.routing = false;
   if (destRoom <= it.ri) return dest;
   const c = conns[it.ri];
   if (!c || !c.unlocked) return dest;
   const target = it.leg ? c.w2 : c.w1;
-  if (Math.hypot(it.g.position.x - target.x, it.g.position.z - target.z) < 0.25) { if (it.leg) { it.ri++; it.leg = 0; } else it.leg = 1; }
+  it.routing = true; // walkers heading through a door don't shove each other (they'd never reach the same waypoint)
+  if (Math.hypot(it.g.position.x - target.x, it.g.position.z - target.z) < 0.6) { if (it.leg) { it.ri++; it.leg = 0; } else it.leg = 1; }
   return target;
 }
 
@@ -1451,6 +1531,9 @@ function makeRound(t, g, x, z) {
 const CORNER = { slabs: [[1.9, 0.8, 0, -0.3], [0.8, 0.7, 0.55, 0.45]], legs: [[-0.85, -0.6], [-0.85, 0], [0.85, -0.6], [0.85, 0.72], [0.22, 0.72]] };
 function makeTable(x, z, kind, hp, reward, yaw, relic) {
   if (kind === 'rack') return makeRack(x, z, hp, reward, yaw);
+  if (kind === 'gpu') return makeGpu(x, z, hp, reward, yaw);
+  if (kind === 'cafe') return makeCafe(x, z, hp, reward, yaw);
+  if (['homedesk', 'kitchen', 'coffee', 'ironing'].includes(kind)) return makeHome(x, z, kind, hp, reward, yaw);
   if (kind === 'bench' || kind === 'round') return makeSpecial(x, z, kind, hp, reward, yaw);
   const boss = kind === 'boss', heavy = kind === 'corner', standing = kind === 'standing', cub = kind === 'cubicle';
   const w = boss ? 5.6 : 2.0, d = boss ? 2.2 : 1.05, legH = standing ? 1.08 : LEG_H;
@@ -1537,6 +1620,51 @@ function makeSpecial(x, z, kind, hp, reward, yaw) {
   (bench ? makeBench : makeRound)(t, g, x, z);
   return t;
 }
+// AI Data Center GPU rack: bigger, glowing, liquid-cooled, much tougher.
+function makeGpu(x, z, hp, reward, yaw) {
+  const g = new THREE.Group();
+  const topMat = M.gpu.clone(); perFloor.push(topMat);
+  const body = new THREE.Mesh(geo('gpu', () => new THREE.BoxGeometry(0.85, 2.4, 1.15)), topMat); body.castShadow = body.receiveShadow = true; g.add(body);
+  const face = new THREE.Mesh(geo('gpuFace', () => new THREE.PlaneGeometry(0.76, 2.3)), gpuFaceMat); face.position.z = 0.58; g.add(face);
+  const back = face.clone(); back.rotation.y = Math.PI; back.position.z = -0.58; g.add(back);
+  for (const px of [-0.25, 0.25]) { const pipe = cyl(0.05, 0.05, 1.2, M.pipe, 10); pipe.rotation.x = Math.PI / 2; pipe.position.set(px, 1.25, 0); g.add(pipe); }
+  g.position.set(x, 1.2, z); g.rotation.y = yaw;
+  return newTable(g, 'gpu', topMat, hp, reward, 0.95, [0.43, 0.58], { loadMult: 1.6, flipAngle: Math.PI / 2, flipH: 0.3 });
+}
+// Coffee shop: little round table, a latte, a laptop and a pastry. Two chairs.
+function itLatte() { const c = cyl(0.045, 0.036, 0.13, M.cup, 14); const sl = cyl(0.047, 0.042, 0.05, M.sleeve, 14); sl.position.y = -0.005; const lid = cyl(0.048, 0.048, 0.015, M.latte, 14); lid.position.y = 0.07; return item(0.065, 0.05, c, sl, lid); }
+function itPastry() { const p = new THREE.Mesh(geo('croissant', () => new THREE.TorusGeometry(0.06, 0.03, 8, 12, Math.PI)), M.pastry); p.rotation.x = -Math.PI / 2; p.castShadow = true; return item(0.03, 0.03, p); }
+function makeCafe(x, z, hp, reward, yaw) {
+  const g = new THREE.Group(), topMat = M.darkwood.clone(); perFloor.push(topMat);
+  const top = new THREE.Mesh(geo('cafeTop', () => new THREE.CylinderGeometry(0.48, 0.48, TOP_H, 24)), topMat); top.castShadow = top.receiveShadow = true; g.add(top);
+  const post = cyl(0.05, 0.05, LEG_H, M.leg, 10); post.position.y = -LEG_H / 2; g.add(post);
+  const foot = cyl(0.26, 0.3, 0.04, M.leg, 18); foot.position.y = -LEG_H - TOP_H / 2 + 0.02; g.add(foot);
+  g.position.set(x, TOP_Y, z); g.rotation.y = yaw;
+  const t = newTable(g, 'cafe', topMat, hp, reward, 0.7, [0.48, 0.48]);
+  const add = (o, ix, iz, ry = 0) => { o.position.set(ix, TOP_H / 2 + o.userData.h, iz); o.rotation.y = ry; g.add(o); t.items.push(o); };
+  add(itLaptop(), 0, 0.05, rand(-0.3, 0.3)); add(itLatte(), 0.3, -0.12); if (Math.random() < 0.6) add(itPastry(), -0.3, -0.15, rand(0, 6));
+  if (Math.random() < 0.4) add(itLatte(), -0.25, 0.25);
+  for (const a of [0.4, 0.4 + Math.PI]) { const ch = makeChair(); ch.position.set(x + Math.sin(a) * 0.8, 0.45, z + Math.cos(a) * 0.8); ch.rotation.y = a; floorGroup.add(ch); t.chairs.push(ch); }
+  return t;
+}
+// Home office: the desk, the kitchen table, the coffee table and (inevitably) the ironing board.
+function makeHome(x, z, kind, hp, reward, yaw) {
+  const g = new THREE.Group();
+  const [w, d, legH, mat] = { homedesk: [1.6, 0.8, LEG_H, M.whiteTop], kitchen: [1.8, 1.1, LEG_H, M.wood], coffee: [1.3, 0.7, 0.38, M.darkwood], ironing: [1.5, 0.42, 0.85, M.board] }[kind];
+  const topMat = mat.clone(); perFloor.push(topMat);
+  const top = new THREE.Mesh(geo(`htop${kind}`, () => new THREE.BoxGeometry(w, TOP_H, d)), topMat); top.castShadow = top.receiveShadow = true; g.add(top);
+  const legs = kind === 'ironing' ? [[-0.4, 0], [0.4, 0]] : [-1, 1].flatMap(a => [-1, 1].map(b => [a * (w / 2 - 0.08), b * (d / 2 - 0.08)]));
+  for (const [lx, lz] of legs) { const l = box(kind === 'ironing' ? 0.03 : 0.06, legH, kind === 'ironing' ? d * 0.9 : 0.06, kind === 'ironing' ? M.metal : M.leg); l.position.set(lx, -legH / 2 - TOP_H / 2, lz); if (kind === 'ironing') l.rotation.x = lx < 0 ? 0.35 : -0.35; g.add(l); }
+  g.position.set(x, legH + TOP_H / 2, z); g.rotation.y = yaw;
+  const t = newTable(g, kind, topMat, hp, reward, Math.max(w, d) * 0.55 + 0.2, [w / 2, d / 2]);
+  const add = (o, ix, iz, ry = 0) => { o.position.set(ix, TOP_H / 2 + o.userData.h, iz); o.rotation.y = ry; g.add(o); t.items.push(o); };
+  if (kind === 'homedesk') { add(itMonitor(), 0, -0.2); add(itKeyboard(), 0, 0.15); add(itMug(), 0.6, 0.1, rand(0, 6)); add(itPlant(), -0.6, -0.2); }
+  if (kind === 'kitchen') { add(itLaptop(), -0.3, 0.1, 0.2); add(itMug(), 0.2, 0.25, rand(0, 6)); add(itPapers(), 0.55, -0.2, 0.3); const bowl = cyl(0.11, 0.07, 0.07, M.cup, 14); add(item(0.035, 0.035, bowl), 0.45, 0.2); }
+  if (kind === 'coffee') { add(itPizza(), -0.25, 0); add(itMug(), 0.35, 0.1, rand(0, 6)); add(itLaptop(), 0.25, -0.1, -0.4); }
+  if (kind === 'ironing') { add(itLaptop(), 0, 0, Math.PI / 2 + 0.1); }
+  if (kind === 'homedesk' || kind === 'kitchen') { const ch = makeChair(); ch.position.set(x, 0.45, z + d / 2 + 0.4); ch.rotation.y = rand(-0.3, 0.3); floorGroup.add(ch); t.chairs.push(ch); }
+  return t;
+}
 // Server rack: tall, blinking, sparks when hit, topples over instead of flipping.
 function makeRack(x, z, hp, reward, yaw) {
   const g = new THREE.Group();
@@ -1618,7 +1746,7 @@ function hit(t, amount, src, dir) {
   const crit = src === 'click' && Math.random() < critChance();
   if (crit) { amount *= 5; cls = 'crit'; sfx.crit(); shake(0.25); }
   t.hp -= amount; t.lastCrit = crit;
-  if (t.kind === 'rack') sparks(t.g.position.clone().setY(1.2), 3);
+  if (t.kind === 'rack' || t.kind === 'gpu') sparks(t.g.position.clone().setY(1.2), t.kind === 'gpu' ? 5 : 3);
   if (src !== 'intern' || Math.random() < 0.3) startle(t, false);
   t.shake = Math.min(0.35, t.shake + (src === 'intern' ? 0.06 : 0.14) * (t.heavy || t.boss ? 0.5 : 1));
   const p = t.g.position.clone(); p.y += 0.6;
@@ -1653,9 +1781,10 @@ function kill(t, src, dir) {
     tables.every(o => o === t || Math.hypot((o.land || o.base).x - q.x, (o.land || o.base).z - q.z) > (o.radius + t.radius) * 0.75);
   for (const k of [1, 0.7, 0.45, 0.2, 0]) { const q = t.base.clone().addScaledVector(dir, dist * k); if (k === 0 || clear(q)) { dist *= k; break; } }
   t.land = t.base.clone().addScaledVector(dir, dist);
-  const landY = t.kind === 'rack' ? (Math.abs(dir.x) > Math.abs(dir.z) ? 0.35 : 0.5) : TOP_H / 2;
+  const landY = t.kind === 'rack' ? (Math.abs(dir.x) > Math.abs(dir.z) ? 0.35 : 0.5) : t.kind === 'gpu' ? (Math.abs(dir.x) > Math.abs(dir.z) ? 0.43 : 0.58) : TOP_H / 2;
   t.flip = { t: 0, dur: t.boss ? 1.1 : t.heavy ? 0.9 : 0.72, dir, axis, p0: t.g.position.clone(), q0: t.g.quaternion.clone(), dist, h: t.boss ? 2.6 : t.flipH ?? rand(1.4, 2.2), angle: t.flipAngle || Math.PI, landY, landed: false };
-  if (t.kind === 'rack') { sparks(t.g.position, 18); tone('sawtooth', 1800, 200, 0.4, 0.06); }
+  if (t.kind === 'rack' || t.kind === 'gpu') { sparks(t.g.position, t.kind === 'gpu' ? 32 : 18); tone('sawtooth', 1800, 200, 0.4, 0.06); }
+  if (t.kind === 'gpu' && Math.random() < 0.25) spawnText(t.g.position.clone().setY(2.6), pick(['-$40,000', 'LOSS: NaN', 'AGI DELAYED', 'CUDA OUT OF MEMORY', 'HALLUCINATING']), 'yelp');
   startle(t, true); printerProtest();
   t.heat = 0;
   const roomLeft = tables.some(o => !o.dead && o.room === t.room);
@@ -2230,6 +2359,7 @@ function loop(now) {
     elev.d1.position.z = elev.z - 0.42 - elev.open * 0.8; elev.d2.position.z = elev.z + 0.42 + elev.open * 0.8;
   }
   rackFaceMat.map = rackFaces[(time * 2.5 | 0) % 2];
+  gpuFaceMat.map = gpuFaces[(time * 3 | 0) % 3];
   const pulse = 0.12 + 0.18 * (0.5 + 0.5 * Math.sin(time * 4));
   for (const m of RELIC_MATS) m.emissiveIntensity = pulse;
   updateDebris(dt); updatePuffs(dt);
