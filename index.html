@@ -421,8 +421,9 @@ function save() { S.t = Date.now(); try { localStorage.setItem(SAVE_KEY, JSON.st
 // ---------------------------------------------------------------- balance
 const isBoss = f => f % 10 === 0;
 // Early floors are a gentle on-ramp (floor 1 desks go over in one click); the full curve kicks in by floor 11.
-const tableHP = f => Math.ceil(3 * Math.pow(1.16, f - 1) * Math.min(1, 0.3 + 0.07 * (f - 1)));
-const tableReward = f => Math.ceil(2 * Math.pow(1.17, f - 1));
+// Desks toughen 28%/floor while rage only grows 20%: easy start, real wall by floor ~25 (where severance unlocks).
+const tableHP = f => Math.ceil(3 * Math.pow(1.28, f - 1) * Math.min(1, 0.3 + 0.07 * (f - 1)));
+const tableReward = f => Math.ceil(2 * Math.pow(1.2, f - 1));
 const tableCount = f => isBoss(f) ? 1 : Math.min(2 + f, 30);
 let mode = 'career'; // 'career' | 'daily'
 // Severance: permanent multiplier earned by quitting and getting rehired (prestige).
@@ -438,11 +439,11 @@ const splashR = () => mode === 'daily' || !S.up.shock ? 0 : 1.6 + 0.7 * S.up.sho
 const emailRate = () => mode === 'daily' ? 0 : S.up.email * tableReward(S.floor) * 0.15 * sevMult();
 
 const UPG = [
-  { id: 'arms', unlock: 1, short: 'Arms', blurb: 'More damage per click', ic: '💪', name: 'Forearm Day', base: 10, k: 1.5, fx: () => `${fmt(dmg())} dmg per click` },
-  { id: 'interns', unlock: 4, short: 'Intern', blurb: 'Flips tables while you idle', ic: '🧑‍💼', name: 'Unpaid Intern', base: 250, k: 1.7, fx: () => S.up.interns ? `${fmt(internDps())} dmg/s for "exposure"` : 'Flips tables for "exposure"' },
+  { id: 'arms', unlock: 1, short: 'Arms', blurb: 'More damage per click', ic: '💪', name: 'Forearm Day', base: 10, k: 1.65, fx: () => `${fmt(dmg())} dmg per click` },
+  { id: 'interns', unlock: 4, short: 'Intern', blurb: 'Flips tables while you idle', ic: '🧑‍💼', name: 'Unpaid Intern', base: 250, k: 1.8, fx: () => S.up.interns ? `${fmt(internDps())} dmg/s for "exposure"` : 'Flips tables for "exposure"' },
   { id: 'spite', unlock: 3, short: 'Spite', blurb: 'Chance of 5× critical hits', ic: '😤', name: 'Pure Spite', base: 60, k: 1.7, max: 15, fx: () => `${Math.round(critChance() * 100)}% chance of 5× crit` },
   { id: 'shock', unlock: 5, short: 'Shock', blurb: 'Hits splash onto nearby desks', ic: '💥', name: 'Shockwave', base: 120, k: 1.75, max: 10, fx: () => S.up.shock ? `${splashR().toFixed(1)}m splash radius` : 'Rage gets area of effect' },
-  { id: 'email', unlock: 2, short: 'Emails', blurb: 'Passive rage per second', ic: '📧', name: 'Reply-All Storm', base: 45, k: 1.5, fx: () => S.up.email ? `+${fmt(emailRate())} rage/s passively` : 'Generates rage while idle' },
+  { id: 'email', unlock: 2, short: 'Emails', blurb: 'Passive rage per second', ic: '📧', name: 'Reply-All Storm', base: 45, k: 1.6, fx: () => S.up.email ? `+${fmt(emailRate())} rage/s passively` : 'Generates rage while idle' },
   { id: 'chair', unlock: 7, short: 'Chairs', blurb: 'Flipped desks fling their chairs at other desks', ic: '🪑', name: 'Ergonomic Chair Throw', base: 400, k: 1.8, max: 10, fx: () => S.up.chair ? `Thrown chairs hit for ${fmt(chairDmg())}` : 'Chairs become projectiles' },
   { id: 'retreat', unlock: 9, req: () => S.up.interns > 0, short: 'Retreat', blurb: 'Interns hit harder after the trust falls', ic: '🏕️', name: 'Team Building Retreat', base: 3000, k: 2.1, max: 10, fx: () => `Interns deal ×${(1 + 0.4 * S.up.retreat).toFixed(1)} damage` },
 ];
@@ -751,12 +752,12 @@ function updateIntern(it, dt) {
       if (sp.lengthSq() < 0.01) sp.set(0, 0, 1);
       sp.normalize().applyAxisAngle(UP, it.ang);
       sp.multiplyScalar(Math.abs(sp.x) * t.half[0] + Math.abs(sp.z) * t.half[1] + 0.45).add(t.base).setY(0);
-      sp.x = clamp(sp.x, room().cx - W / 2 + 0.4, room().cx + W / 2 - 0.4); sp.z = clamp(sp.z, -D / 2 + 0.4, D / 2 - 0.4);
+      sp.x = clamp(sp.x, room().cx - W / 2 + 0.4, room().cx + W / 2 - 0.4); sp.z = clamp(sp.z, room().cz - D / 2 + 0.4, room().cz + D / 2 - 0.4);
     }
   }
   const t = it.target;
   if (!t) return;
-  const to = tmpV.copy(routeTo(g.position, it.spot)).sub(g.position), dist = to.length();
+  const to = tmpV.copy(routeStep(it, it.spot, t.room)).sub(g.position), dist = to.length();
   if (it.state === 'walk') {
     if (dist > 0.08) {
       const step = Math.min(dist, 2.6 * dt);
@@ -826,7 +827,7 @@ function updateCoworker(cw, dt) {
     cw.body.rotation.x = 0.45 + Math.sin(cw.phase * 4) * 0.03;
     if (cw.t > 1.6) { cw.state = 'sit'; cw.t = 0; }
   } else if (cw.state === 'flee') { // run for the elevator, arms flailing
-    const R = rooms[cw.table.room] || room(), out = cw.table.room ? wp.set(R.cx - W / 2 - 0.6, 0, R.dz) : elevPos;
+    const ri = cw.table.room || 0, out = ri ? conns[ri - 1].w2 : elevPos;
     const to = tmpV.copy(out).sub(g.position).setY(0), d = to.length();
     if (d < 0.5) { cw.state = 'gone'; g.visible = false; return; }
     g.position.addScaledVector(to.normalize(), Math.min(d, 4.2 * dt));
@@ -983,36 +984,87 @@ const rackFaces = [0, 1].map(k => canvasTex(64, 128, (g, w, h) => {
 const rackFaceMat = new THREE.MeshBasicMaterial({ map: rackFaces[0], toneMapped: false });
 M.serverSign = new THREE.MeshBasicMaterial({ map: labelTex(360, 120, '#c8241c', '#fff', ['SERVER ROOM', 'AUTHORIZED PERSONNEL ONLY'], 'bold 22px Inter, sans-serif') });
 
-// A floor is a short path of rooms joined by corridors. Each room is small enough to fill the screen;
-// clearing one opens the door to the next, and the exit elevator waits in the last.
+// A floor is a winding path of differently shaped rooms joined by corridors. The path heads
+// east, south or north (never doubling back). Rooms between the camera and the active room are
+// shown cut away (knee-high walls) so they never block the view. A floor arrow points to the
+// next door: red while locked, green once the room is cleared.
 const GAP = 2.2;
-let rooms = [], activeRoom = 0;
-const room = () => rooms[activeRoom] || { cx: 0, dz: 0 };
+let rooms = [], conns = [], activeRoom = 0;
+const room = () => rooms[activeRoom] || { cx: 0, cz: 0, W: 10, D: 10 };
 const camGoal = new THREE.Vector3();
+const arrowTex = canvasTex(128, 128, (g, w, h) => {
+  g.fillStyle = '#fff';
+  for (const ox of [0, 44]) { g.beginPath(); g.moveTo(14 + ox, 24); g.lineTo(58 + ox, 64); g.lineTo(14 + ox, 104); g.lineTo(34 + ox, 104); g.lineTo(78 + ox, 64); g.lineTo(34 + ox, 24); g.closePath(); g.fill(); }
+});
+
+// Lay out rooms: varied sizes, a path that turns, no overlaps, door spots that line up.
+function planRooms(rng, k, counts, sx, sz, tall, boss) {
+  const out = [];
+  const overlap = (a, b) => a.x0 < b.x1 + 0.6 && b.x0 < a.x1 + 0.6 && a.z0 < b.z1 + 0.6 && b.z0 < a.z1 + 0.6;
+  for (let i = 0; i < k; i++) {
+    const c = counts[i];
+    // pick a shape: some rooms wide, some deep, some square
+    const opts = []; for (let cols = 1; cols <= Math.min(c, tall ? 2 : 4); cols++) { const rows = Math.ceil(c / cols); if (rows <= (tall ? 5 : 4)) opts.push([cols, rows]); }
+    const [cols, rows] = boss ? [1, 1] : opts[rng() * opts.length | 0] || [Math.min(c, 2), Math.ceil(c / 2)];
+    const W = boss ? 13 : Math.max(7, cols * sx + 3.4 + rng() * 1.6), D = boss ? 10 : Math.max(6.6, rows * sz + 3.2 + rng() * 1.4);
+    const R = { W, D, cols, rows, count: c, cx: 0, cz: 0 };
+    const box = () => ({ x0: R.cx - W / 2, x1: R.cx + W / 2, z0: R.cz - D / 2, z1: R.cz + D / 2 });
+    if (i === 0) { Object.assign(R, box()); out.push(R); continue; }
+    const P = out[i - 1], last = i === k - 1;
+    const prevDir = P.dir, dirs = ['E', 'S', 'N', 'E', 'S'].filter(d => !(d === 'N' && prevDir === 'S') && !(d === 'S' && prevDir === 'N'));
+    let placed = false;
+    for (let tries = 0; tries < 12 && !placed; tries++) {
+      const dir = tries < 10 ? dirs[rng() * dirs.length | 0] : 'E';
+      const jit = a => (rng() - 0.5) * Math.max(0, a);
+      if (dir === 'E') { R.cx = P.x1 + GAP + W / 2; R.cz = P.cz + jit(Math.min(P.D, D) - 3.6); }
+      if (dir === 'S') { R.cz = P.z1 + GAP + D / 2; R.cx = P.cx + jit(Math.min(P.W, W) - 3.6); }
+      if (dir === 'N') { R.cz = P.z0 - GAP - D / 2; R.cx = P.cx + jit(Math.min(P.W, W) - 3.6); }
+      Object.assign(R, box());
+      if (out.some(o => overlap(o, R))) continue;
+      // door position along the shared side
+      let door;
+      if (dir === 'E') {
+        let lo = Math.max(P.z0, R.z0) + 1.2, hi = Math.min(P.z1, R.z1) - 1.2;
+        if (last) lo = Math.max(lo, R.z0 + 3.4); // keep clear of the exit elevator on the left wall
+        if (i === 1) lo = Math.max(lo, P.z0); if (hi < lo) continue;
+        door = { z: hi - (hi - lo) * rng() * 0.4 };
+      } else {
+        let lo = Math.max(P.x0, R.x0) + 1.3, hi = Math.min(P.x1, R.x1) - 1.3;
+        if (dir === 'N' && i === 1) lo = Math.max(lo, P.x0 + 2.4); // arrival elevator corner of room 0
+        if (hi < lo) continue;
+        door = { x: lo + (hi - lo) * rng() };
+      }
+      R.dir = dir; R.door = door; placed = true;
+    }
+    if (!placed) { // guaranteed-free fallback: further east than everything so far
+      const maxX = Math.max(...out.map(o => o.x1));
+      R.cx = maxX + GAP + W / 2; R.cz = P.cz; Object.assign(R, box());
+      R.dir = 'E'; R.door = { z: clamp(Math.min(P.z1, R.z1) - 1.3, R.z0 + (last ? 3.4 : 1.2), R.z1 - 1.2) };
+    }
+    out.push(R);
+  }
+  return out;
+}
 
 function buildFloor(f, daily = 0) {
   if (floorGroup) scene.remove(floorGroup);
   perFloor.forEach(x => x.dispose()); perFloor.length = 0; interns = [];
-  debris.length = 0; puffs.length = 0; tables = []; rooms = []; activeRoom = 0; printers = [];
+  debris.length = 0; puffs.length = 0; tables = []; rooms = []; conns = []; activeRoom = 0; printers = [];
   floorGroup = new THREE.Group(); scene.add(floorGroup);
   coworkers = []; hr = null;
   const rng = mulberry32(daily ? daily * 7919 + 1 : f * 131 + 7), boss = !daily && isBoss(f), theme = daily ? DAILY_THEMES[daily % 4] : floorTheme(f);
   const n = daily ? { office: 12, openplan: 6, breakroom: 9, server: 12 }[theme] : theme === 'openplan' ? Math.ceil(tableCount(f) / 2) : theme === 'breakroom' ? Math.ceil(tableCount(f) * 0.7) : tableCount(f);
   const [sx, sz] = theme === 'openplan' ? [5.4, 3.7] : theme === 'breakroom' ? [2.9, 2.9] : theme === 'server' ? [1.5, 3.2] : [3.4, 3.1];
-  const tall = innerWidth / innerHeight < 0.9; // portrait phones get narrow, deep rooms that fill the screen
+  const tall = innerWidth / innerHeight < 0.9;
   const cap = (tall ? { office: 3, openplan: 2, breakroom: 4, server: 6 } : { office: 6, openplan: 4, breakroom: 6, server: 8 })[theme];
-  const colPref = (tall ? { office: 1, openplan: 1, breakroom: 2, server: 2 } : { office: 3, openplan: 2, breakroom: 3, server: 4 })[theme];
   const k = boss ? 1 : clamp(Math.ceil(n / cap), 1, 4);
-  const per = Math.ceil(n / k);
-  const cols = boss ? 1 : Math.min(per, colPref * (per > cap ? 2 : 1)), rows = boss ? 1 : Math.ceil(per / cols);
-  W = boss ? 13 : Math.max(7, cols * sx + 3.4); D = boss ? 10 : Math.max(6.6, rows * sz + 3.2);
+  // uneven split so rooms differ in size too
+  const counts = Array(k).fill(Math.floor(n / k)); for (let i = 0; i < n % k; i++) counts[i]++;
+  if (k > 1) for (let s2 = 0; s2 < k; s2++) { const a = rng() * k | 0, b2 = rng() * k | 0; if (a !== b2 && counts[a] > 2) { counts[a]--; counts[b2]++; } }
+  const plan = planRooms(rng, k, counts, sx, sz, tall, boss);
 
   // shared per-floor materials
   const hue = (f * 0.137) % 1;
-  const floorColor = theme === 'breakroom' ? new THREE.Color(0xffffff) : theme === 'server' ? new THREE.Color(0xc4c9d0) : new THREE.Color().setHSL(hue, boss ? 0.45 : 0.22, boss ? 0.22 : 0.42);
-  const carpet = std(floorColor, { map: (theme === 'breakroom' ? tileTex : theme === 'server' ? raisedTex : carpetTex).clone(), roughness: theme === 'office' || theme === 'openplan' ? 1 : 0.6 });
-  const tile = theme === 'office' || theme === 'openplan' ? 3 : 1.2;
-  carpet.map.repeat.set(W / tile, D / tile); carpet.map.needsUpdate = true; perFloor.push(carpet, carpet.map);
   const wallMat = boss ? std(0x3a2a22, { roughness: 0.6 }) : theme === 'server' ? M.serverWall : theme === 'breakroom' ? M.breakWall : M.wall;
   if (boss) perFloor.push(wallMat);
   const wt = windowTex(f); perFloor.push(wt);
@@ -1021,11 +1073,29 @@ function buildFloor(f, daily = 0) {
   const pillarMat = boss ? std(0x2a1d17) : M.pillar;
   if (boss) perFloor.push(pillarMat);
   const deck = [...POSTERS.keys()].sort(() => rng() - 0.5);
-  const flGeo = new THREE.BoxGeometry(W, 0.4, D), bwGeo = new THREE.BoxGeometry(W + 0.3, 3.2, 0.3), lwGeo = new THREE.BoxGeometry(0.3, 3.2, D);
-  perFloor.push(flGeo, bwGeo, lwGeo);
-  const ez = -D / 2 + 1.9, dz = D / 2 - 1.5; // elevator (back of left wall) and doorway (front of left wall)
+  const tile = theme === 'office' || theme === 'openplan' ? 3 : 1.2;
+  const own = g => (perFloor.push(g), g);
 
-  function elevator(rg, cx, exit) {
+  // a wall along one side with openings; returns the door panels it made
+  function wall(parent, axis, len, at, openings) {
+    const doors = [];
+    const ops = openings.slice().sort((a, b) => a - b);
+    let from = -len / 2;
+    const seg = (a, b) => { if (b - a < 0.05) return; const m = new THREE.Mesh(own(axis === 'x' ? new THREE.BoxGeometry(b - a, 3.2, 0.3) : new THREE.BoxGeometry(0.3, 3.2, b - a)), wallMat); m.castShadow = m.receiveShadow = true; if (axis === 'x') m.position.set((a + b) / 2, 1.6, at); else m.position.set(at, 1.6, (a + b) / 2); parent.add(m); };
+    for (const o of ops) {
+      seg(from, o - 0.95);
+      const lintel = axis === 'x' ? box(1.9, 0.8, 0.3, wallMat) : box(0.3, 0.8, 1.9, wallMat);
+      if (axis === 'x') lintel.position.set(o, 2.8, at); else lintel.position.set(at, 2.8, o);
+      const door = axis === 'x' ? box(1.9, 2.4, 0.1, M.door) : box(0.1, 2.4, 1.9, M.door);
+      if (axis === 'x') door.position.set(o, 1.2, at); else door.position.set(at, 1.2, o);
+      parent.add(lintel, door); doors.push({ mesh: door, axis, base: o, open: 0 });
+      from = o + 0.95;
+    }
+    seg(from, len / 2);
+    return doors;
+  }
+  function elevator(parent, R, exit) {
+    const W = R.W, D = R.D, ez = -D / 2 + 1.9;
     const ef = box(0.08, 2.5, 1.9, M.plastic); ef.position.set(-W / 2 + 0.02, 1.25, ez);
     const d1 = box(0.06, 2.3, 0.82, M.metal); d1.position.set(-W / 2 + 0.07, 1.15, ez - 0.42);
     const d2 = d1.clone(); d2.position.z = ez + 0.42;
@@ -1034,110 +1104,144 @@ function buildFloor(f, daily = 0) {
     const inside = new THREE.Mesh(geo('elevIn', () => new THREE.PlaneGeometry(1.64, 2.3)), M.elevLight);
     inside.rotation.y = Math.PI / 2; inside.position.set(-W / 2 + 0.065, 1.15, ez);
     const mat = box(1.1, 0.012, 1.7, M.mat); mat.position.set(-W / 2 + 0.6, 0.006, ez); mat.castShadow = false;
-    rg.add(ef, inside, d1, d2, lmp, mat);
-    if (exit) { lamp = lmp; Object.assign(elev, { meshes: [ef, inside, d1, d2, lmp], d1, d2, z: ez, open: 0, target: 0 }); exitPos.set(cx - W / 2 + 0.7, 0, ez); }
+    parent.add(ef, inside, d1, d2, lmp); R.rg.add(mat);
+    if (exit) { lamp = lmp; Object.assign(elev, { meshes: [ef, inside, d1, d2, lmp], d1, d2, z: ez, open: 0, target: 0 }); exitPos.set(R.cx - W / 2 + 0.7, 0, R.cz + ez); }
+    return ez;
   }
 
-  for (let ri = 0; ri < k; ri++) {
-    const cx = ri * (W + GAP), first = ri === 0, last = ri === k - 1;
-    const rg = new THREE.Group(); rg.position.x = cx; floorGroup.add(rg);
-    const R = { cx, dz, rg, door: null, doorOpen: 0, doorLamp: null };
+  // openings: a room entered from the east side has a door in its left wall; from north, in its back wall;
+  // a room that leads north has a door in its own back wall.
+  plan.forEach((R, i) => {
+    R.leftDoors = []; R.backDoors = [];
+    if (R.dir === 'E') R.leftDoors.push(R.door.z - R.cz);
+    if (R.dir === 'S') R.backDoors.push(R.door.x - R.cx);
+    if (R.dir === 'N') plan[i - 1].backDoors.push(R.door.x - plan[i - 1].cx);
+  });
+
+  plan.forEach((R, ri) => {
+    const W = R.W, D = R.D, first = ri === 0, last = ri === plan.length - 1;
+    const rg = new THREE.Group(); rg.position.set(R.cx, 0, R.cz); floorGroup.add(rg);
+    const walls = new THREE.Group(), stub = new THREE.Group(); rg.add(walls, stub);
+    Object.assign(R, { rg, walls, stub, doorsHere: [] });
     rooms.push(R);
-    const fl = new THREE.Mesh(flGeo, [M.trim, M.trim, carpet, M.trim, M.trim, M.trim]);
+    const carpet = std(new THREE.Color().setHSL((hue + ri * 0.03) % 1, boss ? 0.45 : 0.22, boss ? 0.22 : 0.42 - (ri % 2) * 0.03), { map: (theme === 'breakroom' ? tileTex : theme === 'server' ? raisedTex : carpetTex).clone(), roughness: theme === 'office' || theme === 'openplan' ? 1 : 0.6 });
+    if (theme === 'breakroom') carpet.color.set(0xffffff); if (theme === 'server') carpet.color.set(0xc4c9d0);
+    carpet.map.repeat.set(W / tile, D / tile); carpet.map.needsUpdate = true; perFloor.push(carpet, carpet.map);
+    R.carpet = carpet;
+    const fl = new THREE.Mesh(own(new THREE.BoxGeometry(W, 0.4, D)), [M.trim, M.trim, carpet, M.trim, M.trim, M.trim]);
     fl.position.y = -0.2; fl.receiveShadow = true; rg.add(fl);
-    const bw = new THREE.Mesh(bwGeo, wallMat); bw.position.set(0, 1.6, -D / 2 - 0.15);
-    bw.receiveShadow = bw.castShadow = true; rg.add(bw);
-    if (first) {
-      const lw = new THREE.Mesh(lwGeo, wallMat); lw.position.set(-W / 2 - 0.15, 1.6, 0); lw.receiveShadow = lw.castShadow = true; rg.add(lw);
-    } else { // left wall with a doorway from the corridor, closed until this room unlocks
-      const z0 = dz - 0.95, z1 = dz + 0.95;
-      const segA = box(0.3, 3.2, z0 + D / 2, wallMat); segA.position.set(-W / 2 - 0.15, 1.6, (-D / 2 + z0) / 2);
-      const segB = box(0.3, 3.2, D / 2 - z1, wallMat); segB.position.set(-W / 2 - 0.15, 1.6, (z1 + D / 2) / 2);
-      const lintel = box(0.3, 0.8, 1.9, wallMat); lintel.position.set(-W / 2 - 0.15, 2.8, dz);
-      const door = box(0.1, 2.4, 1.9, M.door); door.position.set(-W / 2 - 0.15, 1.2, dz);
-      const dl = new THREE.Mesh(geo('dlamp', () => new THREE.BoxGeometry(0.06, 0.12, 0.6)), new THREE.MeshBasicMaterial({ color: 0xff3b1f, toneMapped: false }));
-      dl.position.set(-W / 2 + 0.02, 2.62, dz); perFloor.push(dl.material);
-      rg.add(segA, segB, lintel, door, dl);
-      R.door = door; R.doorLamp = dl;
-      const cor = box(GAP + 0.1, 0.4, 1.9, M.trim); cor.position.set(-W / 2 - GAP / 2, -0.2, dz); cor.castShadow = false; rg.add(cor);
-      const run = box(GAP + 0.1, 0.02, 1.7, carpet); run.position.set(-W / 2 - GAP / 2, 0.01, dz); run.castShadow = false; rg.add(run);
-    }
-    // windows, posters and cabinets on the back wall
-    const slots = []; for (let x = -W / 2 + 1.6; x < W / 2 - 1; x += 2.3) slots.push(x);
-    const posterSlot = slots.length >= 4 ? 1 + (rng() * (slots.length - 2) | 0) : -1;
+    // walls (full height) and their cut-away stubs
+    R.doorsHere.push(...wall(walls, 'x', W + 0.3, -D / 2 - 0.15, R.backDoors));
+    R.doorsHere.push(...wall(walls, 'z', D, -W / 2 - 0.15, R.leftDoors));
+    const sb1 = box(W + 0.3, 0.32, 0.3, wallMat); sb1.position.set(0, 0.16, -D / 2 - 0.15);
+    const sb2 = box(0.3, 0.32, D, wallMat); sb2.position.set(-W / 2 - 0.15, 0.16, 0);
+    stub.add(sb1, sb2); stub.visible = false;
+    const nearDoor = (list, v, r) => list.some(d => Math.abs(d - v) < r);
+    // back wall: windows, a poster, cabinets, kitchenette; skip door openings
+    const slots = []; for (let x = -W / 2 + 1.6; x < W / 2 - 1; x += 2.3) if (!nearDoor(R.backDoors, x, 2.1)) slots.push(x);
+    const posterSlot = slots.length >= 3 ? 1 + (rng() * (slots.length - 2) | 0) : -1;
     slots.forEach((x, i) => {
       if (theme === 'server') {
-        if (i === 1 || slots.length === 1) { const sign = new THREE.Mesh(geo('ssign', () => new THREE.PlaneGeometry(1.8, 0.6)), M.serverSign); sign.position.set(x, 1.9, -D / 2 + 0.03); rg.add(sign); }
+        if (i === 0) { const sign = new THREE.Mesh(geo('ssign', () => new THREE.PlaneGeometry(1.8, 0.6)), M.serverSign); sign.position.set(x, 1.9, -D / 2 + 0.03); walls.add(sign); }
         return;
       }
-      if (i === posterSlot && deck.length) { poster(deck.pop(), x, 1.75, -D / 2 + 0.03, 'z', frameMat, rg); return; }
-      const frame = box(1.9, 1.75, 0.06, frameMat); frame.position.set(x, 1.75, -D / 2 + 0.02); rg.add(frame);
-      const pane = new THREE.Mesh(geo('pane', () => new THREE.PlaneGeometry(1.78, 1.63)), winMat); pane.position.set(x, 1.75, -D / 2 + 0.06); rg.add(pane);
-      const sill = box(2.0, 0.05, 0.16, M.trim); sill.position.set(x, 0.86, -D / 2 + 0.08); rg.add(sill);
+      if (i === posterSlot && deck.length) { poster(deck.pop(), x, 1.75, -D / 2 + 0.03, 'z', frameMat, walls); return; }
+      const frame = box(1.9, 1.75, 0.06, frameMat); frame.position.set(x, 1.75, -D / 2 + 0.02);
+      const pane = new THREE.Mesh(geo('pane', () => new THREE.PlaneGeometry(1.78, 1.63)), winMat); pane.position.set(x, 1.75, -D / 2 + 0.06);
+      const sill = box(2.0, 0.05, 0.16, M.trim); sill.position.set(x, 0.86, -D / 2 + 0.08);
+      walls.add(frame, pane, sill);
       if (theme === 'breakroom') {
-        const counter = box(2.3, 0.88, 0.6, M.counter); counter.position.set(x, 0.44, -D / 2 + 0.3); rg.add(counter);
-        const top = box(2.3, 0.04, 0.62, M.counterTop); top.position.set(x, 0.9, -D / 2 + 0.31); rg.add(top);
+        const counter = box(2.3, 0.88, 0.6, M.counter); counter.position.set(x, 0.44, -D / 2 + 0.3);
+        const top = box(2.3, 0.04, 0.62, M.counterTop); top.position.set(x, 0.9, -D / 2 + 0.31); rg.add(counter, top);
         if (i === 0) { const mw = box(0.5, 0.3, 0.38, M.cooler); mw.position.set(x - 0.4, 1.07, -D / 2 + 0.3); const dr = box(0.32, 0.22, 0.01, M.plastic); dr.position.set(-0.06, 0, 0.195); mw.add(dr); rg.add(mw); }
         if (i === 1) { const cm = box(0.3, 0.42, 0.3, M.plastic); cm.position.set(x + 0.5, 1.13, -D / 2 + 0.3); const pot = cyl(0.08, 0.08, 0.16, M.water); pot.position.set(0, -0.1, 0.12); cm.add(pot); rg.add(cm); }
         return;
       }
       if (x < W / 2 - 2.2 && rng() < 0.45) {
         const cab = box(0.9, 0.7, 0.44, M.cabinet); cab.position.set(x + (rng() - 0.5) * 0.6, 0.35, -D / 2 + 0.24);
-        const gp = box(0.86, 0.015, 0.01, M.leg); gp.position.set(0, 0, 0.222); cab.add(gp);
-        rg.add(cab);
+        const gp = box(0.86, 0.015, 0.01, M.leg); gp.position.set(0, 0, 0.222); cab.add(gp); rg.add(cab);
       }
     });
     if (slots.length >= 2) {
       const clock = new THREE.Mesh(geo('clock', () => new THREE.CylinderGeometry(0.22, 0.22, 0.05, 32)), [M.plastic, clockMat, M.plastic]);
-      clock.rotation.x = Math.PI / 2; clock.position.set((slots[0] + slots[1]) / 2, 2.9, -D / 2 + 0.03); rg.add(clock);
+      clock.rotation.x = Math.PI / 2; clock.position.set((slots[0] + slots[1]) / 2, 2.9, -D / 2 + 0.03); walls.add(clock);
     }
     for (const [px, pz] of [[-W / 2 - 0.12, -D / 2 - 0.12], [W / 2 + 0.05, -D / 2 - 0.12], [-W / 2 - 0.12, D / 2 + 0.05]]) {
-      const pl = box(0.46, 3.36, 0.46, pillarMat); pl.position.set(px, 1.68, pz); rg.add(pl);
+      const pl = box(0.46, 3.36, 0.46, pillarMat); pl.position.set(px, 1.68, pz); walls.add(pl);
     }
     const bb1 = box(W, 0.14, 0.04, M.baseboard); bb1.position.set(0, 0.07, -D / 2 + 0.02);
     const bb2 = box(0.04, 0.14, D, M.baseboard); bb2.position.set(-W / 2 + 0.02, 0.07, 0);
     rg.add(bb1, bb2);
-    // elevators: you arrive in the first room and leave from the last
-    if (first) { elevator(rg, cx, last); elevPos.set(cx - W / 2 + 0.7, 0, ez); }
-    else if (last) elevator(rg, cx, true);
-    // posters along the left wall, clear of the elevator and the doorway
-    const pz0 = first || last ? ez + 1.6 : -D / 2 + 1.0, pz1 = first ? D / 2 - 1.1 : dz - 1.6;
-    for (let pz = pz0 + (first ? 0.9 : 0); pz < pz1 && deck.length; pz += 1.7) poster(deck.pop(), -W / 2 + 0.03, 1.65, pz, 'x', frameMat, rg);
-    makePrinter(cx + W / 2 - 0.7, -D / 2 + 0.65);
+    // elevators: arrive in the first room, leave from the last
+    let ez = null;
+    if (first) { ez = elevator(walls, R, last); elevPos.set(R.cx - W / 2 + 0.7, 0, R.cz + ez); }
+    else if (last) ez = elevator(walls, R, true);
+    // posters on the left wall, clear of elevator and doors
+    for (let pz = -D / 2 + 1.1; pz < D / 2 - 1.0 && deck.length; pz += 1.7) {
+      if (ez != null && Math.abs(pz - ez) < 2.2) continue;
+      if (first && pz > ez + 1.2 && pz < ez + 2.2) continue; // water cooler
+      if (nearDoor(R.leftDoors, pz, 1.9)) continue;
+      if (rng() < 0.35) continue;
+      poster(deck.pop(), -W / 2 + 0.03, 1.65, pz, 'x', frameMat, walls);
+    }
+    makePrinter(R.cx + W / 2 - 0.7, R.cz - D / 2 + 0.65);
     const plant = (x, z) => { const pt = cyl(0.28, 0.22, 0.6, M.pot); pt.position.set(x, 0.3, z); const l = new THREE.Mesh(geo('bigleaf', () => new THREE.IcosahedronGeometry(0.55, 0)), M.leaf); l.position.set(x, 1.05, z); l.castShadow = true; rg.add(pt, l); };
     if (first) {
-      if (theme !== 'breakroom') plant(-W / 2 + 0.6, D / 2 - 0.6);
-      else { const fridge = box(0.8, 1.9, 0.7, M.cooler); fridge.position.set(-W / 2 + 0.5, 0.95, D / 2 - 0.6); fridge.rotation.y = Math.PI / 2; const h = box(0.04, 0.5, 0.05, M.metal); h.position.set(-0.3, 0.2, 0.37); fridge.add(h); rg.add(fridge); }
       const cooler = box(0.4, 1.0, 0.4, M.cooler); cooler.position.set(-W / 2 + 0.45, 0.5, ez + 1.6);
       const jug = cyl(0.16, 0.16, 0.45, M.water); jug.position.set(-W / 2 + 0.45, 1.25, ez + 1.6); rg.add(cooler, jug);
-    } else if (theme !== 'server') plant(W / 2 - 0.6, D / 2 - 0.6);
+    }
+    if (theme !== 'server' && !nearDoor(R.leftDoors, D / 2 - 0.6, 1.4)) plant(-W / 2 + 0.6, D / 2 - 0.6);
+  });
+
+  // corridors, doors and wayfinding arrows between consecutive rooms
+  for (let i = 1; i < rooms.length; i++) {
+    const A = rooms[i - 1], B = rooms[i], dir = B.dir;
+    let a, b, nrm;
+    if (dir === 'E') { a = new THREE.Vector3(A.x1, 0, B.door.z); b = new THREE.Vector3(B.x0, 0, B.door.z); nrm = new THREE.Vector3(1, 0, 0); }
+    if (dir === 'S') { a = new THREE.Vector3(B.door.x, 0, A.z1); b = new THREE.Vector3(B.door.x, 0, B.z0); nrm = new THREE.Vector3(0, 0, 1); }
+    if (dir === 'N') { a = new THREE.Vector3(B.door.x, 0, A.z0); b = new THREE.Vector3(B.door.x, 0, B.z1); nrm = new THREE.Vector3(0, 0, -1); }
+    const len = a.distanceTo(b), mid = a.clone().add(b).multiplyScalar(0.5);
+    const along = dir === 'E';
+    const cor = box(along ? len + 0.3 : 1.9, 0.4, along ? 1.9 : len + 0.3, M.trim); cor.position.set(mid.x, -0.2, mid.z); cor.castShadow = false;
+    const run = box(along ? len + 0.3 : 1.7, 0.02, along ? 1.7 : len + 0.3, A.carpet); run.position.set(mid.x, 0.01, mid.z); run.castShadow = false;
+    floorGroup.add(cor, run);
+    // the door panel sits in whichever wall got the opening
+    const owner = dir === 'N' ? A : B, ax = dir === 'E' ? 'z' : 'x';
+    const di = owner.doorsHere.findIndex(d => d.axis === ax), door = di >= 0 ? owner.doorsHere.splice(di, 1)[0] : null;
+    const arrowMat = new THREE.MeshBasicMaterial({ map: arrowTex, color: 0xff3b1f, transparent: true, depthWrite: false, toneMapped: false }); perFloor.push(arrowMat);
+    const arrow = new THREE.Mesh(geo('arrow', () => new THREE.PlaneGeometry(1.1, 1.1)), arrowMat);
+    arrow.rotation.set(-Math.PI / 2, 0, Math.atan2(-nrm.z, nrm.x)); arrow.position.copy(a).addScaledVector(nrm, -0.9).setY(0.03);
+    floorGroup.add(arrow);
+    conns.push({ from: i - 1, to: i, door, arrow, arrowMat, w1: a.clone().addScaledVector(nrm, -0.5), w2: b.clone().addScaledVector(nrm, 0.9), unlocked: false });
   }
 
   // desks, dealt out room by room
   const cornerOdds = daily ? 0.2 : f < 4 ? 0 : Math.min(0.4, 0.08 + (f - 4) * 0.025);
   const cubOdds = daily ? 0.12 : f < 8 ? 0 : Math.min(0.22, 0.1 + (f - 8) * 0.01);
   const hpBase = daily ? 4 : tableHP(f);
-  let corners = 0, standings = 0, cubicles = 0;
-  for (let i = 0; i < n; i++) {
-    const ri = Math.floor(i / per), li = i - ri * per, cx = rooms[ri].cx;
-    const roll = rng();
-    const kind = boss ? 'boss' : theme === 'openplan' ? 'bench' : theme === 'breakroom' ? 'round' : theme === 'server' ? 'rack'
-      : roll < cornerOdds ? 'corner' : roll < cornerOdds + cubOdds ? 'cubicle' : (daily || f >= 6) && roll < cornerOdds + cubOdds + 0.15 ? 'standing' : 'desk';
-    const mult = { boss: [14, 8], corner: [3, 2.5], cubicle: [6, 4.5], standing: [1.5, 2], bench: [2.2, 1.6], round: [0.8, 1], rack: [1.6, 1.8] }[kind] || [1, 1];
-    let relic = null;
-    if (kind === 'standing') standings++;
-    if (kind === 'cubicle') cubicles++;
-    if (kind === 'desk' && !daily) {
-      if (f === 2 && i === n - 1 && !S.found.stapler) relic = 'stapler';
-      else if (f >= 3 && rng() < 0.5 / n) relic = RELIC_KEYS.filter(k => k !== 'bossmug')[rng() * 4 | 0];
+  let corners = 0, standings = 0, cubicles = 0, i = 0;
+  rooms.forEach((R, ri) => {
+    for (let li = 0; li < R.count; li++, i++) {
+      const roll = rng();
+      const kind = boss ? 'boss' : theme === 'openplan' ? 'bench' : theme === 'breakroom' ? 'round' : theme === 'server' ? 'rack'
+        : roll < cornerOdds ? 'corner' : roll < cornerOdds + cubOdds ? 'cubicle' : (daily || f >= 6) && roll < cornerOdds + cubOdds + 0.15 ? 'standing' : 'desk';
+      const mult = { boss: [14, 8], corner: [3, 2.5], cubicle: [6, 4.5], standing: [1.5, 2], bench: [2.2, 1.6], round: [0.8, 1], rack: [1.6, 1.8] }[kind] || [1, 1];
+      let relic = null;
+      if (kind === 'standing') standings++;
+      if (kind === 'cubicle') cubicles++;
+      if (kind === 'desk' && !daily) {
+        if (f === 2 && i === n - 1 && !S.found.stapler) relic = 'stapler';
+        else if (f >= 3 && rng() < 0.5 / n) relic = RELIC_KEYS.filter(k2 => k2 !== 'bossmug')[rng() * 4 | 0];
+      }
+      if (kind === 'corner') corners++;
+      const c = li % R.cols, r = li / R.cols | 0;
+      const rowsHere = Math.ceil(R.count / R.cols);
+      const x = boss ? 0 : (c - (R.cols - 1) / 2) * sx + (rng() - 0.5) * 0.4;
+      const z = boss ? 0.3 : (r - (rowsHere - 1) / 2) * sz + (rng() - 0.5) * 0.3 + 0.3;
+      const t = makeTable(R.cx + x, R.cz + z, kind, hpBase * mult[0], tableReward(f) * mult[1], (rng() - 0.5) * 0.14, relic);
+      t.room = ri; tables.push(t);
     }
-    if (kind === 'corner') corners++;
-    const c = li % cols, r = li / cols | 0;
-    const x = boss ? 0 : (c - (cols - 1) / 2) * sx + (rng() - 0.5) * 0.4;
-    const z = boss ? 0.3 : (r - (rows - 1) / 2) * sz + (rng() - 0.5) * 0.3 + 0.3;
-    const t = makeTable(cx + x, z, kind, hpBase * mult[0], tableReward(f) * mult[1], (rng() - 0.5) * 0.14, relic);
-    t.room = ri; tables.push(t);
-  }
+  });
   if (THEME_MEMOS[theme] && !daily && !S['seen_' + theme]) { S['seen_' + theme] = true; setTimeout(() => memo(...THEME_MEMOS[theme]), 2600); }
   let seated = 0;
   for (const t of tables) for (const ch of t.chairs) if (!t.boss && seated < 7 && rng() < 0.3) seatCoworker(t, ch, seated++);
@@ -1145,35 +1249,42 @@ function buildFloor(f, daily = 0) {
   if (standings && !daily && !S.seenStanding) { S.seenStanding = true; setTimeout(() => memo('Facilities has installed standing desks. They are taller, pay double, and nobody has ever stood at one.', 'FACILITIES'), 3200); }
   if (corners && !daily && !S.seenCorner) { S.seenCorner = true; setTimeout(() => memo('Facilities has installed corner desks. They are heavier, load-bearing (probably) and covered in expensive equipment.', 'FACILITIES'), 2600); }
   if (cubicles && !daily && !S.seenCubicle) { S.seenCubicle = true; setTimeout(() => memo('Cubicles have arrived. Three walls, one desk, zero hope. They are very heavy and pay very well.', 'FACILITIES'), 3600); }
-  if (k > 1 && !daily && !S.seenRooms) { S.seenRooms = true; setTimeout(() => memo(`This floor has ${k} rooms. Clear one and the door to the next opens. The elevator is in the last room.`, 'FACILITIES'), 1800); }
+  if (k > 1 && !daily && !S.seenRooms) { S.seenRooms = true; setTimeout(() => memo(`This floor has ${k} rooms. Clear one and follow the arrow to the next. The elevator is in the last room.`, 'FACILITIES'), 1800); }
   alive = n; floorFlipped = 0; cleared = false;
 
-  const ext = Math.max(W, D);
-  const sc = sun.shadow.camera; sc.left = sc.bottom = -ext * 0.85; sc.right = sc.top = ext * 0.85; sc.near = 1; sc.far = 50; sc.updateProjectionMatrix();
   fitCamera(); camTarget.copy(camGoal);
   syncInterns();
   $('#boss').style.display = boss ? 'block' : 'none';
   document.body.classList.toggle('bossfloor', boss);
 }
-// Room cleared but floor isn't: open the next door, walk the camera over.
+// Rooms between the camera and the active room get cut-away walls.
+function applyCutaway() {
+  const A = room(), dx = camDir.x, dz = camDir.z, l = Math.hypot(dx, dz) || 1;
+  for (const R of rooms) {
+    const front = R !== A && ((R.cx - A.cx) * dx + (R.cz - A.cz) * dz) / l > 0.5;
+    R.walls.visible = !front; R.stub.visible = front;
+  }
+}
+// Room cleared but floor isn't: unlock the next door and walk the camera over.
 function roomCleared() {
-  const nx = rooms[activeRoom + 1]; if (!nx) return;
-  nx.doorLamp.material.color.set(0x34ff7a);
+  const c = conns[activeRoom]; if (!c) return;
+  c.unlocked = true; c.arrowMat.color.set(0x34ff7a);
   [0, 2, 4].forEach((k, j) => mallet(scaleNote(k + 5), 0.12, j * 0.07));
   setTimeout(() => {
-    activeRoom++; nx.doorTarget = 1; noise(0.5, 0.12, 'lowpass', 500);
+    activeRoom++; noise(0.5, 0.12, 'lowpass', 500);
     fitCamera();
-    bannerText(`ROOM ${activeRoom + 1} / ${rooms.length}`, activeRoom === rooms.length - 1 ? 'THE ELEVATOR IS IN HERE' : 'KEEP GOING');
+    bannerText(`ROOM ${activeRoom + 1} / ${rooms.length}`, activeRoom === rooms.length - 1 ? 'THE ELEVATOR IS IN HERE' : 'FOLLOW THE ARROWS');
   }, 650);
 }
-// Walk through doorways when the destination is in a room further along the path.
-const wp = new THREE.Vector3();
-function routeTo(pos, dest) {
-  for (let j = 0; j < rooms.length - 1; j++) {
-    const edge = rooms[j].cx + W / 2, wall = rooms[j + 1].cx - W / 2, z = rooms[j + 1].dz;
-    if (dest.x > wall && pos.x < wall + 0.4) return pos.x < edge - 0.35 ? wp.set(edge - 0.2, 0, z) : wp.set(wall + 0.9, 0, z);
-  }
-  return dest;
+// Walkers move room to room through the door waypoints.
+function routeStep(it, dest, destRoom) {
+  if (it.ri == null) it.ri = 0;
+  if (destRoom <= it.ri) return dest;
+  const c = conns[it.ri];
+  if (!c || !c.unlocked) return dest;
+  const target = it.leg ? c.w2 : c.w1;
+  if (Math.hypot(it.g.position.x - target.x, it.g.position.z - target.z) < 0.25) { if (it.leg) { it.ri++; it.leg = 0; } else it.leg = 1; }
+  return target;
 }
 
 // Frame the whole room inside the screen area left free by the HUD: binary-search the
@@ -1184,7 +1295,7 @@ for (const x of [-1, 1]) for (const z of [-1, 1]) { corners.push(new THREE.Vecto
 function projectedBounds(dist) {
   camera.position.copy(camGoal).addScaledVector(camDir, dist); camera.lookAt(camGoal); camera.updateMatrixWorld();
   const b = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 }, v = new THREE.Vector3();
-  for (const c of corners) { v.set(camGoal.x + c.x * W / 2, c.y, c.z * D / 2).project(camera); b.x0 = Math.min(b.x0, v.x); b.x1 = Math.max(b.x1, v.x); b.y0 = Math.min(b.y0, v.y); b.y1 = Math.max(b.y1, v.y); }
+  for (const c of corners) { v.set(camGoal.x + c.x * W / 2, c.y, camGoal.z + c.z * D / 2).project(camera); b.x0 = Math.min(b.x0, v.x); b.x1 = Math.max(b.x1, v.x); b.y0 = Math.min(b.y0, v.y); b.y1 = Math.max(b.y1, v.y); }
   return b;
 }
 function fitCamera() {
@@ -1193,7 +1304,8 @@ function fitCamera() {
   const topPx = mobile ? 148 : short ? 0 : innerHeight * 0.1, botPx = mobile ? 150 : short ? 112 : 110;
   const sideFrac = short ? 0.78 : 0.94; // landscape phones: keep the room clear of the corner HUD
   const availW = 2 * sideFrac, availH = 2 * (1 - (topPx + botPx) / innerHeight);
-  camGoal.set(room().cx, 0, 0);
+  W = room().W; D = room().D; camGoal.set(room().cx, 0, room().cz);
+  const ext = Math.max(W, D), sc = sun.shadow.camera; sc.left = sc.bottom = -ext * 0.85; sc.right = sc.top = ext * 0.85; sc.near = 1; sc.far = 60; sc.updateProjectionMatrix();
   // portrait: look along the room's long axis so it fills the tall screen
   camDir.set(...(camera.aspect < 0.9 ? (W > D ? [0.8, 1.7, 0.16] : [0.16, 1.7, 0.8]) : [0.62, 0.8, 0.92])).normalize();
   camera.clearViewOffset();
@@ -1209,6 +1321,7 @@ function fitCamera() {
   const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2;
   const wantY = (botPx - topPx) / innerHeight; // NDC centre of the free area
   camera.setViewOffset(innerWidth, innerHeight, cx * innerWidth / 2, -(cy - wantY) * innerHeight / 2, innerWidth, innerHeight);
+  if (rooms.length) applyCutaway();
 }
 
 // Bench: open-plan long table, monitors and chairs on both sides.
@@ -1433,7 +1546,7 @@ function kill(t, src, dir) {
   const axis = UP.clone().cross(dir).normalize();
   // land somewhere clear: shorten the throw until it doesn't pile onto another desk or leave the room
   let dist = t.boss ? 1.2 : rand(1.0, 1.7);
-  const clear = q => Math.abs(q.x - room().cx) < W / 2 - 0.9 && Math.abs(q.z) < D / 2 - 0.7 &&
+  const clear = q => Math.abs(q.x - room().cx) < W / 2 - 0.9 && Math.abs(q.z - room().cz) < D / 2 - 0.7 &&
     tables.every(o => o === t || Math.hypot((o.land || o.base).x - q.x, (o.land || o.base).z - q.z) > (o.radius + t.radius) * 0.75);
   for (const k of [1, 0.7, 0.45, 0.2, 0]) { const q = t.base.clone().addScaledVector(dir, dist * k); if (k === 0 || clear(q)) { dist *= k; break; } }
   t.land = t.base.clone().addScaledVector(dir, dist);
@@ -1555,7 +1668,7 @@ function updateTable(t, dt) {
 
 const halfPI = Math.PI / 2;
 function updateDebris(dt) {
-  const ox = room().cx, hx = W / 2 - 0.2, hz = D / 2 - 0.2;
+  const ox = room().cx, oz = room().cz, hx = W / 2 - 0.2, hz = D / 2 - 0.2;
   for (const d of debris) {
     if (d.done) continue;
     const o = d.o;
@@ -1570,7 +1683,7 @@ function updateDebris(dt) {
     }
     if (d.life != null && (d.life -= dt) <= 0) { d.done = true; o.visible = false; continue; }
     if (Math.abs(o.position.x - ox) > hx) { o.position.x = ox + Math.sign(o.position.x - ox) * hx; d.v.x *= -0.4; }
-    if (Math.abs(o.position.z) > hz) { o.position.z = Math.sign(o.position.z) * hz; d.v.z *= -0.4; }
+    if (Math.abs(o.position.z - oz) > hz) { o.position.z = oz + Math.sign(o.position.z - oz) * hz; d.v.z *= -0.4; }
     if (o.position.y <= d.rest) {
       o.position.y = d.rest;
       if (!d.flat && d.v.y < -2.5 && d.b < 2) { d.v.y *= -0.32; d.v.x *= 0.5; d.v.z *= 0.5; d.w.multiplyScalar(0.4); d.b++; }
@@ -2021,8 +2134,11 @@ function loop(now) {
   // camera: gentle orbit sway + mouse parallax + shake
   camShake = Math.max(0, camShake - realDt * 2.2);
   camTarget.lerp(camGoal, 1 - Math.exp(-realDt * 3)); // walk the camera to the active room
-  sun.position.set(camTarget.x + W * 0.35, 16, D * 0.55 + 4); sun.target.position.copy(camTarget);
-  for (const R of rooms) if (R.door && R.doorTarget && R.doorOpen < 1) { R.doorOpen = Math.min(1, R.doorOpen + realDt * 1.5); R.door.position.z = R.dz - 1.9 * R.doorOpen; }
+  sun.position.set(camTarget.x + W * 0.35, 16, camTarget.z + D * 0.55 + 4); sun.target.position.copy(camTarget);
+  for (const c of conns) {
+    if (c.unlocked && c.door && c.door.open < 1) { const d = c.door; d.open = Math.min(1, d.open + realDt * 1.5); d.mesh.position[d.axis === 'x' ? 'x' : 'z'] = d.base - 1.9 * d.open; }
+    if (c.unlocked) c.arrowMat.opacity = 0.55 + 0.45 * Math.sin(time * 6) ** 2;
+  }
   const sway = reducedMotion() ? 0 : started ? 0.04 : 0.25;
   const dir = camDir.clone().applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.sin(time * 0.15) * sway - mouse.x * 0.06);
   camera.position.copy(camTarget).addScaledVector(dir, camDist);
