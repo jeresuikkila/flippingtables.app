@@ -1058,7 +1058,7 @@ function setDressing(R, ri, { f, theme, boss, rng, first, last, own }) {
     rg.add(s1, s2);
     if (ri === 0) makeHologram(rg, W / 2 - 1.1, D / 2 - 1.2, 0xff4fe0, CYBER_LINES);
   }
-  // the HYPERVSN avatar lives in one cafeteria: the first break room room of every third break-room floor
+  // the Holigram avatar lives in one cafeteria: the first break room room of every third break-room floor
   if (theme === 'breakroom' && ri === 0 && f % 3 === 0) makeHologram(rg, W / 2 - 1.1, D / 2 - 1.2, 0x7ef0ff, HOLO_LINES);
   if (theme === 'cafe') cafeDecor(R, ri);
   if (theme === 'ai') aiDecor(R, ri);
@@ -1176,7 +1176,7 @@ const cyberScreen = new THREE.MeshBasicMaterial({ toneMapped: false, map: canvas
   g.globalAlpha = 1;
 }) });
 const NEON = [new THREE.MeshBasicMaterial({ color: 0xff2bd6, toneMapped: false }), new THREE.MeshBasicMaterial({ color: 0x22e5ff, toneMapped: false })];
-// HYPERVSN-style holographic fan display with a floating avatar. Spins, flickers, gives unsolicited advice.
+// Holigram: holographic fan display with a floating avatar. Spins, flickers, gives unsolicited advice.
 const holoFanTex = canvasTex(256, 256, (g, w, h) => {
   g.translate(128, 128);
   for (let i = 0; i < 4; i++) { g.rotate(Math.PI / 2); const gr = g.createLinearGradient(0, 0, 120, 0); gr.addColorStop(0, 'rgba(120,240,255,.0)'); gr.addColorStop(1, 'rgba(120,240,255,.55)'); g.fillStyle = gr; g.beginPath(); g.moveTo(0, -4); g.lineTo(122, -14); g.lineTo(122, 14); g.lineTo(0, 4); g.fill(); }
@@ -1202,7 +1202,7 @@ function makeHologram(parent, x, z, color, lines) {
   holos.push({ g, fan, av, arm, mat, lines, t: rand(4, 9) });
   return g;
 }
-const holoPlateMat = new THREE.MeshBasicMaterial({ map: labelTex(256, 56, '#0b0d12', '#7ef0ff', ['HYPERVSN'], 'bold 30px Inter, sans-serif'), toneMapped: false });
+const holoPlateMat = new THREE.MeshBasicMaterial({ map: labelTex(256, 56, '#0b0d12', '#7ef0ff', ['HOLIGRAM'], 'bold 30px Inter, sans-serif'), toneMapped: false });
 const HOLO_LINES = ["Hydration reminder! 💧", "Hi! I'm your AI wellness avatar.", 'Please stop flipping the tables.', 'Mandatory fun in 5 minutes!', 'I am a hologram. I cannot stop you.', 'Have you tried mindfulness instead?', 'Your posture score: 3/10'];
 const CYBER_LINES = ['Wake up, choom. We have desks to flip.', 'Your quarterly chrome upgrade is due.', 'Corporate thanks you for your compliance.', 'This hologram is your manager now.', 'Neon synergy levels: critical.'];
 function updateHolos(dt) {
