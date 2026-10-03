@@ -26,7 +26,7 @@
   --text:#f2efe9; --mute:#9a9ca6; --accent:#ff5a36; --accent2:#ffb02e; --good:#4ade80;
   --display:'Archivo Black',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
 }
-*{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation}
 html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--body);-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;overscroll-behavior:none}
 button{touch-action:manipulation}
 canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
@@ -108,7 +108,7 @@ body.bossfloor #toasts{margin-top:44px}
 .world{margin-top:18px;font-family:var(--display);font-size:13px;letter-spacing:.04em;color:var(--accent2);min-height:16px}
 #modal{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(10,11,14,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 #modal[hidden]{display:none}
-#modal .card{width:min(480px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#1d2027;border-radius:20px;padding:22px;box-shadow:0 10px 0 #0b0c0f}
+#modal .card{touch-action:pan-y;width:min(480px,100%);max-height:calc(100vh - 32px);overflow:auto;background:#1d2027;border-radius:20px;padding:22px;box-shadow:0 10px 0 #0b0c0f}
 #modal h2{font-family:var(--display);font-size:26px;line-height:1;margin-bottom:4px}
 #modal h3{font-family:var(--display);font-size:13px;letter-spacing:.08em;color:var(--accent2);margin:20px 0 10px}
 #modal p{font-size:14px;line-height:1.5;color:#c9cbd2}
@@ -335,6 +335,30 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
   })();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
+<script>
+  // iOS Safari ignores user-scalable=no, so block pinch / double-tap zoom ourselves,
+  // and if the page still ends up zoomed (rotation, accessibility zoom), snap it back.
+  (function () {
+    var opt = { passive: false };
+    ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (ev) { document.addEventListener(ev, function (e) { e.preventDefault(); }, opt); });
+    document.addEventListener('touchmove', function (e) { if (e.touches.length > 1 || (e.scale && e.scale !== 1)) e.preventDefault(); }, opt);
+    var lastEnd = 0;
+    document.addEventListener('touchend', function (e) {
+      var now = Date.now();
+      if (now - lastEnd < 350 && !(e.target.closest && e.target.closest('button,a,.memo'))) e.preventDefault();
+      lastEnd = now;
+    }, opt);
+    var meta = document.querySelector('meta[name=viewport]'), base = meta.content;
+    function unzoom() {
+      if (!window.visualViewport || visualViewport.scale <= 1.01) return;
+      meta.content = base + ',minimum-scale=1';
+      setTimeout(function () { meta.content = base; dispatchEvent(new Event('resize')); }, 60);
+    }
+    if (window.visualViewport) visualViewport.addEventListener('resize', function () { setTimeout(unzoom, 400); });
+    addEventListener('orientationchange', function () { setTimeout(unzoom, 500); });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(unzoom, 200); });
+  })();
+</script>
 <script type="module">
 import * as THREE from 'three';
 
