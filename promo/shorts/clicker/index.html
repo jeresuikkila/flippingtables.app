@@ -1,0 +1,1160 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Archivo Black";
+        src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2");
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");
+        font-weight: 600;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+        font-weight: 800;
+      }
+      /* Subsets of DejaVu Sans Bold + Droid Sans Fallback: only the kaomoji glyphs */
+      @font-face {
+        font-family: "KaoA";
+        src: url("assets/fonts/kao-dejavu.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "KaoB";
+        src: url("assets/fonts/kao-droid.woff2") format("woff2");
+      }
+
+      :root {
+        --bg: #15171c;
+        --bg2: #1d2027;
+        --accent: #ff5a36;
+        --good: #4ade80;
+        --text: #f2efe9;
+        --mute: #9a9ca6;
+        --wood: #c98a4b;
+        --wood-dark: #8e5a2b;
+        --display: "Archivo Black", "KaoA", "KaoB", sans-serif;
+        --body: "Inter", "KaoA", "KaoB", sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: var(--body);
+        color: var(--text);
+        background:
+          radial-gradient(ellipse 120% 60% at 50% 45%, #232733 0%, var(--bg) 70%),
+          var(--bg);
+      }
+      /* carpet-tile grid */
+      #carpet {
+        position: absolute;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 120px),
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 120px);
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .display {
+        font-family: var(--display);
+        line-height: 0.95;
+        letter-spacing: -0.01em;
+        text-transform: uppercase;
+      }
+      .kicker {
+        font-family: var(--body);
+        font-weight: 800;
+        font-size: 34px;
+        letter-spacing: 0.22em;
+        color: var(--mute);
+        text-transform: uppercase;
+      }
+      .accent {
+        color: var(--accent);
+      }
+      .wipe {
+        position: absolute;
+        inset: 0;
+        z-index: 50;
+        background: var(--accent);
+      }
+      .wipe.light {
+        background: var(--text);
+      }
+
+      /* ---------- gameplay beats ---------- */
+      .phone {
+        position: absolute;
+        left: 173px;
+        top: 340px;
+        width: 734px;
+        height: 1305px;
+        border-radius: 40px;
+        overflow: hidden;
+        background: #000;
+        box-shadow:
+          0 0 0 8px #2c3039,
+          0 0 0 11px #3a3e48,
+          0 40px 80px rgba(0, 0, 0, 0.6);
+        opacity: 0;
+      }
+      .phone video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .tap {
+        position: absolute;
+        width: 96px;
+        height: 96px;
+        margin: -48px 0 0 -48px;
+        border-radius: 50%;
+        border: 7px solid rgba(255, 255, 255, 0.95);
+        background: rgba(255, 90, 54, 0.35);
+        opacity: 0;
+      }
+      .gcap {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 130px;
+        text-align: center;
+      }
+      .gcap .kicker {
+        color: var(--accent);
+      }
+      .gcap .kicker::before {
+        content: "";
+        display: inline-block;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--accent);
+        margin-right: 14px;
+        vertical-align: 1px;
+      }
+      .gcap .display {
+        display: block;
+        font-size: 80px;
+        margin-top: 12px;
+      }
+      .gcap-b {
+        opacity: 0;
+      }
+      #flash {
+        position: absolute;
+        inset: 0;
+        z-index: 49;
+        background: #fff;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ---------- S1 hook ---------- */
+      #s1 .kicker {
+        position: absolute;
+        left: 80px;
+        top: 400px;
+      }
+      #s1-lines {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 490px;
+      }
+      #s1-lines .line {
+        display: block;
+        font-size: 118px;
+        margin-bottom: 14px;
+      }
+      #s1-kao {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1260px;
+        display: flex;
+        justify-content: center;
+        font-family: "KaoA", "KaoB", sans-serif;
+        font-size: 120px;
+        white-space: nowrap;
+      }
+      #s1-kao span {
+        display: inline-block;
+      }
+      #s1-table {
+        color: var(--wood);
+        margin-left: 18px;
+      }
+
+      /* ---------- S2 the game ---------- */
+      #s2-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 230px;
+        text-align: center;
+      }
+      #s2-title .display {
+        display: block;
+        font-size: 150px;
+      }
+      #s2-sub {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 580px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 46px;
+        color: var(--mute);
+      }
+      #s2-sub b {
+        color: var(--text);
+        font-weight: 800;
+      }
+      #s2-rage {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 720px;
+        display: flex;
+        justify-content: center;
+        align-items: baseline;
+        gap: 22px;
+      }
+      #s2-rage .kicker {
+        color: var(--accent);
+      }
+      #s2-rage-n {
+        font-family: var(--display);
+        font-size: 104px;
+        font-variant-numeric: tabular-nums;
+        min-width: 140px;
+        display: inline-block;
+      }
+      .desk {
+        position: absolute;
+        left: 260px;
+        top: 1010px;
+        width: 560px;
+        height: 360px;
+      }
+      .desk > div {
+        position: absolute;
+      }
+      .desk .monitor {
+        left: 150px;
+        top: 0;
+        width: 250px;
+        height: 156px;
+        background: #0f1116;
+        border: 12px solid #3a3e48;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--display);
+        font-size: 34px;
+        color: var(--accent);
+      }
+      .desk .stand {
+        left: 262px;
+        top: 156px;
+        width: 26px;
+        height: 34px;
+        background: #3a3e48;
+      }
+      .desk .mug {
+        left: 452px;
+        top: 112px;
+        width: 58px;
+        height: 78px;
+        background: var(--text);
+        border-radius: 0 0 14px 14px;
+      }
+      .desk .mug::after {
+        content: "";
+        position: absolute;
+        right: -22px;
+        top: 16px;
+        width: 22px;
+        height: 34px;
+        border: 8px solid var(--text);
+        border-left: none;
+        border-radius: 0 14px 14px 0;
+      }
+      .desk .papers {
+        left: 40px;
+        top: 168px;
+        width: 92px;
+        height: 22px;
+        background: #e8e4dc;
+        border-radius: 3px;
+        box-shadow: 0 -8px 0 #d6d1c7;
+      }
+      .desk .top {
+        left: 0;
+        top: 190px;
+        width: 560px;
+        height: 52px;
+        background: var(--wood);
+        border-radius: 8px;
+        border-bottom: 12px solid var(--wood-dark);
+      }
+      .desk .leg {
+        top: 242px;
+        width: 34px;
+        height: 118px;
+        background: var(--wood-dark);
+      }
+      .desk .leg.l {
+        left: 34px;
+      }
+      .desk .leg.r {
+        left: 492px;
+      }
+      .desk .drawer {
+        left: 330px;
+        top: 242px;
+        width: 150px;
+        height: 84px;
+        background: #a86d36;
+        border-radius: 0 0 8px 8px;
+      }
+      .desk .drawer::after {
+        content: "";
+        position: absolute;
+        left: 50px;
+        top: 34px;
+        width: 50px;
+        height: 10px;
+        border-radius: 5px;
+        background: var(--wood-dark);
+      }
+      .floor-shadow {
+        position: absolute;
+        left: 230px;
+        top: 1350px;
+        width: 620px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.45);
+      }
+      .paper {
+        position: absolute;
+        left: 520px;
+        top: 1190px;
+        width: 70px;
+        height: 90px;
+        background: var(--text);
+        border-radius: 4px;
+        opacity: 0;
+      }
+      #cursor {
+        position: absolute;
+        left: 560px;
+        top: 1180px;
+        width: 96px;
+        height: 120px;
+        z-index: 20;
+      }
+      .ripple {
+        position: absolute;
+        left: 500px;
+        top: 1120px;
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        border: 8px solid var(--text);
+        opacity: 0;
+      }
+      .pop {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 960px;
+        text-align: center;
+        font-family: var(--display);
+        font-size: 96px;
+        color: var(--accent);
+        opacity: 0;
+      }
+      #s2-crit {
+        font-size: 150px;
+        top: 1000px;
+        color: var(--text);
+        -webkit-text-stroke: 0;
+        text-shadow: 0 10px 0 var(--accent);
+      }
+      #s2-again {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 1450px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 48px;
+        opacity: 0;
+      }
+
+      /* ---------- S3 upgrades ---------- */
+      #s3-head {
+        position: absolute;
+        left: 80px;
+        top: 250px;
+      }
+      #s3-head .display {
+        font-size: 116px;
+        margin-top: 18px;
+      }
+      #s3-cards {
+        position: absolute;
+        left: 80px;
+        top: 540px;
+        width: 920px;
+        display: flex;
+        flex-direction: column;
+        gap: 26px;
+      }
+      .card {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 28px;
+        height: 168px;
+        padding: 0 32px 0 24px;
+        border-radius: 22px;
+        background: var(--bg2);
+        border: 3px solid #2c3039;
+      }
+      .card .flash {
+        position: absolute;
+        inset: -3px;
+        border-radius: 22px;
+        border: 5px solid var(--accent);
+        background: rgba(255, 90, 54, 0.14);
+        opacity: 0;
+      }
+      .card .ic {
+        flex: none;
+        width: 118px;
+        height: 118px;
+        border-radius: 18px;
+        background: var(--accent);
+        color: var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--display);
+        font-size: 44px;
+      }
+      .card .txt {
+        flex: 1;
+        min-width: 0;
+      }
+      .card .name {
+        font-family: var(--display);
+        font-size: 46px;
+        text-transform: uppercase;
+        line-height: 1.05;
+      }
+      .card .blurb {
+        font-weight: 600;
+        font-size: 31px;
+        color: var(--mute);
+        margin-top: 6px;
+      }
+      .card .lv {
+        flex: none;
+        width: 140px;
+        text-align: right;
+      }
+      .card .lv small {
+        display: block;
+        font-weight: 800;
+        font-size: 24px;
+        letter-spacing: 0.18em;
+        color: var(--mute);
+      }
+      .card .lv span {
+        display: block;
+        font-family: var(--display);
+        font-size: 64px;
+        color: var(--good);
+        font-variant-numeric: tabular-nums;
+      }
+      #s3-bank {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1330px;
+        text-align: center;
+      }
+      #s3-bank .kicker {
+        color: var(--accent);
+      }
+      #s3-rage {
+        display: block;
+        font-family: var(--display);
+        font-size: 170px;
+        line-height: 1;
+        margin-top: 8px;
+        font-variant-numeric: tabular-nums;
+      }
+      #s3-rate {
+        display: block;
+        font-weight: 800;
+        font-size: 40px;
+        color: var(--good);
+        margin-top: 4px;
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* ---------- S4 infinite office ---------- */
+      .rain {
+        position: absolute;
+        top: 0;
+        font-family: "KaoA", sans-serif;
+        font-size: 80px;
+        color: var(--wood);
+        opacity: 0.22;
+      }
+      #s4-head {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 250px;
+        text-align: center;
+      }
+      #s4-floor {
+        position: relative;
+        height: 260px;
+        margin-top: 10px;
+      }
+      #s4-floor-n,
+      #s4-inf {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        font-family: var(--display);
+        font-size: 250px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      #s4-inf {
+        font-family: "KaoA", sans-serif;
+        font-size: 400px;
+        line-height: 0.62;
+        color: var(--accent);
+        opacity: 0;
+      }
+      #s4-up {
+        font-weight: 800;
+        font-size: 44px;
+        color: var(--mute);
+      }
+      #s4-up b {
+        color: var(--good);
+      }
+      .memo {
+        position: absolute;
+        left: 110px;
+        top: 960px;
+        width: 860px;
+        min-height: 210px;
+        padding: 30px 40px 36px;
+        border-radius: 10px;
+        background: var(--text);
+        color: var(--bg);
+        box-shadow: 0 24px 50px rgba(0, 0, 0, 0.5);
+      }
+      .memo h4 {
+        font-family: var(--display);
+        font-size: 28px;
+        font-weight: 400;
+        letter-spacing: 0.12em;
+        color: #c7381a;
+      }
+      .memo p {
+        font-weight: 800;
+        font-size: 44px;
+        line-height: 1.15;
+        margin-top: 10px;
+      }
+
+      /* ---------- S5 CTA ---------- */
+      #s5-lines {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 320px;
+      }
+      #s5-lines .line {
+        display: block;
+        font-size: 98px;
+        margin-bottom: 16px;
+      }
+      #s5-url {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 860px;
+        display: flex;
+        justify-content: center;
+      }
+      #s5-pill {
+        display: block;
+        padding: 30px 50px 34px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--bg);
+        font-family: var(--display);
+        font-size: 68px;
+        line-height: 1;
+        box-shadow: 0 14px 0 #b8381c;
+      }
+      #s5-sub {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 1030px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 40px;
+        color: var(--mute);
+      }
+      #s5-kao {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1250px;
+        text-align: center;
+        font-family: "KaoA", "KaoB", sans-serif;
+        font-size: 92px;
+        white-space: nowrap;
+      }
+      #s5-kao-cap {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 1390px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 34px;
+        color: var(--mute);
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="32"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="carpet"></div>
+      <div id="stage">
+        <!-- S1: hook -->
+        <section id="s1" class="scene clip" data-start="0" data-duration="3" data-track-index="0">
+          <div class="kicker" id="s1-kicker">Monday · 4:59 PM</div>
+          <div id="s1-lines">
+            <span class="line display">When the</span>
+            <span class="line display">meeting</span>
+            <span class="line display">could&rsquo;ve been</span>
+            <span class="line display accent">an email</span>
+          </div>
+          <div id="s1-kao"><span id="s1-face">(╯°□°)╯︵</span><span id="s1-table">┻━┻</span></div>
+        </section>
+
+        <!-- S2: the game -->
+        <section id="s2" class="scene clip" data-start="3" data-duration="4.5" data-track-index="0">
+          <div id="s2-title">
+            <span class="display" id="s2-t1">Flipping</span>
+            <span class="display accent" id="s2-t2">Tables</span>
+          </div>
+          <div id="s2-sub">an <b>infinite clicker</b> for your office</div>
+          <div id="s2-rage">
+            <span class="kicker">Rage</span><span id="s2-rage-n">0</span>
+          </div>
+          <div class="floor-shadow" id="s2-shadow"></div>
+          <div class="desk" id="desk1">
+            <div class="monitor">┻━┻</div>
+            <div class="stand"></div>
+            <div class="mug"></div>
+            <div class="papers"></div>
+            <div class="top"></div>
+            <div class="leg l"></div>
+            <div class="leg r"></div>
+            <div class="drawer"></div>
+          </div>
+          <div class="desk" id="desk2">
+            <div class="monitor">┬─┬</div>
+            <div class="stand"></div>
+            <div class="mug"></div>
+            <div class="papers"></div>
+            <div class="top"></div>
+            <div class="leg l"></div>
+            <div class="leg r"></div>
+            <div class="drawer"></div>
+          </div>
+          <div class="paper" id="p1"></div>
+          <div class="paper" id="p2"></div>
+          <div class="paper" id="p3"></div>
+          <div class="paper" id="p4"></div>
+          <div class="paper" id="p5"></div>
+          <div class="paper" id="p6"></div>
+          <div class="ripple" id="rip1"></div>
+          <div class="ripple" id="rip2"></div>
+          <div class="ripple" id="rip3"></div>
+          <div class="pop" id="pop1">+1</div>
+          <div class="pop" id="pop2">+1</div>
+          <div class="pop" id="s2-crit">CRIT ×5</div>
+          <svg id="cursor" viewBox="0 0 24 30" aria-hidden="true">
+            <path
+              d="M2 1 L2 23 L7.5 18 L11 27 L15 25.3 L11.5 16.5 L19 16.5 Z"
+              fill="#f2efe9"
+              stroke="#15171c"
+              stroke-width="1.6"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div id="s2-again">There&rsquo;s always another table.</div>
+        </section>
+
+
+        <!-- g1: real gameplay -->
+        <div class="phone" id="g1-phone">
+          <video id="g1" class="clip" src="assets/clips/fresh.mp4" data-start="7.5" data-duration="3.5" data-media-start="0.35" data-track-index="1" muted playsinline></video>
+          <div id="g1-taps"></div>
+        </div>
+        <section id="g1-ui" class="scene clip" data-start="7.5" data-duration="3.5" data-track-index="0">
+          <div class="gcap" id="g1-cap">
+            <div class="kicker">Actual gameplay</div>
+            <span class="display">Tap. Flip. Repeat.</span>
+          </div>
+        </section>
+
+        <!-- S3: upgrades -->
+        <section id="s3" class="scene clip" data-start="11" data-duration="4.5" data-track-index="0">
+          <div id="s3-head">
+            <div class="kicker">Then</div>
+            <div class="display">Hire help.</div>
+          </div>
+          <div id="s3-cards">
+            <div class="card" id="c1">
+              <div class="flash"></div>
+              <div class="ic">×2</div>
+              <div class="txt">
+                <div class="name">Forearm Day</div>
+                <div class="blurb">More damage per click</div>
+              </div>
+              <div class="lv"><small>LV</small><span id="lv1">1</span></div>
+            </div>
+            <div class="card" id="c2">
+              <div class="flash"></div>
+              <div class="ic">IN</div>
+              <div class="txt">
+                <div class="name">Unpaid Intern</div>
+                <div class="blurb">Flips tables for &ldquo;exposure&rdquo;</div>
+              </div>
+              <div class="lv"><small>LV</small><span id="lv2">1</span></div>
+            </div>
+            <div class="card" id="c3">
+              <div class="flash"></div>
+              <div class="ic">@</div>
+              <div class="txt">
+                <div class="name">Reply-All Storm</div>
+                <div class="blurb">Rage while you idle</div>
+              </div>
+              <div class="lv"><small>LV</small><span id="lv3">1</span></div>
+            </div>
+            <div class="card" id="c4">
+              <div class="flash"></div>
+              <div class="ic">×5</div>
+              <div class="txt">
+                <div class="name">Pure Spite</div>
+                <div class="blurb">Critical hits. Personal ones.</div>
+              </div>
+              <div class="lv"><small>LV</small><span id="lv4">1</span></div>
+            </div>
+          </div>
+          <div id="s3-bank">
+            <span class="kicker">Rage</span>
+            <span id="s3-rage">7</span>
+            <span id="s3-rate">+0 / sec</span>
+          </div>
+        </section>
+
+
+        <!-- g2: real gameplay -->
+        <div class="phone" id="g2-phone">
+          <video id="g2" class="clip" src="assets/clips/midgame.mp4" data-start="15.5" data-duration="4" data-media-start="0.25" data-track-index="1" muted playsinline></video>
+          <div id="g2-taps"></div>
+        </div>
+        <section id="g2-ui" class="scene clip" data-start="15.5" data-duration="4" data-track-index="0">
+          <div class="gcap" id="g2-cap">
+            <div class="kicker">Floor 14 · interns on payroll</div>
+            <span class="display">Combos. Crits.</span>
+          </div>
+        </section>
+
+        <!-- S4: infinite office -->
+        <section id="s4" class="scene clip" data-start="19.5" data-duration="4" data-track-index="0">
+          <div id="s4-rain"></div>
+          <div id="s4-head">
+            <div class="kicker">Floor</div>
+            <div id="s4-floor">
+              <div id="s4-floor-n">1</div>
+              <div id="s4-inf">∞</div>
+            </div>
+            <div id="s4-up"><b>▲</b> the elevator only goes up</div>
+          </div>
+          <div class="memo" id="m1">
+            <h4>Memo · HR</h4>
+            <p>HR would like a quick word. And then a longer word.</p>
+          </div>
+          <div class="memo" id="m2">
+            <h4>Memo · Legal</h4>
+            <p>Legal says this is &ldquo;technically cardio.&rdquo;</p>
+          </div>
+          <div class="memo" id="m3">
+            <h4>Memo · Facilities</h4>
+            <p>Reminder: the ping-pong table is NOT for flipping.</p>
+          </div>
+          <div class="memo" id="m4">
+            <h4>Memo · IT</h4>
+            <p>Please do not flip the servers.</p>
+          </div>
+        </section>
+
+
+        <!-- g3: real gameplay -->
+        <div class="phone" id="g3-phone">
+          <video id="g3" class="clip" src="assets/clips/elevator.mp4" data-start="23.5" data-duration="4.5" data-media-start="1.2" data-track-index="1" muted playsinline></video>
+          <div id="g3-taps"></div>
+        </div>
+        <section id="g3-ui" class="scene clip" data-start="23.5" data-duration="4.5" data-track-index="0">
+          <div class="gcap" id="g3-cap">
+            <div class="kicker">Clear the floor</div>
+            <span class="display">Ride up.</span>
+          </div>
+          <div class="gcap gcap-b" id="g3-capb">
+            <div class="kicker">Every 10th floor</div>
+            <span class="display">The boardroom.</span>
+          </div>
+        </section>
+
+        <!-- S5: CTA -->
+        <section id="s5" class="scene clip" data-start="28" data-duration="4" data-track-index="0">
+          <div id="s5-lines">
+            <span class="line display">Flip tables.</span>
+            <span class="line display">Climb floors.</span>
+            <span class="line display accent">Annoy HR.</span>
+          </div>
+          <div id="s5-url"><span id="s5-pill">flippingtables.app</span></div>
+          <div id="s5-sub">free · in your browser · forever</div>
+          <div id="s5-kao">┬─┬ノ( º _ ºノ)</div>
+          <div id="s5-kao-cap">(please put the table back)</div>
+        </section>
+      </div>
+
+      <div class="wipe" id="w1"></div>
+      <div class="wipe light" id="w2"></div>
+      <div class="wipe" id="w3"></div>
+      <div class="wipe light" id="w4"></div>
+      <div id="flash"></div>
+    </div>
+
+    <script src="assets/clips/taps.js"></script>
+    <script>
+      // ---- deterministic helpers ----
+      function mulberry32(a) {
+        return function () {
+          a |= 0;
+          a = (a + 0x6d2b79f5) | 0;
+          let t = Math.imul(a ^ (a >>> 15), 1 | a);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const rand = mulberry32(1337);
+      function fmt(n) {
+        if (n < 1000) return String(Math.round(n));
+        const units = ["K", "M", "B", "T"];
+        let i = -1;
+        while (n >= 1000 && i < units.length - 1) {
+          n /= 1000;
+          i++;
+        }
+        return (n >= 100 ? n.toFixed(0) : n.toFixed(1)) + units[i];
+      }
+      function counter(tl, el, from, to, at, dur, ease, format) {
+        const s = { v: from };
+        const f = format || ((v) => fmt(v));
+        el.textContent = f(from);
+        tl.to(s, { v: to, duration: dur, ease, onUpdate: () => (el.textContent = f(s.v)) }, at);
+      }
+      const $ = (id) => document.getElementById(id);
+      // tap positions per clip, written by the recorder (assets/clips/taps.js)
+      const { fresh: TAPS_FRESH = [], midgame: TAPS_MIDGAME = [], elevator: TAPS_ELEVATOR = [] } = window.__TAPS || {};
+
+      // ---- build the rain of tiny flipped tables (S4) ----
+      const rain = $("s4-rain");
+      const drops = [];
+      for (let i = 0; i < 14; i++) {
+        const d = document.createElement("div");
+        d.className = "rain";
+        d.textContent = "┻━┻";
+        d.style.left = Math.round(20 + rand() * 860) + "px";
+        rain.appendChild(d);
+        drops.push({ el: d, delay: rand() * 2.6, dur: 1.4 + rand() * 1.2, rot: (rand() > 0.5 ? 1 : -1) * (180 + rand() * 360) });
+      }
+
+      const tl = gsap.timeline({ paused: true });
+
+      // ---- transitions: wipe covers just before a cut, uncovers just after ----
+      [
+        ["#w1", 3],
+        ["#w2", 11],
+        ["#w3", 19.5],
+        ["#w4", 28],
+      ].forEach(([sel, t]) => {
+        tl.fromTo(sel, { yPercent: 100 }, { yPercent: 0, duration: 0.2, ease: "power3.in" }, t - 0.2);
+        tl.to(sel, { yPercent: -100, duration: 0.28, ease: "power3.out" }, t);
+      });
+
+      // ================= S1 — hook (0–3s) =================
+      tl.fromTo("#s1-kicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.05);
+      tl.fromTo(
+        "#s1-lines .line",
+        { opacity: 0, y: 70, rotation: 0 },
+        { opacity: 1, y: 0, duration: 0.32, ease: "back.out(1.6)", stagger: 0.16 },
+        0.15,
+      );
+      tl.fromTo("#s1-kao", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2.2)" }, 1.45);
+      // the flip
+      tl.to("#s1-table", { rotation: 540, x: 420, y: -900, duration: 0.75, ease: "power2.out" }, 1.95);
+      tl.to(
+        "#stage",
+        { keyframes: { x: [0, -30, 24, -16, 10, -4, 0], y: [0, 18, -14, 9, -5, 2, 0] }, duration: 0.45, ease: "none" },
+        1.95,
+      );
+      tl.to(
+        "#s1-lines .line",
+        {
+          y: (i) => 1500 + i * 60,
+          rotation: (i) => [-14, 18, -9, 22][i],
+          x: (i) => [-60, 80, -30, 60][i],
+          duration: 0.8,
+          ease: "power2.in",
+          stagger: 0.05,
+        },
+        2.1,
+      );
+
+      // ================= S2 — the game (3–7.5s) =================
+      tl.fromTo(["#s2-t1", "#s2-t2"], { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out", stagger: 0.12 }, 3.1);
+      tl.fromTo("#s2-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 3.5);
+      tl.fromTo("#s2-rage", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 3.7);
+      tl.fromTo("#desk1", { y: -1100 }, { y: 0, duration: 0.5, ease: "bounce.out" }, 3.15);
+      tl.fromTo("#s2-shadow", { opacity: 0, scaleX: 0.3 }, { opacity: 1, scaleX: 1, duration: 0.5, ease: "bounce.out" }, 3.15);
+      tl.set("#desk2", { y: -1500 }, 0);
+      tl.fromTo("#cursor", { x: 360, y: 520, opacity: 0 }, { x: 0, y: 0, opacity: 1, duration: 0.45, ease: "power3.out" }, 3.85);
+
+      const rageEl = $("s2-rage-n");
+      const taps = [
+        { t: 4.4, rip: "#rip1", pop: "#pop1", from: 0, to: 1 },
+        { t: 4.85, rip: "#rip2", pop: "#pop2", from: 1, to: 2 },
+        { t: 5.3, rip: "#rip3", pop: "#s2-crit", from: 2, to: 7 },
+      ];
+      taps.forEach((tap, i) => {
+        tl.to("#cursor", { scale: 0.82, duration: 0.07, ease: "power2.in", transformOrigin: "10% 5%" }, tap.t - 0.07);
+        tl.to("#cursor", { scale: 1, duration: 0.15, ease: "back.out(3)" }, tap.t);
+        tl.fromTo(tap.rip, { opacity: 0.9, scale: 0.3 }, { opacity: 0, scale: 1.6, duration: 0.45, ease: "power2.out", immediateRender: false }, tap.t);
+        tl.fromTo(
+          tap.pop,
+          { opacity: 1, y: 40, scale: i === 2 ? 0.5 : 0.8 },
+          { opacity: i === 2 ? 1 : 0, y: i === 2 ? -60 : -120, scale: 1, duration: i === 2 ? 0.45 : 0.6, ease: "power2.out", immediateRender: false },
+          tap.t,
+        );
+        if (i < 2) {
+          tl.to("#desk1", { keyframes: { rotation: [0, -4, 3, -1.5, 0] }, duration: 0.3, ease: "none", transformOrigin: "50% 100%" }, tap.t);
+        }
+        counter(tl, rageEl, tap.from, tap.to, tap.t, 0.18, "power1.out", (v) => String(Math.round(v)));
+        tl.fromTo(rageEl, { scale: 1.35 }, { scale: 1, duration: 0.25, ease: "back.out(3)" }, tap.t);
+      });
+      // crit flips the desk off-screen
+      tl.to("#desk1", { rotation: 200, x: 640, y: -720, duration: 0.8, ease: "power2.out", transformOrigin: "100% 100%" }, 5.3);
+      tl.to("#s2-shadow", { opacity: 0.25, scaleX: 0.5, duration: 0.3 }, 5.3);
+      tl.to("#stage", { keyframes: { x: [0, -26, 20, -12, 6, 0], y: [0, 16, -12, 6, -2, 0] }, duration: 0.4, ease: "none" }, 5.3);
+      tl.to("#s2-crit", { opacity: 0, duration: 0.25 }, 6.0);
+      [
+        [-380, -620, -260],
+        [-200, -880, 190],
+        [60, -980, -340],
+        [260, -760, 300],
+        [380, -520, -150],
+        [-60, -560, 420],
+      ].forEach(([dx, dy, rot], i) => {
+        tl.fromTo(
+          "#p" + (i + 1),
+          { opacity: 1, x: 0, y: 0, rotation: 0 },
+          { x: dx, y: dy, rotation: rot, duration: 0.9, ease: "power2.out", immediateRender: false },
+          5.32 + i * 0.03,
+        );
+        tl.to("#p" + (i + 1), { opacity: 0, y: dy + 140, duration: 0.35, ease: "power1.in" }, 6.0 + i * 0.03);
+      });
+      tl.to("#cursor", { x: 300, y: 380, opacity: 0, duration: 0.4, ease: "power2.in" }, 5.6);
+      // a new table always arrives
+      tl.to("#desk2", { y: 0, duration: 0.55, ease: "bounce.out" }, 6.25);
+      tl.to("#s2-shadow", { opacity: 1, scaleX: 1, duration: 0.45, ease: "bounce.out" }, 6.3);
+      tl.fromTo("#s2-again", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 6.55);
+
+      // S3–S5 keep their original authored times; each is a child timeline offset into place.
+      // ================= S3 — upgrades (11–15.5s) =================
+      {
+      const sub = gsap.timeline();
+      ((tl) => {
+      tl.fromTo("#s3-head", { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.35, ease: "power3.out" }, 7.55);
+      tl.fromTo(".card", { opacity: 0, x: 700 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", stagger: 0.12 }, 7.75);
+      tl.fromTo("#s3-bank", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 8.2);
+      const levels = [48, 23, 61, 15];
+      [1, 2, 3, 4].forEach((n, i) => {
+        const t = 8.7 + i * 0.32;
+        tl.fromTo(`#c${n} .flash`, { opacity: 1 }, { opacity: 0, duration: 0.45, ease: "power2.out", immediateRender: false }, t);
+        tl.fromTo(`#c${n}`, { scale: 0.96 }, { scale: 1, duration: 0.3, ease: "back.out(3)", immediateRender: false }, t);
+        counter(tl, $("lv" + n), 1, levels[i], t, 3.1 - i * 0.3, "power2.in", (v) => String(Math.round(v)));
+      });
+      counter(tl, $("s3-rage"), 7, 1240000, 8.6, 3.2, "expo.in");
+      counter(tl, $("s3-rate"), 0, 48200, 8.7, 3.0, "expo.in", (v) => "+" + fmt(v) + " / sec");
+      tl.fromTo("#s3-rage", { scale: 0.7 }, { scale: 1.08, duration: 3.2, ease: "expo.in" }, 8.6);
+
+      })(sub);
+      tl.add(sub, 11 - 7.5);
+      }
+
+      // ================= S4 — infinite office (19.5–23.5s) =================
+      {
+      const sub = gsap.timeline();
+      ((tl) => {
+      drops.forEach((d) => {
+        tl.fromTo(
+          d.el,
+          { y: -140, rotation: 0 },
+          { y: 2020, rotation: d.rot, duration: d.dur, ease: "power1.in" },
+          12 + d.delay,
+        );
+      });
+      tl.fromTo("#s4-head", { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, 12.05);
+      counter(tl, $("s4-floor-n"), 1, 9999, 12.25, 1.75, "expo.in", (v) => Math.round(v).toLocaleString("en-US"));
+      tl.to("#s4-floor-n", { opacity: 0, scale: 1.6, duration: 0.2, ease: "power2.in" }, 14.0);
+      tl.fromTo("#s4-inf", { opacity: 0, scale: 0.3, rotation: -90 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2)" }, 14.1);
+      [
+        ["#m1", 12.55, -4],
+        ["#m2", 13.35, 3],
+        ["#m3", 14.15, -2.5],
+        ["#m4", 14.95, 2],
+      ].forEach(([sel, t, rot]) => {
+        tl.fromTo(sel, { opacity: 0, y: 160, rotation: rot * 4, scale: 1.15 }, { opacity: 1, y: 0, rotation: rot, scale: 1, duration: 0.35, ease: "back.out(1.7)" }, t);
+      });
+
+      })(sub);
+      tl.add(sub, 19.5 - 12);
+      }
+
+      // ================= S5 — CTA (28–32s) =================
+      {
+      const sub = gsap.timeline();
+      ((tl) => {
+      tl.fromTo(
+        "#s5-lines .line",
+        { opacity: 0, scale: 1.6, x: -40 },
+        { opacity: 1, scale: 1, x: 0, duration: 0.28, ease: "power4.out", stagger: 0.38, transformOrigin: "0% 50%" },
+        16.15,
+      );
+      tl.fromTo("#s5-pill", { opacity: 0, y: 80, scale: 0.6 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(2)" }, 17.35);
+      tl.fromTo("#s5-sub", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 17.65);
+      tl.to("#s5-pill", { scale: 1.05, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, 18.0);
+      tl.fromTo("#s5-kao", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 18.45);
+      tl.fromTo("#s5-kao-cap", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 18.75);
+
+      })(sub);
+      tl.add(sub, 28 - 16);
+      }
+
+      // ================= real gameplay beats =================
+      // Clips are recorded from the live game (recorder/rec.mjs) at 1080x1920; taps.js gives
+      // each tap in clip time + video pixels, so we can draw touches the game itself doesn't show.
+      const PHONE = { x: 173, y: 340, s: 734 / 1080 };
+      const BEATS = [
+        { id: "g1", start: 7.5, dur: 3.5, mstart: 0.35, taps: TAPS_FRESH },
+        { id: "g2", start: 15.5, dur: 4, mstart: 0.25, taps: TAPS_MIDGAME },
+        { id: "g3", start: 23.5, dur: 4.5, mstart: 1.2, taps: TAPS_ELEVATOR, swapAt: 25.35 },
+      ];
+      BEATS.forEach((b) => {
+        const end = b.start + b.dur;
+        tl.fromTo(`#${b.id}-phone`, { opacity: 0, y: 220, rotation: -5, scale: 0.9 }, { opacity: 1, y: 0, rotation: 0, scale: 1, duration: 0.45, ease: "back.out(1.5)", immediateRender: false }, b.start);
+        tl.to(`#${b.id}-phone`, { scale: 1.03, duration: b.dur - 0.45, ease: "none" }, b.start + 0.45);
+        tl.set(`#${b.id}-phone`, { opacity: 0 }, end);
+        tl.fromTo(`#${b.id}-cap`, { opacity: 0, y: -40 }, { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" }, b.start + 0.1);
+        if (b.swapAt) {
+          tl.to(`#${b.id}-cap`, { opacity: 0, y: -30, duration: 0.2, ease: "power2.in" }, b.swapAt - 0.2);
+          tl.fromTo(`#${b.id}-capb`, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35, ease: "back.out(2)" }, b.swapAt);
+        }
+        const host = $(`${b.id}-taps`);
+        b.taps.forEach((tp, i) => {
+          const at = b.start + (tp.t - b.mstart);
+          if (at < b.start || at > end - 0.3) return;
+          const d = document.createElement("div");
+          d.className = "tap";
+          d.style.left = tp.x * PHONE.s + "px";
+          d.style.top = tp.y * PHONE.s + "px";
+          host.appendChild(d);
+          tl.fromTo(d, { opacity: 0.95, scale: 0.35 }, { opacity: 0, scale: 1.5, duration: 0.42, ease: "power2.out", immediateRender: false }, at);
+        });
+      });
+      // hard cut into each clip with a flash pop
+      [7.5, 15.5, 23.5].forEach((t) => {
+        tl.fromTo("#flash", { opacity: 0.85 }, { opacity: 0, duration: 0.3, ease: "power2.out", immediateRender: false }, t);
+      });
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

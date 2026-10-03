@@ -1,0 +1,14 @@
+{
+  "name": "flippingtables-promo",
+  "private": true,
+  "type": "module",
+  "description": "Recorder + HyperFrames compositions for Flipping Tables promo videos. Not deployed (see /.vercelignore).",
+  "scripts": {
+    "make": "node scripts/make.mjs",
+    "record": "node recorder/rec.mjs",
+    "serve": "node recorder/serve.mjs"
+  },
+  "devDependencies": {
+    "puppeteer": "^24.22.0"
+  }
+}

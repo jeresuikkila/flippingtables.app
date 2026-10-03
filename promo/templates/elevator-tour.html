@@ -1,0 +1,413 @@
+<!doctype html>
+<!-- Elevator-tour Short template. Filled in by scripts/build-tour.mjs from shorts/<name>/short.json; don't edit generated index.html files. -->
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face {
+        font-family: "Archivo Black";
+        src: url("assets/fonts/archivo-black-latin-400-normal.woff2") format("woff2");
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/inter-latin-600-normal.woff2") format("woff2");
+        font-weight: 600;
+      }
+      @font-face {
+        font-family: "Inter";
+        src: url("assets/fonts/inter-latin-800-normal.woff2") format("woff2");
+        font-weight: 800;
+      }
+      /* Subsets of DejaVu Sans Bold + Droid Sans Fallback: only the kaomoji / symbol glyphs */
+      @font-face {
+        font-family: "KaoA";
+        src: url("assets/fonts/kao-dejavu.woff2") format("woff2");
+      }
+      @font-face {
+        font-family: "KaoB";
+        src: url("assets/fonts/kao-droid.woff2") format("woff2");
+      }
+
+      :root {
+        --bg: #15171c;
+        --bg2: #1d2027;
+        --accent: #ff5a36;
+        --text: #f2efe9;
+        --mute: #9a9ca6;
+        --wood: #c98a4b;
+        --led: #ff3b2f;
+        --display: "Archivo Black", "KaoA", "KaoB", sans-serif;
+        --body: "Inter", "KaoA", "KaoB", sans-serif;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1080px;
+        height: 1920px;
+        overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: var(--body);
+        color: var(--text);
+        background:
+          radial-gradient(ellipse 120% 60% at 50% 45%, #232733 0%, var(--bg) 70%),
+          var(--bg);
+      }
+      #carpet {
+        position: absolute;
+        inset: 0;
+        background-image:
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 120px),
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 2px, transparent 2px 120px);
+      }
+      #stage {
+        position: absolute;
+        inset: 0;
+      }
+      .scene {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .display {
+        font-family: var(--display);
+        line-height: 0.95;
+        letter-spacing: -0.01em;
+        text-transform: uppercase;
+      }
+      .kicker {
+        font-family: var(--body);
+        font-weight: 800;
+        font-size: 34px;
+        letter-spacing: 0.22em;
+        color: var(--mute);
+        text-transform: uppercase;
+      }
+      .accent {
+        color: var(--accent);
+      }
+
+      /* ---------- gameplay ---------- */
+      .vw {
+        position: absolute;
+        inset: 0;
+      }
+      .vw video {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .tap {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        margin: -60px 0 0 -60px;
+        border-radius: 50%;
+        border: 8px solid rgba(255, 255, 255, 0.95);
+        background: rgba(255, 90, 54, 0.3);
+        opacity: 0;
+      }
+      .cap {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        top: 1370px;
+        display: flex;
+        justify-content: center;
+      }
+      .cap span {
+        display: block;
+        max-width: 960px;
+        padding: 22px 34px 24px;
+        border-radius: 20px;
+        background: rgba(21, 23, 28, 0.9);
+        border-left: 12px solid var(--accent);
+        font-weight: 800;
+        font-size: 44px;
+        line-height: 1.15;
+        text-align: center;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+      }
+
+      /* ---------- elevator doors ---------- */
+      .door {
+        position: absolute;
+        top: 0;
+        width: 540px;
+        height: 1920px;
+        z-index: 40;
+        background:
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 3px, transparent 3px 26px),
+          linear-gradient(90deg, #5d636d, #8b919b 45%, #6a7079);
+      }
+      #doorL {
+        left: 0;
+        border-right: 4px solid #2a2d33;
+      }
+      #doorR {
+        left: 540px;
+        border-left: 4px solid #2a2d33;
+      }
+      .panel {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 700px;
+        z-index: 41;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        opacity: 0;
+      }
+      .panel .led {
+        display: block;
+        padding: 18px 44px 22px;
+        border-radius: 18px;
+        background: #121318;
+        border: 6px solid #3a3e48;
+        font-family: var(--display);
+        font-size: 150px;
+        line-height: 1;
+        color: var(--led);
+        text-shadow: 0 0 26px rgba(255, 59, 47, 0.75);
+        white-space: nowrap;
+      }
+      .panel .dept {
+        display: block;
+        margin-top: 30px;
+        max-width: 960px;
+        padding: 16px 30px 18px;
+        border-radius: 14px;
+        background: rgba(18, 19, 24, 0.88);
+        font-family: var(--display);
+        font-size: 50px;
+        line-height: 1.05;
+        text-align: center;
+        text-transform: uppercase;
+      }
+
+      /* ---------- hook ---------- */
+      #hook .kicker {
+        position: absolute;
+        left: 80px;
+        top: 380px;
+        color: var(--accent);
+      }
+      #hook-lines {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 460px;
+      }
+      #hook-lines .line {
+        display: block;
+        font-size: {{HOOK_SIZE}}px;
+        margin-bottom: 14px;
+      }
+      #hook-kao {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1180px;
+        display: flex;
+        justify-content: center;
+        font-family: "KaoA", "KaoB", sans-serif;
+        font-size: 120px;
+        white-space: nowrap;
+      }
+      #hook-kao span {
+        display: inline-block;
+      }
+      #hook-table {
+        color: var(--wood);
+        margin-left: 18px;
+      }
+
+      /* ---------- CTA ---------- */
+      #cta-title {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 330px;
+        text-align: center;
+      }
+      #cta-title .display {
+        display: block;
+        font-size: 150px;
+      }
+      #cta-sub {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 690px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 48px;
+        color: var(--mute);
+      }
+      #cta-sub b {
+        color: var(--text);
+        font-weight: 800;
+      }
+      #cta-url {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 860px;
+        display: flex;
+        justify-content: center;
+      }
+      #cta-pill {
+        display: block;
+        padding: 30px 50px 34px;
+        border-radius: 999px;
+        background: var(--accent);
+        color: var(--bg);
+        font-family: var(--display);
+        font-size: 68px;
+        line-height: 1;
+        box-shadow: 0 14px 0 #b8381c;
+      }
+      #cta-fine {
+        position: absolute;
+        left: 80px;
+        right: 80px;
+        top: 1030px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 40px;
+        color: var(--mute);
+      }
+      #cta-kao {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 1230px;
+        text-align: center;
+        font-family: "KaoA", "KaoB", sans-serif;
+        font-size: 92px;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="{{TOTAL}}"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div id="carpet"></div>
+      <div id="stage">
+        <!-- Hook -->
+        <section id="hook" class="scene clip" data-start="0" data-duration="2.6" data-track-index="0">
+          <div class="kicker" id="hook-kicker">{{HOOK_KICKER}}</div>
+          <div id="hook-lines">{{HOOK_LINES}}
+          </div>
+          <div id="hook-kao"><span id="hook-face">(╯°□°)╯︵</span><span id="hook-table">┻━┻</span></div>
+        </section>
+
+        {{BEATS}}
+
+        <!-- CTA -->
+        <section id="cta" class="scene clip" data-start="{{CTA_START}}" data-duration="{{CTA_DUR}}" data-track-index="0">
+          <div id="cta-title">
+            <span class="display" id="cta-t1">Flipping</span>
+            <span class="display accent" id="cta-t2">Tables</span>
+          </div>
+          <div id="cta-sub">{{CTA_SUB}}</div>
+          <div id="cta-url"><span id="cta-pill">flippingtables.app</span></div>
+          <div id="cta-fine">{{CTA_FINE}}</div>
+          <div id="cta-kao">┬─┬ノ( º _ ºノ)</div>
+        </section>
+      </div>
+
+      <div class="door" id="doorL"></div>
+      <div class="door" id="doorR"></div>
+      {{PANELS}}
+
+      {{SFX}}
+    </div>
+
+    <script src="assets/clips/taps.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const TAPS = window.__TAPS || {}; // from assets/clips/taps.js, written by the recorder
+      const BEATS = {{BEATS_JSON}};
+      const DOORS = {{DOORS_JSON}};
+      const tl = gsap.timeline({ paused: true });
+
+      // ================= hook (0–2.6s) =================
+      tl.fromTo("#hook-kicker", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, 0.05);
+      tl.fromTo("#hook-lines .line", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.32, ease: "back.out(1.6)", stagger: 0.17 }, 0.12);
+      tl.fromTo("#hook-kao", { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.28, ease: "back.out(2.2)" }, 0.95);
+      tl.to("#hook-table", { rotation: 540, x: 420, y: -1000, duration: 0.75, ease: "power2.out" }, 1.4);
+      tl.to("#stage", { keyframes: { x: [0, -30, 24, -16, 10, -4, 0], y: [0, 18, -14, 9, -5, 2, 0] }, duration: 0.45, ease: "none" }, 1.4);
+
+      // ================= elevator doors between floors =================
+      tl.set("#doorL", { xPercent: -101 }, 0);
+      tl.set("#doorR", { xPercent: 101 }, 0);
+      DOORS.forEach((d, i) => {
+        const T = d.t; // the cut happens behind closed doors at T
+        tl.to("#doorL", { xPercent: 0, duration: 0.3, ease: "power3.in" }, T - 0.62);
+        tl.to("#doorR", { xPercent: 0, duration: 0.3, ease: "power3.in" }, T - 0.62);
+        tl.fromTo(`#panel${i}`, { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)", immediateRender: false }, T - 0.34);
+        tl.to(`#panel${i}`, { opacity: 0, duration: 0.14 }, T + 0.06);
+        tl.to("#doorL", { xPercent: -101, duration: 0.38, ease: "power2.out" }, T + 0.12);
+        tl.to("#doorR", { xPercent: 101, duration: 0.38, ease: "power2.out" }, T + 0.12);
+      });
+
+      // ================= gameplay beats =================
+      BEATS.forEach((b) => {
+        const end = b.start + b.dur;
+        tl.fromTo(`#${b.id}-vw`, { scale: 1.06 }, { scale: 1, duration: 0.6, ease: "power2.out", immediateRender: false }, b.start + 0.12);
+        b.caps.forEach((c, k) => {
+          tl.fromTo(`#${b.id}-cap${k}`, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, c.from);
+          tl.to(`#${b.id}-cap${k}`, { opacity: 0, y: 20, duration: 0.2, ease: "power2.in" }, c.to);
+        });
+        const host = $(`${b.id}-taps`);
+        (TAPS[b.id] || []).forEach((tp) => {
+          const at = b.start + (tp.t - b.mstart);
+          if (at < b.start + 0.3 || at > end - 0.5) return;
+          const d = document.createElement("div");
+          d.className = "tap";
+          d.style.left = tp.x + "px";
+          d.style.top = tp.y + "px";
+          host.appendChild(d);
+          tl.fromTo(d, { opacity: 0.95, scale: 0.35 }, { opacity: 0, scale: 1.4, duration: 0.4, ease: "power2.out", immediateRender: false }, at);
+        });
+      });
+
+      // ================= CTA =================
+      const C = {{CTA_START}};
+      tl.fromTo(["#cta-t1", "#cta-t2"], { opacity: 0, scale: 1.5 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power3.out", stagger: 0.12 }, C + 0.2);
+      tl.fromTo("#cta-sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, C + 0.6);
+      tl.fromTo("#cta-pill", { opacity: 0, y: 80, scale: 0.6 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(2)" }, C + 0.95);
+      tl.fromTo("#cta-fine", { opacity: 0 }, { opacity: 1, duration: 0.35 }, C + 1.3);
+      tl.to("#cta-pill", { scale: 1.05, duration: 0.35, ease: "sine.inOut", yoyo: true, repeat: 3 }, C + 1.6);
+      tl.fromTo("#cta-kao", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, C + 2.2);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+{
+  "type": "elevator-tour",
+  "hook": { "kicker": "Flipping Tables · special floors", "lines": ["Every office", "you've ever", "hated."] },
+  "beats": [
+    { "scenario": "accounting", "floor": "2", "dept": "Accounting", "dur": 4.4, "caps": [["There's a red stapler in one of these desks.", 0.55, 2.35], ["Relic found. HR has been notified.", 2.55, 3.95]] },
+    { "scenario": "itcrowd", "floor": "3", "dept": "IT", "dur": 3.7, "caps": [["Have you tried turning it off and on again?", 0.55, 3.1]] },
+    { "scenario": "initech", "floor": "5", "dept": "Initech", "dur": 3.8, "caps": [["Is this good for the company?", 0.55, 3.2]] },
+    { "scenario": "lumon", "floor": "23", "dept": "Macrodata Refinement", "dur": 3.8, "caps": [["The work is mysterious and important.", 0.55, 3.2]] },
+    { "scenario": "notfound", "floor": "404", "dept": "Department Not Found", "dur": 4.2, "caps": [["The numbers stopped making sense.", 0.55, 3.6]] },
+    { "scenario": "csuite", "floor": "99", "dept": "Middle Management", "dur": 6.0, "caps": [["Get through middle management…", 0.55, 2.9], ["…and flip the C-Suite's table.", 3.3, 5.5]] }
+  ],
+  "end": { "floor": "1000", "dept": "The Shareholders" },
+  "cta": { "sub": "an <b>infinite clicker</b> for your office", "fine": "free · in your browser · keep climbing" }
+}
