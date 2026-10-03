@@ -390,7 +390,8 @@ const sevMult = () => 1 + 0.1 * S.sev;
 const sevGain = () => S.floor >= 25 ? Math.floor(Math.pow(S.floor / 10, 2)) : 0;
 const dmgAt = n => (1 + n) * Math.pow(1.12, n);
 const dmg = () => mode === 'daily' ? 1 : dmgAt(S.up.arms) * sevMult();
-const internDps = () => mode === 'daily' ? 0 : S.up.interns * 0.8 * dmg() * (1 + 0.5 * S.up.retreat);
+// Interns get a third of your base arm strength and none of your severance bonus: they help, they don't carry.
+const internDps = () => mode === 'daily' ? 0 : S.up.interns * 0.3 * dmgAt(S.up.arms) * (1 + 0.4 * S.up.retreat);
 const chairDmg = () => dmg() * 1.5 * S.up.chair;
 const critChance = () => mode === 'daily' ? 0 : Math.min(0.6, S.up.spite * 0.04);
 const splashR = () => mode === 'daily' || !S.up.shock ? 0 : 1.6 + 0.7 * S.up.shock;
@@ -403,7 +404,7 @@ const UPG = [
   { id: 'shock', unlock: 5, short: 'Shock', blurb: 'Hits splash onto nearby desks', ic: '💥', name: 'Shockwave', base: 120, k: 1.75, max: 10, fx: () => S.up.shock ? `${splashR().toFixed(1)}m splash radius` : 'Rage gets area of effect' },
   { id: 'email', unlock: 2, short: 'Emails', blurb: 'Passive rage per second', ic: '📧', name: 'Reply-All Storm', base: 45, k: 1.5, fx: () => S.up.email ? `+${fmt(emailRate())} rage/s passively` : 'Generates rage while idle' },
   { id: 'chair', unlock: 7, short: 'Chairs', blurb: 'Flipped desks fling their chairs at other desks', ic: '🪑', name: 'Ergonomic Chair Throw', base: 400, k: 1.8, max: 10, fx: () => S.up.chair ? `Thrown chairs hit for ${fmt(chairDmg())}` : 'Chairs become projectiles' },
-  { id: 'retreat', unlock: 9, req: () => S.up.interns > 0, short: 'Retreat', blurb: 'Interns hit harder after the trust falls', ic: '🏕️', name: 'Team Building Retreat', base: 3000, k: 2.1, max: 10, fx: () => `Interns deal ×${(1 + 0.5 * S.up.retreat).toFixed(1)} damage` },
+  { id: 'retreat', unlock: 9, req: () => S.up.interns > 0, short: 'Retreat', blurb: 'Interns hit harder after the trust falls', ic: '🏕️', name: 'Team Building Retreat', base: 3000, k: 2.1, max: 10, fx: () => `Interns deal ×${(1 + 0.4 * S.up.retreat).toFixed(1)} damage` },
 ];
 const unlocked = u => S.best >= u.unlock && (!u.req || u.req() || S.up[u.id] > 0);
 const cost = u => Math.ceil(u.base * Math.pow(u.k, S.up[u.id]));
@@ -1270,7 +1271,7 @@ function hit(t, amount, src, dir) {
 function kill(t, src, dir) {
   t.dead = true; t.hover = false; alive--; floorFlipped++; S.flipped++;
   const load = 0.6 + 0.2 * t.items.length, relic = t.relic && RELICS[t.relic];
-  const gain = mode === 'daily' ? 0 : t.reward * (t.loadMult ?? load) * (relic ? relic.mult : 1) * (src === 'click' ? comboMult() : 1) * sevMult();
+  const gain = mode === 'daily' ? 0 : t.reward * (t.loadMult ?? load) * (relic ? relic.mult : 1) * (src === 'click' ? comboMult() : 1) * (src === 'intern' ? 1 : sevMult()); // severance is yours, not the interns'
   S.rage += gain; S.lifetime += gain; pendingFlips++; countFlip();
   const p = t.g.position.clone(); p.y += 1.2;
   if (gain) spawnText(p, `+${fmt(gain)} RAGE`, 'reward');
