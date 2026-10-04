@@ -25,9 +25,12 @@
 <meta name="apple-mobile-web-app-title" content="Flip Tables">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <!-- Self-hosted fonts (no extra connections on crowded venue Wi-Fi), and the 3D engine starts downloading
-     while this long page is still parsing. Keep the modulepreload in sync with the importmap below. -->
+     while this long page is still parsing. Keep the modulepreload in sync with the importmap above it. -->
 <link rel="preload" href="/vendor/fonts/archivo-black-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/vendor/fonts/inter-800.woff2" as="font" type="font/woff2" crossorigin>
+<!-- The import map must come before ANY module load, modulepreload included: Firefox ignores an import map
+     that appears after one, and then `import 'three'` fails and the game never starts. -->
+<script type="importmap">{"imports":{"three":"./vendor/three-r170-4.min.js"}}</script>
 <link rel="modulepreload" href="./vendor/three-r170-4.min.js">
 <style>
 @font-face{font-family:'Archivo Black';font-weight:400;font-display:swap;src:url(/vendor/fonts/archivo-black-400.woff2) format('woff2')}
@@ -394,13 +397,16 @@ body.rm .ticker-run,body.rm .cta{animation:none}
     ['startBtn', 'dailyBtn'].forEach(function (id) {
       document.getElementById(id).addEventListener('click', function (e) {
         if (window.__ftReady) return;
-        window.__ftQueued = id; e.currentTarget.classList.add('waiting'); e.currentTarget.textContent = label[id];
+        var btn = e.currentTarget;
+        if (btn.dataset.stuck) return location.reload();
+        window.__ftQueued = id; btn.classList.add('waiting'); btn.textContent = label[id];
+        // never leave someone staring at a spinner: if the game hasn't started in 15s, offer a reload
+        setTimeout(function () { if (!window.__ftReady) { btn.dataset.stuck = '1'; btn.classList.remove('waiting'); btn.textContent = 'TAP TO RELOAD'; } }, 15000);
       });
     });
   })();
 </script>
 
-<script type="importmap">{"imports":{"three":"./vendor/three-r170-4.min.js"}}</script>
 <script>
   // Vercel Web Analytics (pageviews + custom events) and a tiny client error reporter.
   window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
