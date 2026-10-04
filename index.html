@@ -24,10 +24,16 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Flip Tables">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<!-- Self-hosted fonts (no extra connections on crowded venue Wi-Fi), and the 3D engine starts downloading
+     while this long page is still parsing. Keep the modulepreload in sync with the importmap below. -->
+<link rel="preload" href="/vendor/fonts/archivo-black-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/vendor/fonts/inter-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="modulepreload" href="./vendor/three-r170-4.min.js">
 <style>
+@font-face{font-family:'Archivo Black';font-weight:400;font-display:swap;src:url(/vendor/fonts/archivo-black-400.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:400;font-display:swap;src:url(/vendor/fonts/inter-400.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:600;font-display:swap;src:url(/vendor/fonts/inter-600.woff2) format('woff2')}
+@font-face{font-family:'Inter';font-weight:800;font-display:swap;src:url(/vendor/fonts/inter-800.woff2) format('woff2')}
 :root{
   --bg:#15171c; --panel:rgba(20,22,28,.74); --line:rgba(255,255,255,.09);
   --text:#f2efe9; --mute:#9a9ca6; --accent:#ff5a36; --accent2:#ffb02e; --good:#4ade80;
@@ -179,7 +185,41 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
 .quit{display:block;margin:10px auto 0;font-size:11px;color:#6d707a;text-decoration:underline}
 .quit:hover{color:var(--accent)}
 .fine{margin-top:26px;font-size:13px;font-weight:600;color:#c9cbd2;letter-spacing:.02em;text-shadow:0 1px 0 #000,0 0 12px rgba(0,0,0,.9)}
+/* landing hero: an elevator LED strip of memos, the logo, then the actions (bottom-anchored on phones) */
+.hero{width:100%;max-width:640px;margin:0 auto} /* explicit width: newer browsers apply #title's place-items to block layout and would shrink-wrap it */
+.ticker{position:relative;max-width:460px;height:30px;margin:0 auto 18px;border-radius:9px;background:#0c0c0e;border:2px solid #2a2d35;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.ticker-run{display:flex;width:max-content;height:100%;align-items:center;animation:ticker 40s linear infinite}
+.ticker-run span{white-space:nowrap;font-family:var(--display);font-size:12px;letter-spacing:.14em;color:#ff6b3d;text-shadow:0 0 10px rgba(255,59,31,.75)}
+@keyframes ticker{to{transform:translateX(-50%)}}
+.cta{display:block;margin:0 auto;animation:beckon 2.6s ease-in-out infinite}
+@keyframes beckon{50%{box-shadow:0 7px 0 #a8321a,0 20px 64px rgba(255,90,54,.62)}}
+.cta2{display:block;margin:16px auto 0}
+.cta.waiting,.cta2.waiting{background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.2) 0 12px,transparent 12px 24px);background-size:34px 34px;animation:barber .6s linear infinite}
+@keyframes barber{to{background-position:34px 0}}
+.dailyNote{margin-top:10px;font-size:12px;font-weight:600;color:var(--mute);text-shadow:0 1px 0 #000}
+.hero-foot{display:flex;flex-direction:column;align-items:center;gap:12px;margin-top:20px}
+.hero-foot .fine{margin:0}
+.chip{font-family:var(--display);font-size:11px;letter-spacing:.08em;padding:9px 14px;border-radius:999px;background:#2a2d35;color:var(--text);box-shadow:0 3px 0 #0b0c0f;white-space:nowrap}
+.chip:active{transform:translateY(2px);box-shadow:0 1px 0 #0b0c0f}
+html:not(.ready) #soundChip{visibility:hidden}
+body.rm .ticker-run,body.rm .cta{animation:none}
+@media (prefers-reduced-motion:reduce){.ticker-run,.cta{animation:none}}
 @media (max-width:640px){
+  /* phone hero: brand on top, a clear window onto the live office in the middle, actions in thumb reach */
+  #title{display:block;padding:0;overflow-y:auto;background:linear-gradient(180deg,rgba(21,23,28,.97) 0%,rgba(21,23,28,.86) 28%,rgba(21,23,28,.22) 44%,rgba(21,23,28,.22) 54%,rgba(21,23,28,.88) 68%,rgba(21,23,28,.98) 82%)}
+  .hero{min-height:100%;display:flex;flex-direction:column;justify-content:space-between;gap:16px;padding:calc(12px + env(safe-area-inset-top)) 20px calc(14px + env(safe-area-inset-bottom))}
+  .ticker{height:28px;margin-bottom:14px}
+  .ticker-run span{font-size:11px}
+  .kicker{font-size:11px;letter-spacing:.24em;white-space:nowrap}
+  .logo{font-size:min(calc((100vw - 40px) / 5.3), 12.5vh);margin:10px 0 8px}
+  .face{font-size:22px}
+  .tag{font-size:15px;line-height:1.45;margin:0 auto 16px;max-width:330px;text-wrap:balance}
+  .cta{width:100%;font-size:22px;padding:19px 0 20px;border-radius:16px}
+  .cta2{width:100%;margin-top:14px;padding:14px 0;font-size:15px}
+  .dailyNote{margin-top:8px}
+  .world{margin-top:10px;min-height:0}
+  .hero-foot{flex-direction:row;justify-content:space-between;align-items:center;margin-top:14px}
+  .hero-foot .fine{font-size:11px;text-align:right;max-width:62%}
   .tl{left:calc(14px + env(safe-area-inset-left));top:calc(12px + env(safe-area-inset-top))}
   .tr{right:calc(14px + env(safe-area-inset-right));top:calc(12px + env(safe-area-inset-top))}
   .big{font-size:50px}
@@ -238,13 +278,20 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
   #banner{top:28%}
 }
 @media (max-height:500px) and (orientation:landscape){
-  #title{overflow-y:auto;place-items:start center;padding:14px}
-  .logo{font-size:52px;margin:6px 0}
+  /* landscape phone hero: brand left, actions right */
+  #title{display:block;padding:0;overflow-y:auto}
+  .hero{max-width:none;min-height:100%;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:28px;padding:12px calc(24px + env(safe-area-inset-right)) 12px calc(24px + env(safe-area-inset-left))}
+  .ticker{display:none}
+  .kicker{font-size:10px;letter-spacing:.22em}
+  .logo{font-size:min(10vw, 22vh);margin:6px 0}
   .face{font-size:18px}
-  .tag{margin:8px auto 12px;font-size:14px}
-  .cta{padding:12px 26px;font-size:17px}
-  .cta2{margin-top:10px}
-  .fine{margin-top:10px}
+  .tag{margin:0 auto 12px;font-size:13px;line-height:1.4;text-wrap:balance}
+  .cta{width:100%;padding:13px 0;font-size:18px}
+  .cta2{width:100%;margin-top:10px;padding:10px 0;font-size:13px}
+  .dailyNote{margin-top:6px;font-size:11px}
+  .world{margin-top:6px;min-height:0}
+  .hero-foot{flex-direction:row;justify-content:space-between;margin-top:10px}
+  .hero-foot .fine{font-size:10px;text-align:right}
   .tl,.tr{top:10px}
   .big{font-size:40px}
   .lbl{font-size:11px}
@@ -320,17 +367,38 @@ body.rm .logo em,body.rm .face .t,body.rm #elevBtn.show,body.rm #bragBtn.show{an
 <div id="elev"><div class="door l"></div><div class="door r"></div><div class="elevInd"><span>▲</span><b id="elevFloor">1</b></div></div>
 
 <div id="title">
-  <div>
-    <div class="kicker">AN INFINITE OFFICE EXPERIENCE™</div>
-    <h1 class="logo">FLIPPING<br><em>TABLES</em></h1>
-    <div class="face">(╯°□°)╯︵ <span class="t">┻━┻</span></div>
-    <p class="tag">There are infinite floors. Every floor has tables. Every table is a problem.<br>Solve them all.</p>
-    <button class="cta" id="startBtn">CLOCK IN</button>
-    <div><button class="cta2" id="dailyBtn">☀ FLOOR OF THE DAY</button></div>
-    <div class="world" id="worldCount"></div>
-    <div class="fine" id="fine">No tables were harmed. Several were flipped.</div>
+  <div class="hero">
+    <div class="hero-top">
+      <div class="ticker" aria-hidden="true"><div class="ticker-run">
+        <span>▲ NOW ARRIVING: FLOOR 1 · RETURN-TO-OFFICE MANDATE: SUCCESSFUL · HR WOULD LIKE A QUICK WORD · PLEASE DO NOT FLIP THE SERVERS · THE ELEVATOR ONLY GOES UP · FRIDAY PIZZA CANCELLED. YOU KNOW WHY · </span>
+        <span>▲ NOW ARRIVING: FLOOR 1 · RETURN-TO-OFFICE MANDATE: SUCCESSFUL · HR WOULD LIKE A QUICK WORD · PLEASE DO NOT FLIP THE SERVERS · THE ELEVATOR ONLY GOES UP · FRIDAY PIZZA CANCELLED. YOU KNOW WHY · </span>
+      </div></div>
+      <div class="kicker">AN INFINITE OFFICE EXPERIENCE™</div>
+      <h1 class="logo">FLIPPING<br><em>TABLES</em></h1>
+      <div class="face">(╯°□°)╯︵ <span class="t">┻━┻</span></div>
+    </div>
+    <div class="hero-bottom">
+      <p class="tag">There are infinite floors. Every floor has tables. Every table is a problem. Solve them all.</p>
+      <button class="cta" id="startBtn">CLOCK IN</button>
+      <button class="cta2" id="dailyBtn">☀ FLOOR OF THE DAY</button>
+      <div class="dailyNote">Same floor for everyone today. Fastest time wins.</div>
+      <div class="world" id="worldCount"></div>
+      <div class="hero-foot"><button class="chip" id="soundChip" type="button">🔊 SOUND ON</button><span class="fine" id="fine">No tables were harmed. Several were flipped.</span></div>
+    </div>
   </div>
 </div>
+<script>
+  // On slow Wi-Fi the buttons render seconds before the game script runs. Remember an early tap and honor it when ready.
+  (function () {
+    var label = { startBtn: 'CLOCKING IN…', dailyBtn: 'LOADING THE FLOOR…' };
+    ['startBtn', 'dailyBtn'].forEach(function (id) {
+      document.getElementById(id).addEventListener('click', function (e) {
+        if (window.__ftReady) return;
+        window.__ftQueued = id; e.currentTarget.classList.add('waiting'); e.currentTarget.textContent = label[id];
+      });
+    });
+  })();
+</script>
 
 <script type="importmap">{"imports":{"three":"./vendor/three-r170-4.min.js"}}</script>
 <script>
@@ -2299,8 +2367,9 @@ function tip(html) {
   const el = $('#tip'); el.innerHTML = html; el.classList.add('show');
   clearTimeout(tipTimer); tipTimer = setTimeout(() => el.classList.remove('show'), 2400);
 }
-function setMute(m) { S.muted = m; if (master) master.gain.value = m ? 0 : 0.55; if (silentEl) { if (m) silentEl.pause(); else silentEl.play().catch(() => {}); } $('#muteBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/>${m ? '<path d="M17 9l5 6M22 9l-5 6"/>' : '<path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'}</svg>`; save(); }
+function setMute(m) { S.muted = m; if (master) master.gain.value = m ? 0 : 0.55; if (silentEl) { if (m) silentEl.pause(); else silentEl.play().catch(() => {}); } $('#soundChip').textContent = m ? '🔇 SOUND OFF' : '🔊 SOUND ON'; $('#muteBtn').innerHTML = `<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/>${m ? '<path d="M17 9l5 6M22 9l-5 6"/>' : '<path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/>'}</svg>`; save(); }
 $('#muteBtn').addEventListener('click', () => { audio(); setMute(!S.muted); });
+$('#soundChip').addEventListener('click', () => { setMute(!S.muted); if (!S.muted) { audio(); sfx.buy(); } }); // decide before clocking in, e.g. in a quiet room
 $('#shareBtn').addEventListener('click', () => { audio(); shareFlow(mode === 'daily' ? { headline: 'FLOOR OF THE DAY', sub: `#${dailyDay}`, lines: ['Same floor for everyone.', 'Beat my time.'] } : careerCard(), mode === 'daily' ? `Flipping Tables · Floor of the Day #${dailyDay} (╯°□°)╯︵ ┻━┻` : careerText(), 'button'); });
 const hrCount = () => Math.floor(S.flipped * 1.5 + S.floor * 3);
 
@@ -2679,6 +2748,9 @@ function beginShift(daily) {
   save();
 }
 addEventListener('visibilitychange', () => { if (document.hidden && started) { save(); flushFlips(true); } });
+// The landing page is interactive now: honor a CLOCK IN tapped while the game was still loading.
+window.__ftReady = true; document.documentElement.classList.add('ready');
+if (window.__ftQueued) $('#' + window.__ftQueued).click();
 requestAnimationFrame(loop);
 </script>
 </body>
